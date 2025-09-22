@@ -1,107 +1,76 @@
-# Senior Thesis Repo: [PLACE YOUR PROJECT NAME HERE]
+# Senior Thesis Repo: CONNECT 4 SOFTWARE WITH A Q-LEARNING ML-POWERED ALGORITHM
 This repository is provided to help you build your senior thesis project. You will edit it to store your specification documents, code, and weekly checkins.
 
-First, fork this repo (this makes a copy of it associated with your account) and then clone it to your machine (this makes a copy of your fork on your personal machine). You can then use an editor and a GitHub client to manage the repository.
-
-### Markdown
-This file is called README.md. It is a [Markdown file](https://en.wikipedia.org/wiki/Markdown). Markdown is a simple way to format documents. When a Markdown-ready viewer displays the contents of a file, it formats it to look like HTML. However, Markdown is significantly easier to write than HTML. VSCode supports displaying Markdown in a preview window. GitHub uses Markdown extensively including in every repo's description file, ```README.md```.
-
-All Markdown files end with the extension ```.md```. There is a Markdown tutorial [here](https://www.markdowntutorial.com/) and a Markdown cheatsheet [here](https://www.markdownguide.org/cheat-sheet/).
-
-#### Images
-If you would like to add images to a Markdown file, place them in the ```docs/images/``` directory in this repo and reference them using markdown like this:
-
-```
-![alt text](relative/path/to/image)
-```
-
-Here is how to add the Carthage logo to a Markdown file (you can see the image in the repo right now):
-
-```
-![Carthage Firebird Logo](docs/images/firebirdLogo.jpg)
-```
-![Carthage Firebird Logo](docs/images/firebirdLogo.jpg)
-
-This ensures that images are correctly linked and displayed when viewing the documentation on GitHub or any Markdown-supported platform.
-
-## Code
-The ```code``` directory is used to store your code. You can put it all in one directory or you can create subdirectories.
-
-I have added a ```main.cpp``` file to get you started. Feel free to remove it.
-
-If you have any questions feel free to ask me! I'll answer professor questions, customer questions, and give advice if asked.
-
-# Sample Spec
-
-Below is an example of a project specification.  
-
-## Software Requirements Specification for the Mahoney University Registration System
+## Software Requirements Specification
 
 ## Introduction
 
 ### Purpose
-The purpose of this document is to outline the functional and non-functional requirements of Mahoney University’s new online registration system. The system is designed to streamline the registration process for students and faculty, replacing the outdated manual system. This specification serves as a contract between the system stakeholders and the developers to ensure that the system meets the needs of its users while adhering to university policies and technical constraints.
+This document provides all the functional and non-functional requirements of the Machine Learning Connect Four Software. The primary purpose of this software is to train an Artificially Intelligent algorithm on the popular MB game, Connect Four, so that it can go up against and masterfully beat human players of the game.
 
-The key goals of the new system are:
-- To improve the efficiency of the course registration process for students.
-- To provide staff in the Registrar’s Office with tools to manage course offerings, schedules, and student records.
-- To enhance the accuracy and accessibility of student academic information, such as grades and enrollment history.
-- To support the university’s transition to digital infrastructure while maintaining compatibility with legacy systems during a transitional period.
+The key goals of the software are:
+- To create a Q-Learning-based algorithm capable of mastering Connect Four
+- To discover possible new and unexpected strategies for winning the game
+- To showcase the potential of Machine Learning AI in games both physical and virtual.
 
 ### Scope
-This system is intended to support the registration process for all students at Mahoney University, including undergraduates, graduate students, and non-degree-seeking students. The system will handle:
-- Student authentication and secure access to personal records.
-- Course search and registration.
-- Enrollment validation, including prerequisite checks and course availability.
-- Management of student schedules, including the ability to add, drop, or modify course enrollments.
-- Grade viewing and transcript requests.
-
-The scope of the system also includes administrative tools for the Registrar’s Office to:
-- Create and modify course offerings for each academic term.
-- Manage enrollment caps, waitlists, and course prerequisites.
-- Track student progress and generate reports for academic performance.
+Although it is an option for two human players to play Connect Four, this software is supposed to pit human players against an AI. The AI decides the best possible move based on the current state of the board, and is either rewarded or punished based on the ultimate outcome of the game.
+The software will handle:
+- Connect Four Board setup
+- Checking for win
+- Player vs. Player functionality
+- Player vs. AI functionality
+- AI vs. AI functionality (If possible)
 
 ### Definitions, Acronyms, and Abbreviations
-- **Registrar**: The official responsible for maintaining student records, managing course schedules, and overseeing the registration process.
-- **Student Information System (SIS)**: A university-wide database that stores student records, course information, and academic data.
-- **GPA**: Grade Point Average, a numerical representation of a student's academic performance.
-- **Semester**: A division of the academic year, typically consisting of a Fall and Spring term, in which courses are offered and completed.
-- **Waitlist**: A system that allows students to reserve a spot in a full course, subject to availability if another student drops the course.
-- **Prerequisite**: A course or requirement that must be completed before a student can enroll in a more advanced course.
-- **User Role**: A designation for system access levels, such as student, registrar, or faculty member, each with different permissions within the system.
-- **Concurrent Enrollment**: The ability for students to be enrolled in multiple courses during the same academic term.
+- **Machine Learning (ML)**: A form of Artificial Intelligence where computers utilize recorded data to make its own decisions
+- **Q-Learning**: A specific type of ML in which the AI determines the best possible course of action based on the current state of the game.
+- **State (s)**: The list of all moves played by both agents throughout the game.
+- **Agent**: Anything that acts to achieve a goal.
+- **Learning Rate (α)**: How much new information should be acquired versus old info.
+- **Discount Factor (γ)**: How important is the future reward over the immediate reward.
+- **Board**: The 7x6 Game Space in which agents drop their checkers into the seven spots on top of the board.
+- **Hole**: The place inside the board where a checker lands into. Marked as follows:
+  - R for Player 1 (Red)
+  - B for Player 2 (Black)
+  - O for Empty
 
 ## Overview
-The Mahoney University Registration System is a web-based platform designed to automate the course registration process for students and faculty. It serves as the primary interface for students to manage their academic schedules and for university staff to oversee the course offerings and registration workflows.
+Machine Learning Connect Four is a software designed to train an AI algorithm. The algorithm is based on Q-Learning, a type of machine learning where decisions are made based on what is happening right now and which one is the most valuable.
+The primary functionality for the algorithm is based on the following equation: **Q(s, a) = Q(s, a) + α * [R(s, a) + γ * maxQ(s', a') - Q(s, a)]**
+Q(s, a) is the current state of the game based on the action taken
+α is the Learning Rate. See the Definitions page for the full definition.
+R(s, a) determines whether the AI should be rewarded or punished at the end of the game. Points are added if the AI wins, points are docked if it loses, and half a point is added if the game ends in a draw.
+γ is the Discount Rate. See the Definitions page for the full definition.
+maxQ(s', a') lists all future states for the AI to pick the best possible state-action pair.
 
 ### System Features:
-1. **Secure Login**: Ensures that only authorized users (students, faculty, and staff) have access to the system, with user authentication based on university credentials.
-2. **Course Search**: Allows students to browse available courses by department, term, and subject, with filtering options based on course availability, schedule, and prerequisites.
-3. **Course Registration**: Students can add or drop courses, view class schedules, and receive notifications of any conflicts or unmet prerequisites.
-4. **Grades and Transcripts**: Provides students with access to their grades from current and past semesters, as well as the ability to request official transcripts.
-5. **Registrar Management Tools**: The Registrar’s Office can create, modify, and delete course sections, set enrollment limits, and manage waitlists.
+1. **Main Menu** A selection screen where the user can select from different game modes
+2. **Player vs. Player** A game mode that plays like traditional Connect Four
+3. **Player vs. AI** A game mode in which the player plays against the Machine Learning computer
+4. **AI vs. AI** The computer is trained against another identical model to generate more learning data
+5. **Options** User can set their checker color and erase AI data.
 
-The system is designed with scalability in mind, allowing it to handle thousands of students registering simultaneously during peak periods. It will integrate with the university’s existing Student Information System (SIS) and is built using modern web technologies to ensure ease of use, reliability, and performance.
-
-The following sections detail the specific use cases that the system will support, describing how students and staff will interact with the system during typical operations.
+The following sections detail the specific use cases that the software will support
 
 ## Use Cases
 
-### Use Case 1.1: Secure Login
-- **Actors**: Student or registrar
-- **Overview**: Actor uses password to verify their identity.
+### Use Case 1.1: Place checker
+- **Actors**: Agent
+- **Overview**: Agent selects spot on the top of the Board to drop the checker into
 
 **Typical Course of Events**:
-1. Page prompts for username and password.
-2. User enters their username and password and hits enter/login.
-3. System verifies that the username and password are correct.
+1. Software prompts agent to select a spot.
+2. Agent types in numeric value to select a specific spot.
+3. Checker is dropped and either lands on the bottom of the board or on top of another checker.
+4. Checks entire board if agent has connected four checkers.
 
 **Alternative Courses**:
-- **Step 3**: User and/or password are not correct.
+- **Step 3**: Spot number is not valid.
   1. Displays error.
   2. Go back to step 1.
 
-### Use Case 1.2: Find a Course
+### Use Case 1.2: Determine Win
 - **Actors**: Student
 - **Overview**: Student finds a desired class.
 

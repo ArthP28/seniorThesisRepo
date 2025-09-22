@@ -1,0 +1,11 @@
+{
+    "files.exclude": {
+        "**/a.out": true,
+        "**/*.dSYM":true
+    },
+    "files.associations": {
+        "iostream": "cpp",
+        "string": "cpp",
+        "ostream": "cpp"
+    }
+}

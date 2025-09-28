@@ -20,7 +20,7 @@ The overall scope of the software will consist of:
 - Checking win conditions
 - Player vs. Player mode
 - Player vs. AI mode
-- AI vs. AI mod (If possible)
+- AI vs. AI mode (If possible)
 
 ### Definitions, Acronyms, and Abbreviations
 - **Machine Learning (ML)**: A form of Artificial Intelligence where computers utilize recorded data to make its own decisions

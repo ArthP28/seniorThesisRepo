@@ -1,58 +1,58 @@
-## Week 1 Summary (MM/DD/YYYY)
+## Week 1 Summary (09/08/2025)
 
 ### This week I worked on:
 
-[Your answer here]
+I first presented my proposal to Professors Mahoney and Zak. My proposal was to write a paper about the applications of Machine Learning in video games and other virtual environments. Afterwards, I cloned the base Senior Thesis Repository onto my computer, and added a blank thesis document to get started. Meanwhile, outside of class, I took annotated notes on some research articles I found that are relevant to my paper.
 
 ### This week I learned:
 
-[Your answer here]
+I have learned about the requirements and expectations of the Senior Thesis Project and how they apply to my paper proposal.
 
 ### My successes this week were:
 
-[Your answer here]
+I was able to get my own copy of the Senior Thesis Repo and insert my own sources into it.
 
 ### The challenges I faced this week were:
 
-[Your answer here]
+Because I chose to work on a paper in a project-heavy course, my biggest challenge this week was trying to convince the instructors of my proposal. I wanted to write a paper for my Senior Project because it was the most effective way for me to explore new and exciting technologies.
 
 ---
 
-## Week 2 Summary (MM/DD/YYYY)
+## Week 2 Summary (09/15/2025)
 ### This week I worked on:
 
-[Your answer here]
+I was not able to commit much work on my Project Repo this week, because I spent most of my time communicating with instructors. I was talking with them about my project proposal and the progress I have made on it prior to the beginning of the academic year. Towards the tail end of the week, I came up with a fresh new idea to share with my instructors.
 
 ### This week I learned:
 
-[Your answer here]
+As I talked with professors about my initial proposal, it began to dawn on me how better it would be to convey my thesis idea through a project rather than a paper. Making a project around machine learning would be a more direct and rewarding method to demonstrate the revolutionary prospects machine learning has on the mediums of both physical and virtual games.
 
 ### My successes this week were:
 
-[Your answer here]
+Even though I had to sacrifice my paper proposal, choosing to work on a Machine Learning Connect Four algorithm will hopefully give me a stronger base to work on my thesis idea.
 
 ### The challenges I faced this week were:
 
-[Your answer here]
+The decision to give up my proposal to write a thesis paper was the most difficult I had to make. It essentially reduced the amount of resource-gathering and note-taking I put in over the past two months to nothing. However, considering the direction I have been taking over the past three years, as a student software developer with an interest in AI, it would be more difficult to connect my future prospects through a paper than through a project.
 
 ---
 
-## Week 3 Summary (MM/DD/YYYY)
+## Week 3 Summary (09/22/2025)
 ### This week I worked on:
 
-[Your answer here]
+After I got my proposal approved and locked in, I spent the whole week designing a basic Connect 4 program as well as writing the specifications for my whole Senior Project.
 
 ### This week I learned:
 
-[Your answer here]
+While designing the graphical elements of the software, I took some time to review what ANSI Escape Code do, and how they modify the command terminal's output. I used it to bold text, color in text a specific color, and to erase individual lines of printed strings. By incorporating system() commands as well, I formatted my software to appear clean and professional.
 
 ### My successes this week were:
 
-[Your answer here]
+Getting the overall Player vs. Player Connect Four program working is the biggest success I have had in my Senior Project so far. It felt like I had already completed half the entire project.
 
 ### The challenges I faced this week were:
 
-[Your answer here]
+Trying to mentally picture the overall structure of my Connect Four Program was pretty challenging. I ended up having the whole game be in one function within main(), where, within a while loop, players take turns choosing a column to drop their own checker into. The program then checks if the player has won right before the end of the primary while loop. I based the nested logic of the player's actions on my existing experience working with graphical applications, such as a Geography Comparer program I worked on last summer. I am not sure whether using an alternate structure would make the program's code simpler to understand.
 
 ---
 

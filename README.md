@@ -37,11 +37,17 @@ The overall scope of the software will consist of:
 
 ## Overview
 Machine Learning Connect Four is a software designed to train an AI algorithm. The algorithm is based on Q-Learning, a type of machine learning where decisions are made based on selecting the most valuable choice.
+
 The primary functionality for the algorithm is based on the following equation: **Q(s, a) = Q(s, a) + α * [R(s, a) + γ * maxQ(s', a') - Q(s, a)]**
-Q(s, a) is the current state of the game based on the action taken
+
+Q(s, a) is the current state of the game based on the action taken.
+
 α is the Learning Rate. See the Definitions page for the full definition.
+
 R(s, a) determines whether the AI should be rewarded or punished at the end of the game for their decision. Points are added if the AI wins, and points are docked if it loses.
+
 γ is the Discount Rate. See the Definitions page for the full definition.
+
 maxQ(s', a') lists all future states for the AI to pick the best possible state-action pair.
 
 ### System Features:

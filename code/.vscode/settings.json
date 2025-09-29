@@ -6,6 +6,7 @@
     "files.associations": {
         "iostream": "cpp",
         "string": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "chrono": "cpp"
     }
 }

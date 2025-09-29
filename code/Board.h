@@ -3,6 +3,8 @@
 
 using namespace std;
 
+bool CheckForFourInRow(int& connectCount, bool& hasWon);
+
 class Board{
     struct Player{
         char symbol;
@@ -13,12 +15,13 @@ class Board{
         bool placeChecker(int playerNum, int columnToPlace);
         bool checkWin(int checkerNum);
         void printBoard();
+        void printHeader();
 
     private:
         Player _players[2];
         int _boardSpaces[7][6];
 };
-    
+
 
 Board::Board(char p1Symbol, char p2Symbol){
     // Make sure that entire board starts completely empty (Full of 0s)
@@ -40,10 +43,6 @@ bool Board::placeChecker(int playerNum, int columnToPlace){
             canBePlaced = true;
             break;
         }
-    }
-
-    if(!canBePlaced){
-        cout << "Invalid place to drop a checker!" << endl;
     }
 
     return canBePlaced;
@@ -70,12 +69,9 @@ bool Board::checkWin(int checkerNum){
                             break;
                         }
                     }
-                    if(connectCount == 4){
-                        cout << "Connect Four!" << endl;
-                        hasWon = true;
+                    if(CheckForFourInRow(connectCount, hasWon)){
+                        cout << "Player " << checkerNum << " wins!" << endl;
                         break;
-                    } else {
-                        connectCount = 0;
                     }
                 }
 
@@ -88,12 +84,9 @@ bool Board::checkWin(int checkerNum){
                             break;
                         }
                     }
-                    if(connectCount == 4){
-                        cout << "Connect Four!" << endl;
-                        hasWon = true;
+                    if(CheckForFourInRow(connectCount, hasWon)){
+                        cout << "Player " << checkerNum << " wins!" << endl;
                         break;
-                    } else {
-                        connectCount = 0;
                     }
                 }
 
@@ -106,12 +99,9 @@ bool Board::checkWin(int checkerNum){
                             break;
                         }
                     }
-                    if(connectCount == 4){
-                        cout << "Connect Four!" << endl;
-                        hasWon = true;
+                    if(CheckForFourInRow(connectCount, hasWon)){
+                        cout << "Player " << checkerNum << " wins!" << endl;
                         break;
-                    } else {
-                        connectCount = 0;
                     }
                 }
 
@@ -124,12 +114,9 @@ bool Board::checkWin(int checkerNum){
                             break;
                         }
                     }
-                    if(connectCount == 4){
-                        cout << "Connect Four!" << endl;
-                        hasWon = true;
+                    if(CheckForFourInRow(connectCount, hasWon)){
+                        cout << "Player " << checkerNum << " wins!" << endl;
                         break;
-                    } else {
-                        connectCount = 0;
                     }
                 }
             }
@@ -142,17 +129,35 @@ bool Board::checkWin(int checkerNum){
     return hasWon;
 }
 
+bool CheckForFourInRow(int& connectCount, bool& hasWon){
+    if(connectCount == 4){
+        cout << "Connect Four!" << endl;
+        hasWon = true;
+        return true;
+    } else {
+        connectCount = 0;
+        return false;
+    }
+}
+
 void Board::printBoard(){
+    string ESC = "\033";
     for(int row = 0; row < 6; row++){
         for(int col = 0; col < 7; col++){
             if(_boardSpaces[col][row] == 1){ // Player 1 Checkers
-                cout << _players[0].symbol << " ";
+                cout << ESC << "[41m" << _players[0].symbol << ESC << "[m ";
             } else if(_boardSpaces[col][row] == 2){ // Player 2 Checkers
-                cout << _players[1].symbol << " ";
+                cout << ESC << "[44m" << _players[1].symbol << ESC << "[m ";
             } else { // Nothing
                 cout << _boardSpaces[col][row] << " ";
             }
         }
         cout << endl;
     }
+}
+
+void Board::printHeader(){
+    cout << "1 2 3 4 5 6 7" << endl;
+    cout << "V V V V V V V" << endl;
+    cout << "-------------" << endl;
 }

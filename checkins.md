@@ -56,26 +56,26 @@ Trying to mentally picture the overall structure of my Connect Four Program was 
 
 ---
 
-## Week 4 Summary (MM/DD/YYYY)
+## Week 4 Summary (09/29/2025)
 ### This week I worked on:
 
-[Your answer here]
+This Monday, I met with professors Zak and Mahoney to discuss my project progress as well as to schedule my elevator pitch for next week. I then spent the rest of the week preparing for the pitch, by first typing out an outline and then finding time every day to practice speaking.
 
 ### This week I learned:
 
-[Your answer here]
+During the discussion I had with both professors, I was first made aware of a more sophisticated form of Q-Learning called "Deep Q-Learning." Rather than using Reinforcement Learning, Deep Q-Learning utilizes Deep Learning for environments with a high number of possible future states, such as robotics and video games. If I successfully implement Q-Learning early, I might consider upgrading the current algorithm to run on Deep Learning.
 
 ### My successes this week were:
 
-[Your answer here]
+Both professors were excited about the project idea. Professor Zak especially could not wait to see where the concept of an adaptive ML algorithm playing board games can go. Because I already have a working prototype of the Connect Four game engine implemented, that left me with a lot of time to focus on pitch practice and other homework.
 
 ### The challenges I faced this week were:
 
-[Your answer here]
+Because of the workload I have received over the week, I struggled to find a lot of time to work on my elevator pitch. But I was still able to dedicate a good amount of time over the last few days practicing and revising my pitch to a point where I can reasonably be confident in presenting my thesis idea well.
 
 ---
 
-## Week 5 Summary (MM/DD/YYYY)
+## Week 5 Summary (10/06/2025)
 ### This week I worked on:
 
 [Your answer here]

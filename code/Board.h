@@ -56,6 +56,9 @@ class Board{
 };
 
 Board::Board(int w, int h, char p1, char p2){
+    if(w < 4 || h < 4){
+        throw runtime_error("Board must at least be 4x4");
+    }
     _boardWidth = w;
     _boardHeight = h;
 
@@ -66,6 +69,9 @@ Board::Board(int w, int h, char p1, char p2){
 }
 
 Board::Board(int w, int h){
+    if(w < 4 || h < 4){
+        throw runtime_error("Board must at least be 4x4");
+    }
     _boardWidth = w;
     _boardHeight = h;
 
@@ -257,14 +263,25 @@ bool CheckForFourInRow(int& connectCount){
 
 void Board::printBoard(){
     string ESC = "\033";
-    for(int row = 0; row < _boardWidth; row++){
-        for(int col = 0; col < _boardHeight; col++){
+    for(int row = 0; row < _boardHeight; row++){
+        for(int col = 0; col < _boardWidth; col++){
+            cout << "|";
             if(_grid.at(col)[row] == _p1Checker){ // Player 1 Checkers
-                cout << ESC << "[41m" << _p1Checker << ESC << "[m ";
+                cout << ESC << "[41m " << _p1Checker << " " << ESC << "[m";
             } else if(_grid.at(col)[row] == _p2Checker){ // Player 2 Checkers
-                cout << ESC << "[44m" << _p2Checker << ESC << "[m ";
+                cout << ESC << "[44m " << _p2Checker << " " << ESC << "[m";
             } else { // Nothing
-                cout << _grid.at(col)[row] << " ";
+                cout << " " << _grid.at(col)[row] << " ";
+            }
+        }
+        cout << "|" << endl;
+        if(row < _boardHeight - 1){
+            for(int w = 0; w <= _boardWidth * 4; w++){
+                if(w % 4 == 0){
+                    cout << "+";
+                } else {
+                    cout << "-";
+                }
             }
         }
         cout << endl;

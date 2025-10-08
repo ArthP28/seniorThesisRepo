@@ -16,6 +16,23 @@ void PlayGame(int firstPlayerIndex);
 
 int main()
 {
+    Board _board;
+    _board.dropChecker(3, _board.getPlayerTurn());
+    _board.dropChecker(2, _board.getPlayerTurn());
+    _board.dropChecker(2, _board.getPlayerTurn());
+    _board.dropChecker(1, _board.getPlayerTurn());
+    _board.dropChecker(2, _board.getPlayerTurn());
+    _board.dropChecker(1, _board.getPlayerTurn());
+    _board.dropChecker(1, _board.getPlayerTurn());
+    _board.dropChecker(0, _board.getPlayerTurn());
+    _board.dropChecker(1, _board.getPlayerTurn());
+    _board.dropChecker(0, _board.getPlayerTurn());
+    _board.dropChecker(0, _board.getPlayerTurn());
+    _board.dropChecker(1, _board.getPlayerTurn());
+    _board.dropChecker(0, _board.getPlayerTurn());
+    _board.printBoard();
+    _board.checkWin('1');
+    /*
     srand(time(0));
     cout << "Let's play Connect Four!" << endl << endl;
     string affirmationSignal = "y";
@@ -28,8 +45,9 @@ int main()
     }
     cout << "See you soon!" << endl;
     return 0;
+    */
 }
-
+/*
 void PlayGame(int firstPlayerIndex){
     Board _board('R', 'B'); // Parameters: Player 1 = RED, Player 2 = BLUE
     string ESC = "\033";
@@ -101,3 +119,4 @@ int DetermineFirstPlayer(){ // Decides who gets to go first. Is completely rando
     cout << "Player " << randomIndex << " goes first!" << endl << endl;
     return randomIndex;
 }
+*/

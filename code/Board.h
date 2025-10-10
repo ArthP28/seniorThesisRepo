@@ -24,10 +24,10 @@ class Board{
         Board();
 
         void placeChecker(int column, char checkerToDrop);
-        bool checkWin(char checker);
+        Board::BOARD_STATE checkWin(char checker);
         void printBoard();
         void printHeader();
-        PLAYER_TURN getPlayerTurn();
+        PLAYER_TURN getNextTurn(PLAYER_TURN prevState);
         bool isFull(int col);
     private:
         vector<string> _grid;
@@ -81,25 +81,12 @@ Board::Board(){
     initializeGrid();
 }
 
-Board::PLAYER_TURN Board::getPlayerTurn(){
-    PLAYER_TURN _retval;
-    int numCheckers = 0;
-
-    for(string col : _grid){
-        for(int i = 0; i < col.length(); i++){
-            if(col[i] == _p1Checker || col[i] == _p2Checker){
-                numCheckers++;
-            }
-        }
+Board::PLAYER_TURN Board::getNextTurn(PLAYER_TURN prevState){
+    if(prevState == PLAYER_TURN::P1){
+        return PLAYER_TURN::P2;
+    } else if (prevState == PLAYER_TURN::P2){
+        return PLAYER_TURN::P1;
     }
-
-    if(numCheckers % 2 == 1){
-        _retval = PLAYER_TURN::P2;
-    } else if (numCheckers % 2 == 0){
-        _retval = PLAYER_TURN::P1;
-    }
-
-    return _retval;
 }
 
 void Board::placeChecker(int column, char checkerToDrop){ // This method returns a bool so that the main software displays a warning message about overfilling one column
@@ -115,7 +102,7 @@ void Board::placeChecker(int column, char checkerToDrop){ // This method returns
 
 // FUTURE TODO: In > 4-in-a-row, Current Win Algorithm searches through checkers it has already searched
 // If possible, find a way to ignore already searched checker rows
-bool Board::checkWin(char checker){
+Board::BOARD_STATE Board::checkWin(char checker){
     bool hasWon = false;
     int connectCount = 0;
     // Scan the entire board for four in a row after each turn
@@ -164,7 +151,14 @@ bool Board::checkWin(char checker){
             }
         }
     }
-    return hasWon;
+    if(hasWon){
+        if(checker == _p1Checker){
+            return BOARD_STATE::P1_WIN;
+        } else if(checker == _p2Checker){
+            return BOARD_STATE::P2_WIN;
+        }
+    }
+    return BOARD_STATE::INCOMPLETE;
 }
 
 bool Board::inBounds(int col, int row){

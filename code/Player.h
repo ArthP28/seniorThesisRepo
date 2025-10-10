@@ -18,6 +18,7 @@ class Player{
         void win();
         void loss();
         char GetSymbol();
+        string GetName();
     private:
         int _numWins = 0;
         int _numLosses = 0;
@@ -63,7 +64,7 @@ void Player::dropChecker(){
                 sleep_for(milliseconds(500));
                 playerInput = ""; // Input is reset back to "null" and the loop restarts.
                 cout << ESC << "[A" << ESC << "[2K"; // Clears the error message
-            } else if(_playersBoard->isFull(colIndex)) { // Else place the checker into the appropriate column
+            } else if(_playersBoard->isFull(colIndex - 1)) { // Else place the checker into the appropriate column
                 cout << ESC << "[A" << ESC << "[2KColumn is full!" << endl;
                 sleep_for(milliseconds(500));
                 playerInput = ""; // Input is reset back to "null" and the loop restarts.
@@ -78,7 +79,7 @@ void Player::dropChecker(){
     cout << _playerName << " drops a checker into column " << playerInput << "." << endl << endl; // This message primarily conveys that the action went through
 
     _playersBoard->printHeader();
-    _playersBoard->placeChecker(colIndex, _tokenSymbol);
+    _playersBoard->placeChecker(colIndex - 1, _tokenSymbol);
     _playersBoard->printBoard();
 }
 
@@ -92,5 +93,9 @@ void Player::loss(){
 
 char Player::GetSymbol(){
     return _tokenSymbol;
+}
+
+string Player::GetName(){
+    return _playerName;
 }
 

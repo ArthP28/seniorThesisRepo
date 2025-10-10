@@ -3,11 +3,10 @@
 #include <thread>
 #include "Board.h"
 #include "Player.h"
+
 using namespace std;
 
-
-int DetermineFirstPlayer();
-void PlayGame(int firstPlayerIndex);
+void PlayGame(Player* p1, Player* p2);
 
 // ***NOTICE***
 // The following code is only a fraction of the overall ML Connect Four Software (The Player vs. Player Mode).
@@ -16,124 +15,60 @@ void PlayGame(int firstPlayerIndex);
 
 int main()
 {
+    srand(time(0));
     Player* _p1 = new Player("Arthur", 'R');
     Player* _p2 = new Player("Maddison", 'B');
-    Board* _board = new Board(_p1->GetSymbol(), _p2->GetSymbol());
-    _p1->SetPlayersBoard(_board);
-    _p2->SetPlayersBoard(_board);
-
-    _p1->dropChecker();
-
-    delete _board;
-    delete _p2;
-    delete _p1;
-    /*_board.dropChecker(3, _board.getPlayerTurn());
-    _board.dropChecker(2, _board.getPlayerTurn());
-    _board.dropChecker(2, _board.getPlayerTurn());
-    _board.dropChecker(1, _board.getPlayerTurn());
-    _board.dropChecker(2, _board.getPlayerTurn());
-    _board.dropChecker(1, _board.getPlayerTurn());
-    _board.dropChecker(1, _board.getPlayerTurn());
-    _board.dropChecker(0, _board.getPlayerTurn());
-    _board.dropChecker(1, _board.getPlayerTurn());
-    _board.dropChecker(0, _board.getPlayerTurn());
-    _board.dropChecker(0, _board.getPlayerTurn());
-    _board.dropChecker(1, _board.getPlayerTurn());
-    _board.dropChecker(0, _board.getPlayerTurn());
-    _board.printBoard();
-    _board.checkWin('1');*/
-    // Game Structure
-    // Generate two players
-    // Generate board
-    // while loop in which players take turns
-    // player drops in checker onto board grid and board checks for win
-    // if win, game is over. Win recorded for victorious player and loss recorded for losing player
-    /*
-    srand(time(0));
     cout << "Let's play Connect Four!" << endl << endl;
     string affirmationSignal = "y";
     while(tolower(affirmationSignal[0]) == 'y'){ // This function goes on as long as the user wants it to go
-        PlayGame(DetermineFirstPlayer());
+        PlayGame(_p1, _p2);
         cout << "Would you like to play again?" << endl << 
         "[y] = YES\n[n] = NO" << endl;
         getline(cin, affirmationSignal);
         system("clear");
     }
     cout << "See you soon!" << endl;
+
+    delete _p2;
+    delete _p1;
+    _p1 = NULL;
+    _p2 = NULL;
     return 0;
-    */
-   return 0;
-}
-/*
-void PlayGame(int firstPlayerIndex){
-    Board _board('R', 'B'); // Parameters: Player 1 = RED, Player 2 = BLUE
-    string ESC = "\033";
-    int currentPlayerIndex = firstPlayerIndex;
-    int colIndex;
-
-    while(true){
-        // First Print which Player is going as well as the current state of the board grid
-        if(currentPlayerIndex == 1){
-            cout << ESC << "[41m";
-        } else if (currentPlayerIndex == 2){
-            cout << ESC << "[44m";
-        }
-        cout << "Player " << currentPlayerIndex << "'s turn!" << ESC << "[m" << endl << endl;
-        _board.printHeader();
-        _board.printBoard();
-
-        // Then ask the user where to drop their checker
-        cout << endl << "Select which column to place your checker." << endl;
-        string playerInput;
-
-        // Logic handling the validity of the user's input
-        while(playerInput == ""){
-            getline(cin, playerInput);
-
-            if(playerInput[0] < 48 || playerInput[0] > 57){ // Check if the user's input is a number by checking its ASCII Value
-                cout << ESC << "[A" << ESC << "[2KInvalid Input" << endl;
-                sleep_for(milliseconds(500));
-                playerInput = ""; // Input is reset back to "null" and the loop restarts.
-                cout << ESC << "[A" << ESC << "[2K"; // Clears the error message
-            } else {
-                colIndex = stoi(playerInput);
-                if(colIndex < 1 || colIndex > 7){ // If user types in a number not between 1 - 7, prompt user to try again
-                    cout << ESC << "[A" << ESC << "[2KInvalid Input" << endl;
-                    sleep_for(milliseconds(500));
-                    playerInput = ""; // Input is reset back to "null" and the loop restarts.
-                    cout << ESC << "[A" << ESC << "[2K"; // Clears the error message
-                } else if(!_board.placeChecker(currentPlayerIndex, colIndex - 1)) { // Else place the checker into the appropriate column
-                    cout << ESC << "[A" << ESC << "[2KColumn is full!" << endl;
-                    sleep_for(milliseconds(500));
-                    playerInput = ""; // Input is reset back to "null" and the loop restarts.
-                    cout << ESC << "[A" << ESC << "[2K"; // Clears the error message
-                }
-            }
-            
-        }
-
-        system("clear"); // Clean up previously printed strings so that software output looks nice.
-        //cout << ESC << "[2J\r";
-
-        cout << "Player " << currentPlayerIndex << " drops a checker into column " << playerInput << "." << endl << endl; // This message primarily conveys that the action went through
-
-        if(_board.checkWin(currentPlayerIndex)){ // Check if the current player has won
-            break;
-        } else {
-            if((currentPlayerIndex + 1) > 2){ // Switch the player count to player 1 if player 2's turn has concluded
-                currentPlayerIndex = 1;
-            } else { // Otherwise if Player 1's turn has ended, switch to Player 2
-                currentPlayerIndex++;
-            }
-        }
-    }
-    cout << endl << "Results" << endl << endl; // Display winning board grid
-    _board.printBoard();
 }
 
-int DetermineFirstPlayer(){ // Decides who gets to go first. Is completely random for every game.
+void PlayGame(Player* p1, Player* p2){
+    Board::PLAYER_TURN _currTurn;
     int randomIndex = (rand() % 2) + 1;
-    cout << "Player " << randomIndex << " goes first!" << endl << endl;
-    return randomIndex;
+    if(randomIndex == 1){
+        _currTurn = Board::PLAYER_TURN::P1;
+    } else if (randomIndex == 2){
+        _currTurn = Board::PLAYER_TURN::P2;
+    }
+    Board* _board = new Board(p1->GetSymbol(), p2->GetSymbol());
+    p1->SetPlayersBoard(_board);
+    p2->SetPlayersBoard(_board);
+
+    // Actual game begins. Loops as long as no one wins
+    Board::BOARD_STATE _currState = Board::BOARD_STATE::INCOMPLETE;
+    while(_currState == Board::BOARD_STATE::INCOMPLETE){
+        if(_currTurn == Board::PLAYER_TURN::P1){
+            cout << p1->GetName() << "'s turn!" << endl;
+            p1->dropChecker();
+            _currState = _board->checkWin(p1->GetSymbol());
+        } else if (_currTurn == Board::PLAYER_TURN::P2){
+            cout << p2->GetName() << "'s turn!" << endl;
+            p2->dropChecker();
+            _currState = _board->checkWin(p2->GetSymbol());
+        }
+        _currTurn = _board->getNextTurn(_currTurn);
+    }
+
+    if(_currState == Board::BOARD_STATE::P1_WIN){
+        cout << p1->GetName() << " Wins!" << endl;
+    } else if(_currState == Board::BOARD_STATE::P2_WIN){
+        cout << p2->GetName() << " Wins!" << endl;
+    }
+
+    delete _board;
+    _board = NULL;
 }
-*/

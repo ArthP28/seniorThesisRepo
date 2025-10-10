@@ -6,10 +6,6 @@ using namespace std;
 bool CheckForFourInRow(int& connectCount);
 
 class Board{
-    struct Player{
-        char symbol;
-    };
-
     
     public:
         enum PLAYER_TURN{
@@ -24,19 +20,16 @@ class Board{
         };
 
         Board(int w, int h, char p1, char p2);
-        Board(int w, int h);
         Board(char p1, char p2);
         Board();
 
-        bool dropChecker(int column, PLAYER_TURN _currPlayerTurn);
-
-        bool placeChecker(int playerNum, int columnToPlace);
+        void placeChecker(int column, char checkerToDrop);
         bool checkWin(char checker);
         void printBoard();
         void printHeader();
         PLAYER_TURN getPlayerTurn();
+        bool isFull(int col);
     private:
-        Player _players[2];
         vector<string> _grid;
         int _boardSpaces[7][6];
         int _boardWidth;
@@ -64,19 +57,6 @@ Board::Board(int w, int h, char p1, char p2){
 
     _p1Checker = p1;
     _p2Checker = p2;
-
-    initializeGrid();
-}
-
-Board::Board(int w, int h){
-    if(w < 4 || h < 4){
-        throw runtime_error("Board must at least be 4x4");
-    }
-    _boardWidth = w;
-    _boardHeight = h;
-
-    _p1Checker = '1';
-    _p2Checker = '2';
 
     initializeGrid();
 }
@@ -122,27 +102,15 @@ Board::PLAYER_TURN Board::getPlayerTurn(){
     return _retval;
 }
 
-bool Board::dropChecker(int column, PLAYER_TURN _currPlayerTurn){ // This method returns a bool so that the main software displays a warning message about overfilling one column
-    bool canBePlaced = false;
-
-    char _checkerToDrop;
-    if(_currPlayerTurn == PLAYER_TURN::P1){
-        _checkerToDrop = _p1Checker;
-    } else if(_currPlayerTurn == PLAYER_TURN::P2){
-        _checkerToDrop = _p2Checker;
-    }
-
-    if(_checkerToDrop != NULL){
+void Board::placeChecker(int column, char checkerToDrop){ // This method returns a bool so that the main software displays a warning message about overfilling one column
+    if(checkerToDrop != NULL){
         for(int bottom = _boardHeight; bottom >= 0; bottom--){
             if(_grid.at(column)[bottom] == _empty){
-                _grid.at(column)[bottom] = _checkerToDrop;
-                canBePlaced = true;
+                _grid.at(column)[bottom] = checkerToDrop;
                 break;
             }
         }
     }
-
-    return canBePlaced;
 }
 
 // FUTURE TODO: In > 4-in-a-row, Current Win Algorithm searches through checkers it has already searched
@@ -160,7 +128,8 @@ bool Board::checkWin(char checker){
                 if(inBounds(col+1, row)){
                     if(_grid.at(col+1)[row] == checker) { // 1. Horizontaly
                         if(searchHorizontally(checker, col+1, row, connectCount+2)){
-                            return true;
+                            hasWon = true;
+                            break;
                         }
                     }
                 }
@@ -168,7 +137,8 @@ bool Board::checkWin(char checker){
                 if(inBounds(col, row+1)){
                     if(_grid.at(col)[row+1] == checker) { // 2. Vertically
                         if(searchVertically(checker, col, row+1, connectCount+2)){
-                            return true;
+                            hasWon = true;
+                            break;
                         }
                     }
                 }
@@ -176,7 +146,8 @@ bool Board::checkWin(char checker){
                 if(inBounds(col-1, row+1)){
                     if(_grid.at(col-1)[row+1] == checker) { // 3. Diagonally (Left)
                         if(searchLeftDiagonally(checker, col-1, row+1, connectCount+2)){
-                            return true;
+                            hasWon = true;
+                            break;
                         }
                     }
                 }
@@ -184,7 +155,8 @@ bool Board::checkWin(char checker){
                 if(inBounds(col+1, row+1)){
                     if(_grid.at(col+1)[row+1] == checker) { // 3. Diagonally (Right)
                         if(searchRightDiagonally(checker, col+1, row+1, connectCount+2)){
-                            return true;
+                            hasWon = true;
+                            break;
                         }
                     }
                 }
@@ -192,7 +164,7 @@ bool Board::checkWin(char checker){
             }
         }
     }
-    return false;
+    return hasWon;
 }
 
 bool Board::inBounds(int col, int row){
@@ -288,10 +260,21 @@ void Board::printBoard(){
     }
 }
 
+bool Board::isFull(int col){
+    // Since a column is only full if the checkers are stacked all the way to the top,
+    // only check if there is a checker at the top-most spot on the grid.
+    return _grid.at(col)[0] != _empty;
+}
+
 void Board::printHeader(){
-    cout << "1 2 3 4 5 6 7" << endl;
-    cout << "V V V V V V V" << endl;
-    cout << "-------------" << endl;
+    for(int col = 0; col < _boardWidth; col++){
+        cout << "  " << (col + 1) << " ";
+    }
+    cout << " " << endl;
+    for(int col = 0; col < _boardWidth; col++){
+        cout << "  V ";
+    }
+    cout << " " << endl;
 }
 
 void Board::initializeGrid(){

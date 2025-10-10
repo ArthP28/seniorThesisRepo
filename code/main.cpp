@@ -2,9 +2,9 @@
 #include <chrono>
 #include <thread>
 #include "Board.h"
+#include "Player.h"
 using namespace std;
-using std::this_thread::sleep_for;
-using std::chrono::milliseconds;
+
 
 int DetermineFirstPlayer();
 void PlayGame(int firstPlayerIndex);
@@ -16,8 +16,18 @@ void PlayGame(int firstPlayerIndex);
 
 int main()
 {
-    Board _board;
-    _board.dropChecker(3, _board.getPlayerTurn());
+    Player* _p1 = new Player("Arthur", 'R');
+    Player* _p2 = new Player("Maddison", 'B');
+    Board* _board = new Board(_p1->GetSymbol(), _p2->GetSymbol());
+    _p1->SetPlayersBoard(_board);
+    _p2->SetPlayersBoard(_board);
+
+    _p1->dropChecker();
+
+    delete _board;
+    delete _p2;
+    delete _p1;
+    /*_board.dropChecker(3, _board.getPlayerTurn());
     _board.dropChecker(2, _board.getPlayerTurn());
     _board.dropChecker(2, _board.getPlayerTurn());
     _board.dropChecker(1, _board.getPlayerTurn());
@@ -31,7 +41,13 @@ int main()
     _board.dropChecker(1, _board.getPlayerTurn());
     _board.dropChecker(0, _board.getPlayerTurn());
     _board.printBoard();
-    _board.checkWin('1');
+    _board.checkWin('1');*/
+    // Game Structure
+    // Generate two players
+    // Generate board
+    // while loop in which players take turns
+    // player drops in checker onto board grid and board checks for win
+    // if win, game is over. Win recorded for victorious player and loss recorded for losing player
     /*
     srand(time(0));
     cout << "Let's play Connect Four!" << endl << endl;
@@ -46,6 +62,7 @@ int main()
     cout << "See you soon!" << endl;
     return 0;
     */
+   return 0;
 }
 /*
 void PlayGame(int firstPlayerIndex){

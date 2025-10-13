@@ -14,16 +14,19 @@ class Player{
         Player(string name, char symbol);
         Player(char symbol);
         void SetPlayersBoard(Board* _board);
-        void dropChecker();
+        virtual void dropChecker();
         void win();
         void loss();
         char GetSymbol();
         string GetName();
+        Board* GetBoard(){ return _playersBoard; };
+    protected:
+        string _playerName = "Arthur";
     private:
         int _numWins = 0;
         int _numLosses = 0;
+        int _numGamesPlayed = 0;
         Board* _playersBoard;
-        string _playerName = "Arthur";
         char _tokenSymbol;
 };
 
@@ -44,7 +47,10 @@ void Player::dropChecker(){
     string ESC = "\033";
 
     // Ask the user where to drop their checker
-    cout << endl << "Select which column to place your checker." << endl;
+    cout << endl << "Select which column to place your checker." << endl << endl;
+    _playersBoard->printHeader();
+    _playersBoard->printBoard();
+    cout << endl;
     string playerInput;
     int colIndex;
 
@@ -77,10 +83,7 @@ void Player::dropChecker(){
     //cout << ESC << "[2J\r";
 
     cout << _playerName << " drops a checker into column " << playerInput << "." << endl << endl; // This message primarily conveys that the action went through
-
-    _playersBoard->printHeader();
     _playersBoard->placeChecker(colIndex - 1, _tokenSymbol);
-    _playersBoard->printBoard();
 }
 
 void Player::win(){

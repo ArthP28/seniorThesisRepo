@@ -3,6 +3,7 @@
 #include <thread>
 #include "Board.h"
 #include "Player.h"
+#include "DummyAI.h"
 
 using namespace std;
 
@@ -16,8 +17,8 @@ void PlayGame(Player* p1, Player* p2);
 int main()
 {
     srand(time(0));
-    Player* _p1 = new Player("Arthur", 'R');
-    Player* _p2 = new Player("Maddison", 'B');
+    Player* _p1 = new Player('R');
+    DummyAI* _p2 = new DummyAI('B');
     cout << "Let's play Connect Four!" << endl << endl;
     string affirmationSignal = "y";
     while(tolower(affirmationSignal[0]) == 'y'){ // This function goes on as long as the user wants it to go
@@ -61,12 +62,20 @@ void PlayGame(Player* p1, Player* p2){
             _currState = _board->checkWin(p2->GetSymbol());
         }
         _currTurn = _board->getNextTurn(_currTurn);
+        for(int i = 0; i <= _board->GetWidth() * 4; i++){
+            cout << "-";
+        }
+        cout << "\n" << endl;
     }
 
     if(_currState == Board::BOARD_STATE::P1_WIN){
         cout << p1->GetName() << " Wins!" << endl;
+        p1->win();
+        p2->loss();
     } else if(_currState == Board::BOARD_STATE::P2_WIN){
         cout << p2->GetName() << " Wins!" << endl;
+        p2->win();
+        p1->loss();
     }
 
     delete _board;

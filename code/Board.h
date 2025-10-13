@@ -29,9 +29,10 @@ class Board{
         void printHeader();
         PLAYER_TURN getNextTurn(PLAYER_TURN prevState);
         bool isFull(int col);
+        int GetWidth() { return _boardWidth; };
+        int GetHeight() { return _boardHeight; };
     private:
         vector<string> _grid;
-        int _boardSpaces[7][6];
         int _boardWidth;
         int _boardHeight;
         char _p1Checker;

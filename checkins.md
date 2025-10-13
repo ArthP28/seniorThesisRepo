@@ -78,19 +78,19 @@ Because of the workload I have received over the week, I struggled to find a lot
 ## Week 5 Summary (10/06/2025)
 ### This week I worked on:
 
-[Your answer here]
+Throughout this week, I added a new player class to my project. Besides being able to drop in their own checkers, the player class also has data regarding wins and losses for all games. They will be displayed in an options menu. The AI models, including the Q-Learning one, will be derived from this class, with the only major change being a distinct dropChecker() method that overrides the base one. I revamped the main file to be compatible with these new player classes, and within the board file, I reworked a couple of methods and added some new ones.
 
 ### This week I learned:
 
-[Your answer here]
+Upon completing my first assignment for the AI class, I noticed that the board class for a Tic-Tac-Toe algorithm utilizes enums to determine the player turn and the status of each new board state. Considering that my Q-Learning algorithm will function similarly to the uninformed search algorithms of the assignment, I decided to implement these enums into my project.
 
 ### My successes this week were:
 
-[Your answer here]
+My player class remained an important highlight of this week because I am getting one step closer to integrating Artificial Intelligence within my project. This player class will serve as a base for a dummy AI algorithm that I will work on next week. It will just randomly select columns to drop checkers.
 
 ### The challenges I faced this week were:
 
-[Your answer here]
+I was having trouble figuring out the relationship between the board and the player. I wanted the board to reference the player for scorekeeping and win-checking, while I wanted the player to reference the board for the actions that happen within the game. So, I initially have two variables within two classes that reference their opposite class, which threw me into a circular inclusion error that I could not solve on my own. I resorted to having the playGame() function in main.cpp keep track of the current state of the game, while I only let the player class use the board class for dropping checkers.
 
 ---
 

@@ -7,11 +7,20 @@
 
 using namespace std;
 
+// Menu Functions
+void LogIn();
+void MainMenu();
+void PlayerVsPlayer();
+void PlayerVsAI();
+void Options();
+// Game Functions
+void SelectPlayer();
+void SelectAI();
 void PlayGame(Player* p1, Player* p2);
+// If possible, after finishing main Q-Learning AI, create a function that saves all player data to a new file using outfile
 
 // ***NOTICE***
-// The following code is only a fraction of the overall ML Connect Four Software (The Player vs. Player Mode).
-// This is to test that the underlying logic of the Connect Four game works well within the software.
+// The following code is to test the underlying logic of the Connect Four game works well.
 // A later implementation will incorporate the meat of the software: The Q-Learning Algorithm for AI versus options.
 
 int main()

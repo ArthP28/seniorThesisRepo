@@ -15,6 +15,7 @@ class Player{
         Player(char symbol);
         void SetPlayersBoard(Board* _board);
         virtual void dropChecker();
+        void viewPlayRecord();
         void win();
         void loss();
         char GetSymbol();
@@ -25,6 +26,7 @@ class Player{
     private:
         int _numWins = 0;
         int _numLosses = 0;
+        int _netScore = 0;
         int _numGamesPlayed = 0;
         Board* _playersBoard;
         char _tokenSymbol;
@@ -86,12 +88,23 @@ void Player::dropChecker(){
     _playersBoard->placeChecker(colIndex - 1, _tokenSymbol);
 }
 
+void Player::viewPlayRecord(){
+    cout << _playerName << " (" << _tokenSymbol << ")" << endl << endl;
+    cout << "Games Played: " << _numGamesPlayed << endl;
+    cout << "Games Won: " << _numWins << endl;
+    cout << "Games Lost: " << _numLosses << endl;
+    cout << "Ratio: " << _numWins << ":" << _numLosses << endl;
+    cout << "Net Score: " << _netScore << endl; 
+}
+
 void Player::win(){
     _numWins++;
+    _netScore++;
 }
 
 void Player::loss(){
     _numLosses++;
+    _netScore--;
 }
 
 char Player::GetSymbol(){

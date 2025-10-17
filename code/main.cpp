@@ -8,16 +8,19 @@
 using namespace std;
 
 // Menu Functions
-void LogIn();
+void LogIn(); // For Later
 void MainMenu();
 void PlayerVsPlayer();
 void PlayerVsAI();
+void ViewScores();
 void Options();
 // Game Functions
 void SelectPlayer();
 void SelectAI();
 void PlayGame(Player* p1, Player* p2);
 // If possible, after finishing main Q-Learning AI, create a function that saves all player data to a new file using outfile
+
+vector<Player*> ALL_PLAYERS;
 
 // ***NOTICE***
 // The following code is to test the underlying logic of the Connect Four game works well.
@@ -27,11 +30,84 @@ int main()
 {
     srand(time(0));
     Player* _p1 = new Player('R');
-    DummyAI* _p2 = new DummyAI('B');
-    cout << "Let's play Connect Four!" << endl << endl;
+    Player* _p2 = new Player('B');
+    ALL_PLAYERS.push_back(_p1);
+    ALL_PLAYERS.push_back(_p2);
+
+    MainMenu();
+    
+    while(!ALL_PLAYERS.empty()){
+        delete ALL_PLAYERS.back();
+        ALL_PLAYERS.back() = NULL;
+        ALL_PLAYERS.pop_back();
+    }
+    return 0;
+}
+
+void MainMenu(){ // Menu interface with various options
+    string ESC = "\033";
+    string _userInput;
+
+    while(_userInput != "Q"){
+        system("clear");
+        cout << "Welcome to the ML Connect Four Software!" << endl;
+        cout << "Type in the corresponding number to get started." << endl << endl;
+        cout << "[1] - Play Player vs. AI" << endl;
+        cout << "[2] - Play Player vs. Player" << endl;
+        cout << "[3] - View Scoreboard" << endl;
+        cout << "[4] - Options" << endl;
+        cout << "[Q] - Quit" << endl;
+        _userInput = "";
+        while(_userInput == ""){ // Program will wait for valid input
+            getline(cin, _userInput);
+            switch(_userInput[0]){
+                case '1': // Proceeds to game where player competes against AI
+                    PlayerVsAI();
+                    break;
+                case '2': // Proceeds to game where player competes with another human player
+                    PlayerVsPlayer();
+                    break;
+                case '3': // Proceeds to screen where user can view all play records of both human and machine players
+                    ViewScores();
+                    break;
+                case '4': // Proceeds to Options Menu where user can change player data
+                    Options();
+                    break;
+                case 'Q': // Quits the application
+                    cout << "See you soon!" << endl;
+                    break;
+                default: // Any other input is invalid
+                    cout << ESC << "[A" << ESC << "[2KInvalid Input!" << endl;
+                    sleep_for(milliseconds(500));
+                    _userInput = ""; // Input is reset back to "null" and the loop restarts.
+                    cout << ESC << "[A" << ESC << "[2K"; // Clears the error message
+            }
+        }
+    }
+
+}
+
+void PlayerVsPlayer(){
+    system("clear");
+    cout << "Let's play PvP Connect Four!" << endl << endl;
     string affirmationSignal = "y";
     while(tolower(affirmationSignal[0]) == 'y'){ // This function goes on as long as the user wants it to go
-        PlayGame(_p1, _p2);
+        PlayGame(ALL_PLAYERS.at(0), ALL_PLAYERS.at(1));
+        cout << "Would you like to play again?" << endl << 
+        "[y] = YES\n[n] = NO" << endl;
+        getline(cin, affirmationSignal);
+        system("clear");
+    }
+    cout << "See you soon!" << endl;
+}
+
+void PlayerVsAI(){
+    system("clear");
+    DummyAI* _p2 = new DummyAI('B');
+    cout << "Let's play PvAI Connect Four!" << endl << endl;
+    string affirmationSignal = "y";
+    while(tolower(affirmationSignal[0]) == 'y'){ // This function goes on as long as the user wants it to go
+        PlayGame(ALL_PLAYERS.at(0), _p2);
         cout << "Would you like to play again?" << endl << 
         "[y] = YES\n[n] = NO" << endl;
         getline(cin, affirmationSignal);
@@ -40,10 +116,22 @@ int main()
     cout << "See you soon!" << endl;
 
     delete _p2;
-    delete _p1;
-    _p1 = NULL;
     _p2 = NULL;
-    return 0;
+}
+
+void ViewScores(){
+    system("clear");
+    cout << "Player Records" << endl;
+    for(int i = 0; i < ALL_PLAYERS.size(); i++){
+        cout << (i + 1) << ": "; ALL_PLAYERS.at(i)->viewPlayRecord(); cout << endl;
+    }
+    string _userInput = "";
+    cout << "Press any key to return to the menu." << endl;
+    getline(cin, _userInput);
+}
+
+void Options(){
+
 }
 
 void PlayGame(Player* p1, Player* p2){

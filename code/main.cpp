@@ -175,6 +175,10 @@ void PlayGame(Player* p1, Player* p2){
         cout << "\n" << endl;
     }
 
+    _board->printHeader();
+    _board->printBoard();
+    cout << endl;
+
     if(_currState == Board::BOARD_STATE::P1_WIN){
         cout << p1->GetName() << " Wins!" << endl;
         p1->win();
@@ -187,4 +191,6 @@ void PlayGame(Player* p1, Player* p2){
 
     delete _board;
     _board = NULL;
+    p1->SetPlayersBoard(NULL);
+    p2->SetPlayersBoard(NULL);
 }

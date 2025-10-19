@@ -94,26 +94,27 @@ I was having trouble figuring out the relationship between the board and the pla
 
 ---
 
-## Week 6 Summary (MM/DD/YYYY)
+## Week 6 Summary (10/13/2025)
 ### This week I worked on:
 
-[Your answer here]
+During class, I created a sample dummy AI class that only drops checkers into random columns. The purpose of this class is not to demonstrate the AI's capabilities as a Q-Learning algorithm would, but to show how a game against a machine opponent would play out in the software.
+Throughout Fall Break, I got to work on the main menu and its graphical components. Each menu within the application is encapsulated into its own function. User input is handled through a while getline() loop, in which the program will stop prompting the user for any more input once a valid character is typed in. The graphical aspects of the menu use ANSI Escape Codes to format the text, as well as calling system("clear") commands to switch between different menus. The downside of using the latter is that it restricts my program to being able to work most effectively on Linux Operating Systems, such as Ubuntu. Windows PowerShell has its own clear command in the form of "cls", which is different compared to "clear" in Linux.
 
 ### This week I learned:
 
-[Your answer here]
+I refreshed my knowledge on Object-Oriented Programming when constructing the dummy AI class. By adding a reference to the Player Superclass in the AI's class name, all of the player's data properties are inherited into the AI class. I also incorporated polymorphism by overriding the Base Player's dropChecker() method to do something different for the AI class.
 
 ### My successes this week were:
 
-[Your answer here]
+By adding ANSI codes into my program, I have implemented a simple and intuitive menu navigation system that works in the console terminal. The success of adding the dummy AI class to the program also made me confident in my ability to add the Reinforcement Q-Learning aspect to the program in the future.
 
 ### The challenges I faced this week were:
 
-[Your answer here]
+I did not come across any major roadblocks this week, although making the dummy AI class body did left me thinking for a while. I was concerned with how I could change some inherited variables by default when initializing an instance of the dummy AI. I ended up having the constructor call the Player class's constructor to change the default name from "Arthur" to "Lily," just so I can tell the two classes apart.
 
 ---
 
-## Week 7 Summary (MM/DD/YYYY)
+## Week 7 Summary (10/20/2025)
 ### This week I worked on:
 
 [Your answer here]

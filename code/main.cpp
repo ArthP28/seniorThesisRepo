@@ -21,6 +21,7 @@ void PlayGame(Player* p1, Player* p2);
 // If possible, after finishing main Q-Learning AI, create a function that saves all player data to a new file using outfile
 
 vector<Player*> ALL_PLAYERS;
+vector<Player*> ALL_AI_MODELS;
 
 // ***NOTICE***
 // The following code is to test the underlying logic of the Connect Four game works well.
@@ -30,9 +31,11 @@ int main()
 {
     srand(time(0));
     Player* _p1 = new Player('R');
-    Player* _p2 = new Player('B');
+    Player* _p2 = new Player("Emma", 'B');
+    DummyAI* _ai1 = new DummyAI('B');
     ALL_PLAYERS.push_back(_p1);
     ALL_PLAYERS.push_back(_p2);
+    ALL_AI_MODELS.push_back(_ai1);
 
     MainMenu();
     
@@ -40,6 +43,11 @@ int main()
         delete ALL_PLAYERS.back();
         ALL_PLAYERS.back() = NULL;
         ALL_PLAYERS.pop_back();
+    }
+    while(!ALL_AI_MODELS.empty()){
+        delete ALL_AI_MODELS.back();
+        ALL_AI_MODELS.back() = NULL;
+        ALL_AI_MODELS.pop_back();
     }
     return 0;
 }
@@ -98,25 +106,19 @@ void PlayerVsPlayer(){
         getline(cin, affirmationSignal);
         system("clear");
     }
-    cout << "See you soon!" << endl;
 }
 
 void PlayerVsAI(){
     system("clear");
-    DummyAI* _p2 = new DummyAI('B');
     cout << "Let's play PvAI Connect Four!" << endl << endl;
     string affirmationSignal = "y";
     while(tolower(affirmationSignal[0]) == 'y'){ // This function goes on as long as the user wants it to go
-        PlayGame(ALL_PLAYERS.at(0), _p2);
+        PlayGame(ALL_PLAYERS.at(0), ALL_AI_MODELS.at(0));
         cout << "Would you like to play again?" << endl << 
         "[y] = YES\n[n] = NO" << endl;
         getline(cin, affirmationSignal);
         system("clear");
     }
-    cout << "See you soon!" << endl;
-
-    delete _p2;
-    _p2 = NULL;
 }
 
 void ViewScores(){
@@ -125,13 +127,21 @@ void ViewScores(){
     for(int i = 0; i < ALL_PLAYERS.size(); i++){
         cout << (i + 1) << ": "; ALL_PLAYERS.at(i)->viewPlayRecord(); cout << endl;
     }
+    cout << endl << "AI Records" << endl;
+    for(int i = 0; i < ALL_AI_MODELS.size(); i++){
+        cout << (i + 1) << ": "; ALL_AI_MODELS.at(i)->viewPlayRecord(); cout << endl;
+    }
     string _userInput = "";
     cout << "Press any key to return to the menu." << endl;
     getline(cin, _userInput);
 }
 
 void Options(){
-
+    system("clear");
+    cout << "Options to be added!" << endl;
+    string _userInput = "";
+    cout << "Press any key to return to the menu." << endl;
+    getline(cin, _userInput);
 }
 
 void PlayGame(Player* p1, Player* p2){

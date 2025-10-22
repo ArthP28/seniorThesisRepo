@@ -14,6 +14,7 @@ class Player{
         Player(string name, char symbol);
         Player(char symbol);
         void SetPlayersBoard(Board* _board);
+        void SetSymbol(char symbol);
         virtual void dropChecker();
         void viewPlayRecord();
         void win();
@@ -23,19 +24,19 @@ class Player{
         Board* GetBoard(){ return _playersBoard; };
     protected:
         string _playerName = "Arthur";
-    private:
+        private:
         int _numWins = 0;
         int _numLosses = 0;
         int _netScore = 0;
         int _numGamesPlayed = 0;
         Board* _playersBoard;
         char _tokenSymbol;
-};
-
-Player::Player(string name, char symbol){
-    _playerName = name;
-    _tokenSymbol = symbol;
-}
+    };
+    
+    Player::Player(string name, char symbol){
+        _playerName = name;
+        _tokenSymbol = symbol;
+    }
 
 Player::Player(char symbol){
     _tokenSymbol = symbol;
@@ -43,6 +44,10 @@ Player::Player(char symbol){
 
 void Player::SetPlayersBoard(Board* _board){
     _playersBoard = _board;
+}
+
+void Player::SetSymbol(char symbol){
+    _tokenSymbol = symbol;
 }
 
 void Player::dropChecker(){

@@ -19,24 +19,23 @@ class Board{
             P2_WIN
         };
 
-        Board(int w, int h, char p1, char p2);
-        Board(char p1, char p2);
+        Board(int w, int h);
+        Board(vector<string> g);
         Board();
 
         void placeChecker(int column, char checkerToDrop);
         Board::BOARD_STATE checkWin(char checker);
         void printBoard();
         void printHeader();
-        PLAYER_TURN getNextTurn(PLAYER_TURN prevState);
+        PLAYER_TURN getNextTurn();
         bool isFull(int col);
         int GetWidth() { return _boardWidth; };
         int GetHeight() { return _boardHeight; };
+        vector<string> GetGrid() { return _grid; };
     private:
         vector<string> _grid;
         int _boardWidth;
         int _boardHeight;
-        char _p1Checker;
-        char _p2Checker;
         char _empty = '0';
         void initializeGrid();
 
@@ -49,50 +48,66 @@ class Board{
         bool inBounds(int col, int row);
 };
 
-Board::Board(int w, int h, char p1, char p2){
+Board::Board(int w, int h){ // Make a new blank board of a custom width and height
     if(w < 4 || h < 4){
         throw runtime_error("Board must at least be 4x4");
     }
     _boardWidth = w;
     _boardHeight = h;
 
-    _p1Checker = p1;
-    _p2Checker = p2;
-
     initializeGrid();
 }
 
-Board::Board(char p1, char p2){
-    _boardWidth = 7;
-    _boardHeight = 6;
-
-    _p1Checker = p1;
-    _p2Checker = p2;
-
-    initializeGrid();
-}
-
-Board::Board(){
-    _boardWidth = 7;
-    _boardHeight = 6;
-
-    _p1Checker = '1';
-    _p2Checker = '2';
-
-    initializeGrid();
-}
-
-Board::PLAYER_TURN Board::getNextTurn(PLAYER_TURN prevState){
-    if(prevState == PLAYER_TURN::P1){
-        return PLAYER_TURN::P2;
-    } else if (prevState == PLAYER_TURN::P2){
-        return PLAYER_TURN::P1;
+Board::Board(vector<string> g){ // Make a board based on an existing one
+    _boardWidth = g.size();
+    _boardHeight = g.at(0).size();
+    if(_boardWidth < 4 || _boardHeight < 4){
+        throw runtime_error("Board must at least be 4x4");
     }
+
+    for(string col : g){
+        if(col.size() != _boardHeight){
+            throw runtime_error("All Board Columns must be equal in size");
+        }
+    }
+    _grid = g;
+}
+
+Board::Board(){ // Make a default board
+    _boardWidth = 7;
+    _boardHeight = 6;
+
+    initializeGrid();
+}
+
+Board::PLAYER_TURN Board::getNextTurn(){
+    PLAYER_TURN retVal;
+    int numRandBs = 0;
+
+    for(int col = 0; col < _boardWidth; col++){
+        for(int row = 0; row < _boardHeight; row++){
+            if (_grid.at(col)[row] == 'R' || _grid.at(col)[row] == 'B')
+            {
+                numRandBs++;
+            }
+        }
+    }
+
+    if (numXAndOs % 2 == 1)
+    {
+        retVal = PLAYER_TURN::O_TURN;
+    }
+    else
+    {
+        retVal = PLAYER_TURN::X_TURN;
+    }
+
+    return retVal;
 }
 
 void Board::placeChecker(int column, char checkerToDrop){ // This method returns a bool so that the main software displays a warning message about overfilling one column
     if(checkerToDrop != NULL){
-        for(int bottom = _boardHeight; bottom >= 0; bottom--){
+        for(int bottom = 0; bottom < _boardHeight; bottom++){
             if(_grid.at(column)[bottom] == _empty){
                 _grid.at(column)[bottom] = checkerToDrop;
                 break;
@@ -153,9 +168,9 @@ Board::BOARD_STATE Board::checkWin(char checker){
         }
     }
     if(hasWon){
-        if(checker == _p1Checker){
+        if(checker == 'R'){
             return BOARD_STATE::P1_WIN;
-        } else if(checker == _p2Checker){
+        } else if(checker == 'B'){
             return BOARD_STATE::P2_WIN;
         }
     }
@@ -230,19 +245,19 @@ bool CheckForFourInRow(int& connectCount){
 
 void Board::printBoard(){
     string ESC = "\033";
-    for(int row = 0; row < _boardHeight; row++){
+    for(int row = _boardHeight - 1; row >= 0; row--){
         for(int col = 0; col < _boardWidth; col++){
             cout << "|";
-            if(_grid.at(col)[row] == _p1Checker){ // Player 1 Checkers
-                cout << ESC << "[41m " << _p1Checker << " " << ESC << "[m";
-            } else if(_grid.at(col)[row] == _p2Checker){ // Player 2 Checkers
-                cout << ESC << "[44m " << _p2Checker << " " << ESC << "[m";
+            if(_grid.at(col)[row] == 'R'){ // Player 1 Checkers
+                cout << ESC << "[41m R " << ESC << "[m";
+            } else if(_grid.at(col)[row] == 'B'){ // Player 2 Checkers
+                cout << ESC << "[44m B " << ESC << "[m";
             } else { // Nothing
                 cout << " " << _grid.at(col)[row] << " ";
             }
         }
         cout << "|" << endl;
-        if(row < _boardHeight - 1){
+        if(row > 0){
             for(int w = 0; w <= _boardWidth * 4; w++){
                 if(w % 4 == 0){
                     cout << "+";
@@ -258,7 +273,7 @@ void Board::printBoard(){
 bool Board::isFull(int col){
     // Since a column is only full if the checkers are stacked all the way to the top,
     // only check if there is a checker at the top-most spot on the grid.
-    return _grid.at(col)[0] != _empty;
+    return _grid.at(col)[_boardHeight - 1] != _empty;
 }
 
 void Board::printHeader(){

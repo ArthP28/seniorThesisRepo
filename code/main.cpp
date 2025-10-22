@@ -30,25 +30,38 @@ vector<Player*> ALL_AI_MODELS;
 int main()
 {
     srand(time(0));
-    Player* _p1 = new Player('R');
-    Player* _p2 = new Player("Emma", 'B');
-    DummyAI* _ai1 = new DummyAI('B');
-    ALL_PLAYERS.push_back(_p1);
-    ALL_PLAYERS.push_back(_p2);
-    ALL_AI_MODELS.push_back(_ai1);
+    vector<string> _boardData = {
+        "R00000", 
+        "BR0000",
+        "BRB000",
+        "RBRB00",
+        "RBR000",
+        "BR0000",
+        "R00000",
+    };
+    Board* _b = new Board(_boardData);
+    _b->printBoard();
+    // Player* _p1 = new Player('R');
+    // Player* _p2 = new Player("Emma", 'B');
+    // DummyAI* _ai1 = new DummyAI('B');
+    // ALL_PLAYERS.push_back(_p1);
+    // ALL_PLAYERS.push_back(_p2);
+    // ALL_AI_MODELS.push_back(_ai1);
 
-    MainMenu();
+    // MainMenu();
     
-    while(!ALL_PLAYERS.empty()){
-        delete ALL_PLAYERS.back();
-        ALL_PLAYERS.back() = NULL;
-        ALL_PLAYERS.pop_back();
-    }
-    while(!ALL_AI_MODELS.empty()){
-        delete ALL_AI_MODELS.back();
-        ALL_AI_MODELS.back() = NULL;
-        ALL_AI_MODELS.pop_back();
-    }
+    // while(!ALL_PLAYERS.empty()){
+    //     delete ALL_PLAYERS.back();
+    //     ALL_PLAYERS.back() = NULL;
+    //     ALL_PLAYERS.pop_back();
+    // }
+    // while(!ALL_AI_MODELS.empty()){
+    //     delete ALL_AI_MODELS.back();
+    //     ALL_AI_MODELS.back() = NULL;
+    //     ALL_AI_MODELS.pop_back();
+    // }
+    delete _b;
+    _b = NULL;
     return 0;
 }
 
@@ -56,7 +69,7 @@ void MainMenu(){ // Menu interface with various options
     string ESC = "\033";
     string _userInput;
 
-    while(_userInput != "Q"){
+    while(_userInput[0] != tolower('Q')){
         system("clear");
         cout << "Welcome to the ML Connect Four Software!" << endl;
         cout << "Type in the corresponding number to get started." << endl << endl;
@@ -82,6 +95,9 @@ void MainMenu(){ // Menu interface with various options
                     Options();
                     break;
                 case 'Q': // Quits the application
+                    cout << "See you soon!" << endl;
+                    break;
+                case 'q': // Quits the application
                     cout << "See you soon!" << endl;
                     break;
                 default: // Any other input is invalid
@@ -147,12 +163,14 @@ void Options(){
 void PlayGame(Player* p1, Player* p2){
     Board::PLAYER_TURN _currTurn;
     int randomIndex = (rand() % 2) + 1;
+    p1->SetSymbol('R');
+    p2->SetSymbol('B');
     if(randomIndex == 1){
         _currTurn = Board::PLAYER_TURN::P1;
     } else if (randomIndex == 2){
         _currTurn = Board::PLAYER_TURN::P2;
     }
-    Board* _board = new Board(p1->GetSymbol(), p2->GetSymbol());
+    Board* _board = new Board();
     p1->SetPlayersBoard(_board);
     p2->SetPlayersBoard(_board);
 

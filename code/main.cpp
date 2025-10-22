@@ -4,6 +4,7 @@
 #include "Board.h"
 #include "Player.h"
 #include "DummyAI.h"
+#include "QLearningAI.h"
 
 using namespace std;
 
@@ -30,17 +31,21 @@ vector<Player*> ALL_AI_MODELS;
 int main()
 {
     srand(time(0));
-    vector<string> _boardData = {
-        "R00000", 
-        "BR0000",
-        "BRB000",
-        "RBRB00",
-        "RBR000",
-        "BR0000",
-        "R00000",
-    };
-    Board* _b = new Board(_boardData);
+    // vector<string> _boardData = {
+    //     "R00000", 
+    //     "BR0000",
+    //     "BRB000",
+    //     "RBRB00",
+    //     "RBR000",
+    //     "BR0000",
+    //     "R00000",
+    // };
+    Board* _b = new Board();
     _b->printBoard();
+    QLearningAI* _q = new QLearningAI('R');
+    _q->SetPlayersBoard(_b);
+    _q->Train(100);
+    
     // Player* _p1 = new Player('R');
     // Player* _p2 = new Player("Emma", 'B');
     // DummyAI* _ai1 = new DummyAI('B');
@@ -61,7 +66,9 @@ int main()
     //     ALL_AI_MODELS.pop_back();
     // }
     delete _b;
+    delete _q;
     _b = NULL;
+    _q = NULL;
     return 0;
 }
 
@@ -161,32 +168,26 @@ void Options(){
 }
 
 void PlayGame(Player* p1, Player* p2){
-    Board::PLAYER_TURN _currTurn;
-    int randomIndex = (rand() % 2) + 1;
     p1->SetSymbol('R');
     p2->SetSymbol('B');
-    if(randomIndex == 1){
-        _currTurn = Board::PLAYER_TURN::P1;
-    } else if (randomIndex == 2){
-        _currTurn = Board::PLAYER_TURN::P2;
-    }
     Board* _board = new Board();
+    _board->firstTurn();
     p1->SetPlayersBoard(_board);
     p2->SetPlayersBoard(_board);
 
     // Actual game begins. Loops as long as no one wins
     Board::BOARD_STATE _currState = Board::BOARD_STATE::INCOMPLETE;
     while(_currState == Board::BOARD_STATE::INCOMPLETE){
-        if(_currTurn == Board::PLAYER_TURN::P1){
+        if(_board->getCurrentTurn() == Board::PLAYER_TURN::P1){
             cout << p1->GetName() << "'s turn!" << endl;
             p1->dropChecker();
             _currState = _board->checkWin(p1->GetSymbol());
-        } else if (_currTurn == Board::PLAYER_TURN::P2){
+        } else if (_board->getCurrentTurn() == Board::PLAYER_TURN::P2){
             cout << p2->GetName() << "'s turn!" << endl;
             p2->dropChecker();
             _currState = _board->checkWin(p2->GetSymbol());
         }
-        _currTurn = _board->getNextTurn(_currTurn);
+        _board->getNextTurn();
         for(int i = 0; i <= _board->GetWidth() * 4; i++){
             cout << "-";
         }

@@ -25,6 +25,7 @@ class Board{
 
         void placeChecker(int column, char checkerToDrop);
         Board::BOARD_STATE checkWin(char checker);
+        Board::BOARD_STATE getCurrentState();
         void printBoard();
         void printHeader();
         PLAYER_TURN getNextTurn();
@@ -32,11 +33,16 @@ class Board{
         int GetWidth() { return _boardWidth; };
         int GetHeight() { return _boardHeight; };
         vector<string> GetGrid() { return _grid; };
+        PLAYER_TURN getCurrentTurn(){ return _currTurn; };
+        void setCurrentTurn(PLAYER_TURN _turn){ _currTurn = _turn; };
+        char getEmptyChar(){ return _empty; };
+        void firstTurn();
     private:
         vector<string> _grid;
         int _boardWidth;
         int _boardHeight;
         char _empty = '0';
+        Board::PLAYER_TURN _currTurn;
         void initializeGrid();
 
         // Helper Search Methods
@@ -81,25 +87,37 @@ Board::Board(){ // Make a default board
 }
 
 Board::PLAYER_TURN Board::getNextTurn(){
+    // if(_currTurn == NULL){
+    //     firstTurn();
+    // }
+    // else if(_currTurn == PLAYER_TURN::P1){
+    //     _currTurn = PLAYER_TURN::P2;
+    //     return PLAYER_TURN::P2;
+    // } else if (_currTurn == PLAYER_TURN::P2){
+    //     _currTurn = PLAYER_TURN::P1;
+    //     return PLAYER_TURN::P1;
+    // }
+
     PLAYER_TURN retVal;
-    int numRandBs = 0;
+
+    int numRsAndBs = 0;
 
     for(int col = 0; col < _boardWidth; col++){
         for(int row = 0; row < _boardHeight; row++){
             if (_grid.at(col)[row] == 'R' || _grid.at(col)[row] == 'B')
             {
-                numRandBs++;
+                numRsAndBs++;
             }
         }
     }
 
-    if (numXAndOs % 2 == 1)
+    if (numRsAndBs % 2 == 1)
     {
-        retVal = PLAYER_TURN::O_TURN;
+        retVal = PLAYER_TURN::P2;
     }
     else
     {
-        retVal = PLAYER_TURN::X_TURN;
+        retVal = PLAYER_TURN::P1;
     }
 
     return retVal;
@@ -177,6 +195,15 @@ Board::BOARD_STATE Board::checkWin(char checker){
     return BOARD_STATE::INCOMPLETE;
 }
 
+Board::BOARD_STATE Board::getCurrentState(){
+    if(checkWin('R')){
+        return Board::BOARD_STATE::P1_WIN;
+    } else if (checkWin('B')){
+        return Board::BOARD_STATE::P2_WIN;
+    }
+    return Board::BOARD_STATE::INCOMPLETE;
+}
+
 bool Board::inBounds(int col, int row){
     return (col >= 0 && row >= 0) && (col < _boardWidth && row < _boardHeight);
 }
@@ -235,7 +262,6 @@ bool Board::searchLeftDiagonally(char checker, int col, int row, int count){
 
 bool CheckForFourInRow(int& connectCount){
     if(connectCount == 4){
-        cout << "Connect Four!" << endl;
         return true;
     } else {
         connectCount = 0;
@@ -292,5 +318,14 @@ void Board::initializeGrid(){
     for(int i = 0; i < _grid.size(); i++){
         string col(_boardHeight, _empty);
         _grid.at(i) = col;
+    }
+}
+
+void Board::firstTurn(){
+    int randomIndex = (rand() % 2) + 1;
+    if(randomIndex == 1){
+        _currTurn = Board::PLAYER_TURN::P1;
+    } else if (randomIndex == 2){
+        _currTurn = Board::PLAYER_TURN::P2;
     }
 }

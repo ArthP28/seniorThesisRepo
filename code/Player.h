@@ -13,7 +13,7 @@ class Player{
     public:
         Player(string name, char symbol);
         Player(char symbol);
-        void SetPlayersBoard(Board* _board);
+        virtual void SetPlayersBoard(Board* _board);
         void SetSymbol(char symbol);
         virtual void dropChecker();
         void viewPlayRecord();

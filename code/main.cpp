@@ -40,35 +40,35 @@ int main()
     //     "BR0000",
     //     "R00000",
     // };
-    Board* _b = new Board();
-    _b->printBoard();
-    QLearningAI* _q = new QLearningAI('R');
-    _q->SetPlayersBoard(_b);
-    _q->Train(100);
+    // Board* _b = new Board();
+    // _b->printBoard();
+    // QLearningAI* _q = new QLearningAI('R');
+    // _q->SetPlayersBoard(_b);
+    // _q->Train(100);
     
-    // Player* _p1 = new Player('R');
-    // Player* _p2 = new Player("Emma", 'B');
-    // DummyAI* _ai1 = new DummyAI('B');
-    // ALL_PLAYERS.push_back(_p1);
-    // ALL_PLAYERS.push_back(_p2);
-    // ALL_AI_MODELS.push_back(_ai1);
+    Player* _p1 = new Player('R');
+    Player* _p2 = new Player("Emma", 'B');
+    DummyAI* _ai1 = new DummyAI('B');
+    ALL_PLAYERS.push_back(_p1);
+    ALL_PLAYERS.push_back(_p2);
+    ALL_AI_MODELS.push_back(_ai1);
 
-    // MainMenu();
+    MainMenu();
     
-    // while(!ALL_PLAYERS.empty()){
-    //     delete ALL_PLAYERS.back();
-    //     ALL_PLAYERS.back() = NULL;
-    //     ALL_PLAYERS.pop_back();
-    // }
-    // while(!ALL_AI_MODELS.empty()){
-    //     delete ALL_AI_MODELS.back();
-    //     ALL_AI_MODELS.back() = NULL;
-    //     ALL_AI_MODELS.pop_back();
-    // }
-    delete _b;
-    delete _q;
-    _b = NULL;
-    _q = NULL;
+    while(!ALL_PLAYERS.empty()){
+        delete ALL_PLAYERS.back();
+        ALL_PLAYERS.back() = NULL;
+        ALL_PLAYERS.pop_back();
+    }
+    while(!ALL_AI_MODELS.empty()){
+        delete ALL_AI_MODELS.back();
+        ALL_AI_MODELS.back() = NULL;
+        ALL_AI_MODELS.pop_back();
+    }
+    // delete _b;
+    // delete _q;
+    // _b = NULL;
+    // _q = NULL;
     return 0;
 }
 
@@ -178,16 +178,15 @@ void PlayGame(Player* p1, Player* p2){
     // Actual game begins. Loops as long as no one wins
     Board::BOARD_STATE _currState = Board::BOARD_STATE::INCOMPLETE;
     while(_currState == Board::BOARD_STATE::INCOMPLETE){
-        if(_board->getCurrentTurn() == Board::PLAYER_TURN::P1){
+        if(_board->getNextTurn() == Board::PLAYER_TURN::P1){
             cout << p1->GetName() << "'s turn!" << endl;
             p1->dropChecker();
             _currState = _board->checkWin(p1->GetSymbol());
-        } else if (_board->getCurrentTurn() == Board::PLAYER_TURN::P2){
+        } else if (_board->getNextTurn() == Board::PLAYER_TURN::P2){
             cout << p2->GetName() << "'s turn!" << endl;
             p2->dropChecker();
             _currState = _board->checkWin(p2->GetSymbol());
         }
-        _board->getNextTurn();
         for(int i = 0; i <= _board->GetWidth() * 4; i++){
             cout << "-";
         }

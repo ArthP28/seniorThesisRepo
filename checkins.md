@@ -117,23 +117,23 @@ I did not come across any major roadblocks this week, although making the dummy 
 ## Week 7 Summary (10/20/2025)
 ### This week I worked on:
 
-[Your answer here]
+Because my sprint presentation has been pushed to the following week, I made sure that I spent as much time as I could practicing. I also started development on the Q-Learning AI, where right now I am creating a training function. This function is supposed to update the table of Q-Values to be the most optimal for every thousand epochs.
 
 ### This week I learned:
 
-[Your answer here]
+Brushing up on Q-Learning made me realize three main things. The first one is that decisions are made based on selecting the most-rewarding (or highest) value in the Q-Table. The dimensions of a Q-Table correspond to the number of available actions and the amount of possible states in the game. These values are influenced by the algorithm's decision-making equation and whether the chosen state has led to a win or a loss. If it is a win, then the AI is rewarded with points added to their table. This ultimately makes the table the most vital component of a Q-Learning algorithm. The second thing I have noticed is that the Q-Learning algorithm only switches between two main states, making it simple to implement. Exploration is where the AI instinctively selects columns to place its checker just to see what happens. While Exploitation has the algorithm sift through the Q-Table to find the largest Q-Value and, therefore, the best decision to make. The final main idea I have learned is that Q-Learning algorithms, as powerful as they are, are not equipped to handle Q-Tables of large actions and states. Considering that the game of Connect Four has over 4.5 trillion possible board states, I was afraid that my thesis work might take far longer than I anticipated. But then it turned out that my Q-Table of three states (Win, Loss, and Incomplete) and seven actions (Seven columns to drop checkers) is just right for the Q-Learning algorithm to handle, as long as I do not resort to constructing a decision tree like I have done in building previous AI algorithms.
 
 ### My successes this week were:
 
-[Your answer here]
+I surprisingly got a significant amount of the Q-Learning part of the software coded up. As I indicated before, all that I need to do is put all my helper methods together into a training function. I do hope that the Q-Learning AI works well, as it is the final and most important main element I have to put in my program. If I get the program finished early, I can choose to upgrade my Q-Learning AI further by incorporating elements of Deep Learning.
 
 ### The challenges I faced this week were:
 
-[Your answer here]
+Like with my Elevator Pitch, it was tough trying to find time throughout the day to practice for my first sprint presentation. This week has been arguably busier than almost a month ago, because on top of my senior thesis progress, I have another ambitious project to work on from another class, as well as a midterm that I needed to study for. I do believe, however, that I will come to class next Monday as prepared as ever for my first demonstration of my thesis project.
 
 ---
 
-## Week 8 Summary (MM/DD/YYYY)
+## Week 8 Summary (10/27/2025)
 ### This week I worked on:
 
 [Your answer here]

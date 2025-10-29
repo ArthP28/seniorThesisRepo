@@ -58,36 +58,32 @@ void QLearningAI::dropChecker(){
 }
 
 void QLearningAI::Train(int numEpochs){
-
+    // Prepare Q-Learning Environment: Player 2 always goes after Player 1
     vector<Board> _firstChildren = MakeChildren(*Player::GetBoard()); // First Time Player 1 Moves
-    int lastActionTaken;
+    int lastActionTaken; // Index storing the previous action taken by the AI player
     lastActionTaken = (rand() % _firstChildren.size());
     vector<Board> _secondChildren = MakeChildren(_firstChildren.at(lastActionTaken)); // First Time Player 2 (AI) Moves
-    float _reward = 0.0;
-    vector<int> statesToChoose;
-    vector<Board> nextStatesToChoose;
-    
-    for(int i = 0; i < numEpochs; i++){
+    float _reward = 0.0; // Reward Value
+    vector<int> statesToChoose; // A scalable array containing indices of all the available states to select
+    // Each training episode (epoch) ends when either player wins or the board is filled with no winner (A tie, although rare, is still a possibility)
+    for(int i = 0; i < numEpochs; i++){ // The training cycle loops for a certain number of epochs
         lastActionTaken = (rand() % _secondChildren.size());
         Board _currentState = _secondChildren.at(lastActionTaken); // Select Random Starting State
         while(_currentState.getCurrentState() == Board::BOARD_STATE::INCOMPLETE){
-            // Make children and make a future state based on the child of actionIndex
-            //statesToChoose = MakeChildren(_currentState);
-            int actionIndex = EGreedyPolicy(_currentState, lastActionTaken, explorationProbability);
-            // Check if the AI wins by taking this future state, and if so reward = 1
-            Board _nextState = _currentState;
+            int actionIndex = EGreedyPolicy(_currentState, lastActionTaken, explorationProbability); // Generate an index of the next move based on an epsilon greedy policy
+            Board _nextState = _currentState; // Make a new board to play the decided action
             _nextState.placeChecker(actionIndex, Player::GetSymbol());
-            if(_nextState.getCurrentState() == _goalState){
+            if(_nextState.getCurrentState() == _goalState){ // Check if the AI wins by taking this action, and if so, reward = 1
                 _reward = 1.0;
             } else {
                 _reward = 0.0;
             }
-
+            // Simulates opponent's movement
             int randColIndex = rand() % GetBoard()->GetWidth();
             _nextState.placeChecker(randColIndex, 'B');
 
+            // Determine the next possible future action
             int nextOpponentMove = actionIndex;
-
             float nextBestQAction = 0.0f;
             for(int col = 0; col < 7; col++) {
                 if(!_nextState.isFull(col)) {
@@ -95,13 +91,13 @@ void QLearningAI::Train(int numEpochs){
                 }
             }
             // Calculate Q Formula to update Q Table
-            //float nextBestActionIndex = *max_element(Q_Table.at(lastActionTaken).begin(), Q_Table.at(lastActionTaken).end());
             Q_Table[lastActionTaken][actionIndex] += learningRate * (float)(_reward + discountFactor * nextBestQAction - Q_Table[lastActionTaken][actionIndex]);
+
             // Set current state to the next state
             _currentState = _nextState;
             lastActionTaken = actionIndex;
         }
-        explorationProbability *= 0.99; // Decay Exploration Rate
+        explorationProbability *= 0.99; // Decay Exploration Rate: AI exploits existing table data more
     }
 
     cout<<"   Col:";

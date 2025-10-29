@@ -31,44 +31,44 @@ vector<Player*> ALL_AI_MODELS;
 int main()
 {
     srand(time(0));
-    // vector<string> _boardData = {
-    //     "R00000", 
-    //     "BR0000",
-    //     "BRB000",
-    //     "RBRB00",
-    //     "RBR000",
-    //     "BR0000",
-    //     "R00000",
-    // };
-    // Board* _b = new Board();
-    // _b->printBoard();
-    // QLearningAI* _q = new QLearningAI('R');
-    // _q->SetPlayersBoard(_b);
-    // _q->Train(100);
+    vector<string> _boardData = {
+        "R00000", 
+        "BR0000",
+        "BRB000",
+        "RBRB00",
+        "RBR000",
+        "BR0000",
+        "R00000",
+    };
+    Board* _b = new Board();
+    _b->printBoard();
+    QLearningAI* _q = new QLearningAI('R');
+    _q->SetPlayersBoard(_b);
+    _q->Train(1000);
     
-    Player* _p1 = new Player('R');
-    Player* _p2 = new Player("Emma", 'B');
-    DummyAI* _ai1 = new DummyAI('B');
-    ALL_PLAYERS.push_back(_p1);
-    ALL_PLAYERS.push_back(_p2);
-    ALL_AI_MODELS.push_back(_ai1);
+    // Player* _p1 = new Player('R');
+    // Player* _p2 = new Player("Emma", 'B');
+    // DummyAI* _ai1 = new DummyAI('B');
+    // ALL_PLAYERS.push_back(_p1);
+    // ALL_PLAYERS.push_back(_p2);
+    // ALL_AI_MODELS.push_back(_ai1);
 
-    MainMenu();
+    // MainMenu();
     
-    while(!ALL_PLAYERS.empty()){
-        delete ALL_PLAYERS.back();
-        ALL_PLAYERS.back() = NULL;
-        ALL_PLAYERS.pop_back();
-    }
-    while(!ALL_AI_MODELS.empty()){
-        delete ALL_AI_MODELS.back();
-        ALL_AI_MODELS.back() = NULL;
-        ALL_AI_MODELS.pop_back();
-    }
-    // delete _b;
-    // delete _q;
-    // _b = NULL;
-    // _q = NULL;
+    // while(!ALL_PLAYERS.empty()){
+    //     delete ALL_PLAYERS.back();
+    //     ALL_PLAYERS.back() = NULL;
+    //     ALL_PLAYERS.pop_back();
+    // }
+    // while(!ALL_AI_MODELS.empty()){
+    //     delete ALL_AI_MODELS.back();
+    //     ALL_AI_MODELS.back() = NULL;
+    //     ALL_AI_MODELS.pop_back();
+    // }
+    delete _b;
+    delete _q;
+    _b = NULL;
+    _q = NULL;
     return 0;
 }
 

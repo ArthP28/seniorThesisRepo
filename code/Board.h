@@ -16,7 +16,8 @@ class Board{
         enum BOARD_STATE{
             INCOMPLETE,
             P1_WIN,
-            P2_WIN
+            P2_WIN,
+            DRAW
         };
 
         Board(int w, int h);
@@ -44,6 +45,7 @@ class Board{
         char _empty = '0';
         Board::PLAYER_TURN _currTurn;
         void initializeGrid();
+        int countAllCheckers();
 
         // Helper Search Methods
         bool searchHorizontally(char checker, int col, int row, int count);
@@ -200,6 +202,8 @@ Board::BOARD_STATE Board::getCurrentState(){
         return Board::BOARD_STATE::P1_WIN;
     } else if (checkWin('B')){
         return Board::BOARD_STATE::P2_WIN;
+    } else if (countAllCheckers() == _boardHeight * _boardWidth){
+        return BOARD_STATE::DRAW;
     }
     return Board::BOARD_STATE::INCOMPLETE;
 }
@@ -328,4 +332,16 @@ void Board::firstTurn(){
     } else if (randomIndex == 2){
         _currTurn = Board::PLAYER_TURN::P2;
     }
+}
+
+int Board::countAllCheckers(){
+    int numCheckers = 0;
+    for(int row = 0; row < _boardHeight; row++){
+        for(int col = 0; col < _boardWidth; col++){
+            if(_grid.at(col)[row] != _empty){
+                numCheckers++;
+            }
+        }
+    }
+    return numCheckers;
 }

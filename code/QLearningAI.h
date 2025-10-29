@@ -6,6 +6,10 @@
 
 using namespace std;
 
+// Note: Consider using an unordered-set: Only stores unique states
+// Use valid board state as key, vector of actions is the value
+// Write a for loop to calculate the largest Q-Value
+
 class QLearningAI : public Player{
     public:
         QLearningAI(string _name, char _symbol);
@@ -47,6 +51,7 @@ QLearningAI::QLearningAI(char _symbol) : Player(_symbol){
 void QLearningAI::SetPlayersBoard(Board* _board){
     Player::SetPlayersBoard(_board);
     numActions = _board->GetWidth();
+    //numStates = 4500000000000;
     numStates = _board->GetWidth();
     Q_Table.resize(numStates, vector<float>(numActions));
 }

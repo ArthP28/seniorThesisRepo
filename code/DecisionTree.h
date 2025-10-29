@@ -4,11 +4,14 @@
 #include <set>
 #include <vector>
 #include <string>
+#include <unordered_set>
 #include "Board.h"
 
 using namespace std;
 
-// FUTURE NOTE: You may not need this class
+// FUTURE NOTE: Try to get the number of board states to tens of thousands
+// Total board states should not be 4.5 trillion
+// The states dimension should reflect the actual number of valid states possible in Connect Four
 class DecisionTree
 {
 public:
@@ -19,6 +22,8 @@ public:
     // Search Algorithms
     void breadthFirstSearchForOutcome(string boardSring, Board::BOARD_STATE requestedState);
     void depthFirstSearchForOutcome(string boardSring, Board::BOARD_STATE requestedState);
+
+    unordered_set<string> _allValidBoardStrings;
 private:
 
     struct Node

@@ -38,6 +38,7 @@ class Board{
         void setCurrentTurn(PLAYER_TURN _turn){ _currTurn = _turn; };
         char getEmptyChar(){ return _empty; };
         void firstTurn();
+        string boardToString();
     private:
         vector<string> _grid;
         int _boardWidth;
@@ -344,4 +345,12 @@ int Board::countAllCheckers(){
         }
     }
     return numCheckers;
+}
+
+string Board::boardToString(){
+    string _boardString = "";
+    for(string col : _grid){
+        _boardString += col;
+    }
+    return _boardString;
 }

@@ -44,7 +44,7 @@ int main()
     _b->printBoard();
     QLearningAI* _q = new QLearningAI('R');
     _q->SetPlayersBoard(_b);
-    _q->Train(1000);
+    _q->Train(10000);
     
     // Player* _p1 = new Player('R');
     // Player* _p2 = new Player("Emma", 'B');

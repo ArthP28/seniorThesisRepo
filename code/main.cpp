@@ -40,7 +40,7 @@ int main()
         "BR0000",
         "R00000",
     };
-    Board* _b = new Board();
+    Board* _b = new Board("RBRBRBRRRRRRBBBBBBBRBR0R0B0R0B00R", 7, 6);
     _b->printBoard();
     QLearningAI* _q = new QLearningAI('R');
     _q->SetPlayersBoard(_b);

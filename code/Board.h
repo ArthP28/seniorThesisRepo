@@ -21,6 +21,7 @@ class Board{
         };
 
         Board(int w, int h);
+        Board(string g_string, int w, int h);
         Board(vector<string> g);
         Board();
 
@@ -65,6 +66,39 @@ Board::Board(int w, int h){ // Make a new blank board of a custom width and heig
     _boardHeight = h;
 
     initializeGrid();
+}
+
+Board::Board(string g_string, int w, int h){ // Convert to a board of custom width and height from a string
+    if(w < 4 || h < 4){
+        throw runtime_error("Board must at least be 4x4");
+    }
+
+    vector<string> g;
+    _boardWidth = w;
+    _boardHeight = h;
+
+    // Append all checker characters into each new grid column generated
+    for(int i = 0; i < _boardWidth; i++){
+        string newCol = "";
+        for(int j = 0; j < _boardHeight; j++){
+            // Check if a character exists in the grid string. If not, stop and exit. The loop may have encountered the end of the string
+            if(g_string[j + (i * _boardHeight)] == NULL){
+                break;
+            }
+            if(g_string[j + (i * _boardHeight)] != _empty){
+                newCol+=g_string[j + (i * _boardHeight)];
+            }
+        }
+        // If the length of the new column string is less than the assigned board height, append the remainder with empty chars
+        if(newCol.length() < _boardHeight){
+            int r = _boardHeight - newCol.length();
+            string r_string(r, _empty);
+            newCol+=r_string;
+        }
+        g.push_back(newCol);
+    }
+
+    _grid = g;
 }
 
 Board::Board(vector<string> g){ // Make a board based on an existing one

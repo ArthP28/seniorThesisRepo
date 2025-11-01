@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-
 using namespace std;
 
 bool CheckForFourInRow(int& connectCount);
@@ -21,7 +20,7 @@ class Board{
         };
 
         Board(int w, int h);
-        Board(string g_string, int w, int h);
+        Board(string g_string, int h);
         Board(vector<string> g);
         Board();
 
@@ -68,34 +67,39 @@ Board::Board(int w, int h){ // Make a new blank board of a custom width and heig
     initializeGrid();
 }
 
-Board::Board(string g_string, int w, int h){ // Convert to a board of custom width and height from a string
-    if(w < 4 || h < 4){
+Board::Board(string g_string, int h){ // Convert to a board of custom width and height from a string
+    vector<string> g;
+
+    _boardHeight = h;
+    for(char letter : g_string){
+        if(letter == '|'){
+            _boardWidth++;
+        }
+    }
+    if(_boardWidth < 4 || _boardHeight < 4){
         throw runtime_error("Board must at least be 4x4");
     }
-
-    vector<string> g;
-    _boardWidth = w;
-    _boardHeight = h;
 
     // Append all checker characters into each new grid column generated
     for(int i = 0; i < _boardWidth; i++){
         string newCol = "";
         for(int j = 0; j < _boardHeight; j++){
-            // Check if a character exists in the grid string. If not, stop and exit. The loop may have encountered the end of the string
-            if(g_string[j + (i * _boardHeight)] == NULL){
+            if(g_string[j] == '|'){
                 break;
             }
-            if(g_string[j + (i * _boardHeight)] != _empty){
-                newCol+=g_string[j + (i * _boardHeight)];
+            if(g_string[j] != 'R' && g_string[j] != 'B' && g_string[j] != _empty){
+                throw runtime_error("Invalid Character Detected!");
             }
+            newCol+=g_string[j];
         }
-        // If the length of the new column string is less than the assigned board height, append the remainder with empty chars
-        if(newCol.length() < _boardHeight){
-            int r = _boardHeight - newCol.length();
-            string r_string(r, _empty);
-            newCol+=r_string;
+        // Calculate Remainder and fill rest with empty chars
+        int r = _boardHeight - newCol.length();
+        if(r != 0){
+            string remainderString(r, _empty);
+            newCol+=remainderString;
         }
         g.push_back(newCol);
+        g_string = g_string.substr(g_string.find('|')+1);
     }
 
     _grid = g;
@@ -384,7 +388,13 @@ int Board::countAllCheckers(){
 string Board::boardToString(){
     string _boardString = "";
     for(string col : _grid){
-        _boardString += col;
+        for(int i = 0; i < _boardHeight; i++){
+            if(col[i] == _empty){
+                break;
+            }
+            _boardString += col[i];
+        }
+        _boardString += '|';
     }
     return _boardString;
 }

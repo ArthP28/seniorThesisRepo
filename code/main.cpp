@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "DummyAI.h"
 #include "QLearningAI.h"
+#include "DecisionTree.h"
 
 using namespace std;
 
@@ -40,7 +41,10 @@ int main()
         "BR0000",
         "R00000",
     };
-    Board* _b = new Board("RBRBRBRRRRRRBBBBBBBRBR0R0B0R0B00R", 7, 6);
+    //DecisionTree* _tree = new DecisionTree(4, 5);
+    //_tree->buildFullTree();
+    Board* _b = new Board("RBRBRB|RRRRRR|BBBBBB|BRBRR|BRB|R||", 6);
+    string b_string = _b->boardToString();
     _b->printBoard();
     QLearningAI* _q = new QLearningAI('R');
     _q->SetPlayersBoard(_b);
@@ -65,10 +69,12 @@ int main()
     //     ALL_AI_MODELS.back() = NULL;
     //     ALL_AI_MODELS.pop_back();
     // }
+    //delete _tree;
     delete _b;
     delete _q;
     _b = NULL;
     _q = NULL;
+    //_tree = NULL;
     return 0;
 }
 

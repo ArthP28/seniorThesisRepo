@@ -41,9 +41,7 @@ int main()
         "BR0000",
         "R00000",
     };
-    //DecisionTree* _tree = new DecisionTree(4, 5);
-    //_tree->buildFullTree();
-    Board* _b = new Board("RBRBRB|RRRRRR|BBBBBB|BRBRR|BRB|R||", 6);
+    Board* _b = new Board("RBRB|RRRR|BBB|BR|", 4);
     string b_string = _b->boardToString();
     _b->printBoard();
     QLearningAI* _q = new QLearningAI('R');
@@ -69,12 +67,10 @@ int main()
     //     ALL_AI_MODELS.back() = NULL;
     //     ALL_AI_MODELS.pop_back();
     // }
-    //delete _tree;
     delete _b;
     delete _q;
     _b = NULL;
     _q = NULL;
-    //_tree = NULL;
     return 0;
 }
 

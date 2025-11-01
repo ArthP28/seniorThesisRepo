@@ -41,8 +41,8 @@ class Board{
         string boardToString();
     private:
         vector<string> _grid;
-        int _boardWidth;
-        int _boardHeight;
+        int _boardWidth = 0;
+        int _boardHeight = 0;
         char _empty = '0';
         Board::PLAYER_TURN _currTurn;
         void initializeGrid();

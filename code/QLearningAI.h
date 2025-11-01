@@ -2,7 +2,10 @@
 #include <iomanip>
 #include <iostream>
 #include "Player.h"
+#include "DecisionTree.h"
 #include <algorithm>
+#include <unordered_set>
+#include <unordered_map>
 
 using namespace std;
 
@@ -26,6 +29,7 @@ class QLearningAI : public Player{
         
         // numActions corresponds with the parameter in the dropChecker function
         vector<vector<float>> Q_Table; // Each float represents the immediate reward value of each action
+        unordered_map<string, vector<float>> New_Q_Table;
         Board::BOARD_STATE _goalState = Board::BOARD_STATE::P1_WIN;
         
         float learningRate = 0.8;
@@ -37,6 +41,7 @@ class QLearningAI : public Player{
         vector<Board> MakeChildren(Board& p);
         vector<Board> CalculateAvailableActions(vector<Board> actions);
         void TakeStep(int actionIndex, int& reward, bool& done);
+        void InitializeQTable();
 };
 
 
@@ -48,12 +53,24 @@ QLearningAI::QLearningAI(char _symbol) : Player(_symbol){
     Player::_playerName = "Q";
 }
 
+void QLearningAI::InitializeQTable(){
+    DecisionTree _tree(Player::GetBoard()->GetWidth(), Player::GetBoard()->GetHeight());
+    _tree.buildFullTree();
+    unordered_set<string> _validBoardStrings = _tree.GetAllValidBoardStrings();
+
+    for(string _boardString : _validBoardStrings){
+        pair<string, vector<float>> _stateActionPair(_boardString, vector<float>(numActions));
+        New_Q_Table.insert(_stateActionPair);
+    }
+}
+
 void QLearningAI::SetPlayersBoard(Board* _board){
     Player::SetPlayersBoard(_board);
     numActions = _board->GetWidth();
     //numStates = 4500000000000;
     numStates = _board->GetWidth();
-    Q_Table.resize(numStates, vector<float>(numActions));
+    InitializeQTable();
+    //Q_Table.resize(numStates, vector<float>(numActions));
 }
 
 void QLearningAI::dropChecker(){

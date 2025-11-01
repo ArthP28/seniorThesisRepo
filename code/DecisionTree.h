@@ -22,6 +22,7 @@ public:
     // Search Algorithms
     void breadthFirstSearchForOutcome(string boardSring, Board::BOARD_STATE requestedState);
     void depthFirstSearchForOutcome(string boardSring, Board::BOARD_STATE requestedState);
+    unordered_set<string> GetAllValidBoardStrings() { return _allValidBoardStrings; };
 
     unordered_set<string> _allValidBoardStrings;
 private:
@@ -59,9 +60,10 @@ DecisionTree::DecisionTree(int w, int h){ // Construct the whole tree of possibl
     root = new Node;
     width = w;
     height = h;
-    root->board_String = string((width*height), '0');
+    root->board_String = string(width, '|');
     root->parent = NULL;
     currNode = root;
+    _allValidBoardStrings.insert(root->board_String);
 }
 
 /*************************/
@@ -126,7 +128,6 @@ void DecisionTree::generateStates(Node* p, string& b_string){ // Create a tree o
             deleteNode(p->children.back());
             p->children.pop_back();
         }
-        //removeAll(p);
 
     } else { // If the game is complete, determine if the endgame is an O Victory, an X victory, or a draw
         if(currBoard.getCurrentState() == Board::BOARD_STATE::P1_WIN){

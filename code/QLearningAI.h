@@ -20,7 +20,7 @@ class QLearningAI : public Player{
         void dropChecker() override;
         void SetPlayersBoard(Board* _board) override;
         void Train(int numEpochs);
-        int EGreedyPolicy(Board childBoard, int lastStateIndex, float e);
+        int EGreedyPolicy(Board childBoard, string stateString, float e);
     private:
         // By Default: 7 Actions, 7 States
         int numStates; // Incomplete, P1 Win, and P2 Win
@@ -42,6 +42,7 @@ class QLearningAI : public Player{
         vector<Board> CalculateAvailableActions(vector<Board> actions);
         void TakeStep(int actionIndex, int& reward, bool& done);
         void InitializeQTable();
+        vector<int> GetAllAvailableActionIndices();
 };
 
 
@@ -92,7 +93,8 @@ void QLearningAI::Train(int numEpochs){
         lastActionTaken = (rand() % _secondChildren.size());
         Board _currentState = _secondChildren.at(lastActionTaken); // Select Random Starting State
         while(_currentState.getCurrentState() == Board::BOARD_STATE::INCOMPLETE){
-            int actionIndex = EGreedyPolicy(_currentState, lastActionTaken, explorationProbability); // Generate an index of the next move based on an epsilon greedy policy
+            string _currentStateString = _currentState.boardToString();
+            int actionIndex = EGreedyPolicy(_currentState, _currentStateString, explorationProbability); // Generate an index of the next move based on an epsilon greedy policy
             Board _nextState = _currentState; // Make a new board to play the decided action
             _nextState.placeChecker(actionIndex, Player::GetSymbol());
             if(_nextState.getCurrentState() == _goalState){ // Check if the AI wins by taking this action, and if so, reward = 1
@@ -101,19 +103,21 @@ void QLearningAI::Train(int numEpochs){
                 _reward = 0.0;
             }
             // Simulates opponent's movement
-            int randColIndex = rand() % GetBoard()->GetWidth();
+            vector<int> validActions = GetAllAvailableActionIndices();
+            int randColIndex = validActions[rand() % (validActions.size())];
             _nextState.placeChecker(randColIndex, 'B');
 
             // Determine the next possible future action
+            string _nextStateString = _nextState.boardToString();
             int nextOpponentMove = actionIndex;
             float nextBestQAction = 0.0f;
-            for(int col = 0; col < 7; col++) {
+            for(int col = 0; col < Player::GetBoard()->GetWidth(); col++) {
                 if(!_nextState.isFull(col)) {
-                    nextBestQAction = max(nextBestQAction, Q_Table[nextOpponentMove][col]);
+                    nextBestQAction = max(nextBestQAction, New_Q_Table.at(_nextStateString).at(col));
                 }
             }
             // Calculate Q Formula to update Q Table
-            Q_Table[lastActionTaken][actionIndex] += learningRate * (float)(_reward + discountFactor * nextBestQAction - Q_Table[lastActionTaken][actionIndex]);
+            New_Q_Table.at(_currentStateString).at(actionIndex) += learningRate * (float)(_reward + discountFactor * nextBestQAction - New_Q_Table.at(_currentStateString).at(actionIndex));
 
             // Set current state to the next state
             _currentState = _nextState;
@@ -139,37 +143,41 @@ void QLearningAI::Train(int numEpochs){
     }
 }
 
-int QLearningAI::EGreedyPolicy(Board childBoard, int lastStateIndex, float e){
+int QLearningAI::EGreedyPolicy(Board childBoard, string stateString, float e){
     int actionIndex = 0;
     float randFloat = (float)((rand() % 100) / 100.0f); // 0 - 1 exclusive
     if(randFloat > e){ // If the random value exceeds the probability of exploration (e)
         // Exploit existing Q Table data to find most rewarding action
-        vector<float> stateArray = Q_Table.at(lastStateIndex);
-        float highestReward = stateArray.front();
+        vector<float> listOfActions = New_Q_Table.at(stateString);
+        float highestReward = listOfActions.front();
         for(int col = 0; col < childBoard.GetWidth(); col++){
             if(!childBoard.isFull(col)){
-                if(stateArray.at(col) > highestReward){
+                if(listOfActions.at(col) > highestReward){
                     actionIndex = col;
-                    highestReward = stateArray.at(col);
+                    highestReward = listOfActions.at(col);
                 }
+            } else {
+                listOfActions.at(col) = -1.0;
             }
         }
     } else {
         // Explore
-        vector<int> validActions;
-        for(int col = 0; col < childBoard.GetWidth(); col++){
-            if(!childBoard.isFull(col)){
-                validActions.push_back(col);
-            }
-        }
+        vector<int> validActions = GetAllAvailableActionIndices();
         actionIndex = validActions[rand() % (validActions.size())];
     }
 
     return actionIndex;
 }
 
-vector<Board> QLearningAI::CalculateAvailableActions(vector<Board> actions){
-    
+vector<int> QLearningAI::GetAllAvailableActionIndices(){
+    vector<int> _availableActions;
+    vector<string> g = Player::GetBoard()->GetGrid();
+    for(int i = 0; i < Player::GetBoard()->GetWidth(); i++){
+        if(!Player::GetBoard()->isFull(i)){
+            _availableActions.push_back(i);
+        }
+    }
+    return _availableActions;
 }
 
 vector<Board> QLearningAI::MakeChildren(Board& p){

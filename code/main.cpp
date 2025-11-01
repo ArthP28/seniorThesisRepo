@@ -41,7 +41,7 @@ int main()
         "BR0000",
         "R00000",
     };
-    Board* _b = new Board("RBRB|RRRR|BBB|BR|", 4);
+    Board* _b = new Board("||||", 4);
     string b_string = _b->boardToString();
     _b->printBoard();
     QLearningAI* _q = new QLearningAI('R');

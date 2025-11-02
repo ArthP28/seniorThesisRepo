@@ -31,6 +31,7 @@ class Board{
         void printHeader();
         PLAYER_TURN getNextTurn();
         bool isFull(int col);
+        bool boardFilled() { return countAllCheckers() == _boardHeight * _boardWidth; };
         int GetWidth() { return _boardWidth; };
         int GetHeight() { return _boardHeight; };
         vector<string> GetGrid() { return _grid; };
@@ -170,6 +171,8 @@ void Board::placeChecker(int column, char checkerToDrop){ // This method returns
             if(_grid.at(column)[bottom] == _empty){
                 _grid.at(column)[bottom] = checkerToDrop;
                 break;
+            } else if (_grid.at(column)[_boardHeight - 1] != _empty){
+                cout << "Col " << column << ": full" << endl;
             }
         }
     }
@@ -241,7 +244,7 @@ Board::BOARD_STATE Board::getCurrentState(){
         return Board::BOARD_STATE::P1_WIN;
     } else if (checkWin('B')){
         return Board::BOARD_STATE::P2_WIN;
-    } else if (countAllCheckers() == _boardHeight * _boardWidth){
+    } else if (boardFilled()){
         return BOARD_STATE::DRAW;
     }
     return Board::BOARD_STATE::INCOMPLETE;

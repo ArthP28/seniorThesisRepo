@@ -106,6 +106,9 @@ void DecisionTree::generateStates(Node* p, string& b_string){ // Create a tree o
                 Board nextBoard = currBoard;
                 nextBoard.placeChecker(col, charToAdd);
                 string _nextBoardString = nextBoard.boardToString();
+                if(_nextBoardString == "BRRB|||RBB|"){
+                    cout << "BRRB|||RBB| found" << endl;
+                }
     
                 if(_allValidBoardStrings.find(_nextBoardString) == _allValidBoardStrings.end()){
                     addNode(p, _nextBoardString);

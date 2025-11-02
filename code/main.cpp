@@ -44,7 +44,7 @@ int main()
     Board* _b = new Board("||||", 4);
     string b_string = _b->boardToString();
     _b->printBoard();
-    QLearningAI* _q = new QLearningAI('R');
+    QLearningAI* _q = new QLearningAI('B');
     _q->SetPlayersBoard(_b);
     _q->Train(10000);
     

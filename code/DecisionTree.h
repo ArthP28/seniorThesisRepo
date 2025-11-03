@@ -86,7 +86,7 @@ void DecisionTree::buildFullTree(){
     cout << "# Times P1 Wins: " << totalP1Wins << endl;
     cout << "# Times P2 Wins: " << totalP2Wins<< endl;
     cout << "# Draws: " << totalDraws << endl;
-    cout << "Total Number of Possible Moves: " << totalMoves << endl;
+    cout << "Total Number of Possible Moves: " << _allValidBoardStrings.size() << endl;
 }
 /***************************/
 // -p- Private Methods -p- //

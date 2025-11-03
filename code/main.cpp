@@ -20,6 +20,7 @@ void Options();
 void SelectPlayer();
 void SelectAI();
 void PlayGame(Player* p1, Player* p2);
+void PlayQGame(Player* p1, QLearningAI* p2);
 // If possible, after finishing main Q-Learning AI, create a function that saves all player data to a new file using outfile
 
 vector<Player*> ALL_PLAYERS;
@@ -41,19 +42,21 @@ int main()
         "BR0000",
         "R00000",
     };
-    Board* _b = new Board("||||", 4);
-    string b_string = _b->boardToString();
-    _b->printBoard();
+    //Board* _b = new Board("||||", 4);
+    //string b_string = _b->boardToString();
+    //_b->printBoard();
     QLearningAI* _q = new QLearningAI('B');
-    _q->SetPlayersBoard(_b);
-    _q->Train(10000);
     
-    // Player* _p1 = new Player('R');
+    
+    Player* _p1 = new Player('R');
+
+    PlayQGame(_p1, _q);
     // Player* _p2 = new Player("Emma", 'B');
     // DummyAI* _ai1 = new DummyAI('B');
     // ALL_PLAYERS.push_back(_p1);
     // ALL_PLAYERS.push_back(_p2);
     // ALL_AI_MODELS.push_back(_ai1);
+    // ALL_AI_MODELS.push_back(_q);
 
     // MainMenu();
     
@@ -67,9 +70,10 @@ int main()
     //     ALL_AI_MODELS.back() = NULL;
     //     ALL_AI_MODELS.pop_back();
     // }
-    delete _b;
+    delete _p1;
+    //delete _b;
     delete _q;
-    _b = NULL;
+    //_b = NULL;
     _q = NULL;
     return 0;
 }
@@ -137,13 +141,16 @@ void PlayerVsAI(){
     system("clear");
     cout << "Let's play PvAI Connect Four!" << endl << endl;
     string affirmationSignal = "y";
+    QLearningAI* _q = new QLearningAI('B');
     while(tolower(affirmationSignal[0]) == 'y'){ // This function goes on as long as the user wants it to go
-        PlayGame(ALL_PLAYERS.at(0), ALL_AI_MODELS.at(0));
+        PlayQGame(ALL_PLAYERS.at(0), _q);
         cout << "Would you like to play again?" << endl << 
         "[y] = YES\n[n] = NO" << endl;
         getline(cin, affirmationSignal);
         system("clear");
     }
+    delete _q;
+    _q = NULL;
 }
 
 void ViewScores(){
@@ -167,6 +174,53 @@ void Options(){
     string _userInput = "";
     cout << "Press any key to return to the menu." << endl;
     getline(cin, _userInput);
+}
+
+void PlayQGame(Player* p1, QLearningAI* p2){
+    p1->SetSymbol('R');
+    p2->SetSymbol('B');
+    Board* _board = new Board("||||", 4);
+    _board->firstTurn();
+    p1->SetPlayersBoard(_board);
+    p2->SetPlayersBoard(_board);
+    p2->Train(7500000);
+
+    // Actual game begins. Loops as long as no one wins
+    Board::BOARD_STATE _currState = Board::BOARD_STATE::INCOMPLETE;
+    while(_currState == Board::BOARD_STATE::INCOMPLETE){
+        if(_board->getNextTurn() == Board::PLAYER_TURN::P1){
+            cout << p1->GetName() << "'s turn!" << endl;
+            p1->dropChecker();
+            _currState = _board->checkWin(p1->GetSymbol());
+        } else if (_board->getNextTurn() == Board::PLAYER_TURN::P2){
+            cout << p2->GetName() << "'s turn!" << endl;
+            p2->dropChecker();
+            _currState = _board->checkWin(p2->GetSymbol());
+        }
+        for(int i = 0; i <= _board->GetWidth() * 4; i++){
+            cout << "-";
+        }
+        cout << "\n" << endl;
+    }
+
+    _board->printHeader();
+    _board->printBoard();
+    cout << endl;
+
+    if(_currState == Board::BOARD_STATE::P1_WIN){
+        cout << p1->GetName() << " Wins!" << endl;
+        p1->win();
+        p2->loss();
+    } else if(_currState == Board::BOARD_STATE::P2_WIN){
+        cout << p2->GetName() << " Wins!" << endl;
+        p2->win();
+        p1->loss();
+    }
+
+    delete _board;
+    _board = NULL;
+    p1->RemovePlayersBoard();
+    p2->RemovePlayersBoard();
 }
 
 void PlayGame(Player* p1, Player* p2){
@@ -211,6 +265,6 @@ void PlayGame(Player* p1, Player* p2){
 
     delete _board;
     _board = NULL;
-    p1->SetPlayersBoard(NULL);
-    p2->SetPlayersBoard(NULL);
+    p1->RemovePlayersBoard();
+    p2->RemovePlayersBoard();
 }

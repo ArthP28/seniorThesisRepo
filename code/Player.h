@@ -14,6 +14,7 @@ class Player{
         Player(string name, char symbol);
         Player(char symbol);
         virtual void SetPlayersBoard(Board* _board);
+        void RemovePlayersBoard();
         void SetSymbol(char symbol);
         virtual void dropChecker();
         void viewPlayRecord();
@@ -44,6 +45,10 @@ Player::Player(char symbol){
 
 void Player::SetPlayersBoard(Board* _board){
     _playersBoard = _board;
+}
+
+void Player::RemovePlayersBoard(){
+    _playersBoard = NULL;
 }
 
 void Player::SetSymbol(char symbol){

@@ -40,6 +40,7 @@ class Board{
         char getEmptyChar(){ return _empty; };
         void firstTurn();
         string boardToString();
+        void clearBoard();
     private:
         vector<string> _grid;
         int _boardWidth = 0;
@@ -400,4 +401,10 @@ string Board::boardToString(){
         _boardString += '|';
     }
     return _boardString;
+}
+
+void Board::clearBoard(){
+    for(string& col : _grid){
+        col = string(_boardHeight, _empty);
+    }
 }

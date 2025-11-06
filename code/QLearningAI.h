@@ -34,9 +34,9 @@ class QLearningAI : public Player{
         Board::BOARD_STATE _goalState = Board::BOARD_STATE::P2_WIN;
         Board::BOARD_STATE _defeatState = Board::BOARD_STATE::P1_WIN;
         
-        double learningRate = 0.1;
-        double discountFactor = 0.9;
-        double explorationProbability = 0.5;
+        double learningRate = 0.25;
+        double discountFactor = 0.97;
+        double explorationProbability = 0.45;
 
         // Helper Functions
         int FindMostRewardingIndex(vector<double> stateArray);
@@ -90,12 +90,19 @@ void QLearningAI::dropChecker(){
     vector<double> Q_State = New_Q_Table->at(_currBoardString);
     double highestReward = INT32_MIN;
     int mostValuedAction = _availableActions[0];
+    cout << "Q Values - {";
     for(int actionIndex : _availableActions){
+        if(actionIndex % 4 != 0){
+            cout << Q_State.at(actionIndex) << ", ";
+        } else {
+            cout << Q_State.at(actionIndex) << " ";
+        }
         if(Q_State.at(actionIndex) > highestReward){
             highestReward = Q_State.at(actionIndex);
             mostValuedAction = actionIndex;
         }
     }
+    cout << "}" << endl;
     // for(int i = 0; i < Q_State.size(); i++){
     //     if(Q_State.at(i) > highestReward){
     //         highestReward = Q_State.at(i);
@@ -116,8 +123,8 @@ void QLearningAI::Train(int numEpochs){
         Board _currentState = *Player::GetBoard();
         // Prepare Q-Learning Environment: Player 2 always goes after Player 1
         //vector<Board> _firstChildren = MakeChildren(*Player::GetBoard()); // First Time Player 1 Moves
-        // int lastActionTaken = (rand() % _currentState.GetWidth());; // Index storing the previous action taken by the AI player
-        // _currentState.placeChecker(lastActionTaken, curr_checkers[currentCheckerIndex]);
+        int lastActionTaken = (rand() % _currentState.GetWidth());; // Index storing the previous action taken by the AI player
+        _currentState.placeChecker(lastActionTaken, curr_checkers[currentCheckerIndex]);
         // currentCheckerIndex = 1;
         while(_currentState.getCurrentState() == Board::BOARD_STATE::INCOMPLETE){
             string _currentStateString = _currentState.boardToString();
@@ -185,12 +192,12 @@ void QLearningAI::updateQTable(string currentState, string nextState, int action
     double nextBestQAction = INT16_MIN;
     Board nextStateBoard = Board(nextState, Player::GetBoard()->GetHeight());
     // Determine the next possible future action
+    if(New_Q_Table->find(nextState) == New_Q_Table->end()){ // TEMPORARY
+        pair<string, vector<double>> _stateActionPair(nextState, vector<double>(numActions));
+        New_Q_Table->insert(_stateActionPair);
+    }
     for(int col = 0; col < Player::GetBoard()->GetWidth(); col++) {
         if(!nextStateBoard.isFull(col)) {
-            // if(New_Q_Table->find(nextState) == New_Q_Table->end()){ // TEMPORARY
-            //     pair<string, vector<double>> _stateActionPair(nextState, vector<double>(numActions));
-            //     New_Q_Table->insert(_stateActionPair);
-            // }
             if(New_Q_Table->at(nextState).at(col) > nextBestQAction){
                 nextBestQAction = New_Q_Table->at(nextState).at(col);
             }
@@ -199,10 +206,10 @@ void QLearningAI::updateQTable(string currentState, string nextState, int action
         }
     }
 
-    // if(New_Q_Table->find(currentState) == New_Q_Table->end()){ // TEMPORARY
-    //     pair<string, vector<double>> _stateActionPair(currentState, vector<double>(numActions));
-    //     New_Q_Table->insert(_stateActionPair);
-    // }
+    if(New_Q_Table->find(currentState) == New_Q_Table->end()){ // TEMPORARY
+        pair<string, vector<double>> _stateActionPair(currentState, vector<double>(numActions));
+        New_Q_Table->insert(_stateActionPair);
+    }
     vector<double> StateActionPair = New_Q_Table->at(currentState);
     // Calculate Q Formula to update Q Table
     StateActionPair.at(actionIndex) += learningRate * (double)(reward + discountFactor * nextBestQAction - StateActionPair.at(actionIndex));
@@ -216,10 +223,10 @@ int QLearningAI::EGreedyPolicy(Board childBoard, string stateString, double e){
     double randdouble = (double)((rand() % 100) / 100.0f); // 0 - 1 exclusive
     if(randdouble > e){ // If the random value exceeds the probability of exploration (e)
         // Exploit existing Q Table data to find most rewarding action
-        // if(New_Q_Table->find(stateString) == New_Q_Table->end()){ // TEMPORARY
-        //     pair<string, vector<double>> _stateActionPair(stateString, vector<double>(numActions));
-        //     New_Q_Table->insert(_stateActionPair);
-        // }
+        if(New_Q_Table->find(stateString) == New_Q_Table->end()){ // TEMPORARY
+            pair<string, vector<double>> _stateActionPair(stateString, vector<double>(numActions));
+            New_Q_Table->insert(_stateActionPair);
+        }
         vector<double> listOfActions = New_Q_Table->at(stateString);
         double highestReward = INT32_MIN;
         for(int validAction : validActions){

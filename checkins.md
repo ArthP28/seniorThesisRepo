@@ -136,23 +136,23 @@ Like with my Elevator Pitch, it was tough trying to find time throughout the day
 ## Week 8 Summary (10/27/2025)
 ### This week I worked on:
 
-[Your answer here]
+I spent the entire past week creating a training function for the Q-Learning AI, since it is necessary for it to make the correct moves. This training method has the computer player choosing to either explore or exploit existing Q-Data to find the right column. Once it has the column index, it then drops a checker on their chosen spot and determines the immediate reward of making that move. The AI ultimately wants to win the game to retrieve a maximum reward value of 1.0. This training is repeated thousands of times until a Q-table full of diverse values is supposedly formed. The Q_Table in the Connect 4 Program is an Unordered Map, with the key being the board string states and the value contained being a vector of double Q-values. Because of this, I also created a script for a Decision tree that helps in generating an unordered set of board states for the Q-table.
 
 ### This week I learned:
 
-[Your answer here]
+This week, I gained a deeper understanding of Q-Training's inner workings by analyzing the order of operations in common implementations. Most of these implementations are written in Python, so I tried my best to paraphrase and translate the code into C++. This is also the first time I utilized unordered sets and maps in my project, and they are really useful to have.
 
 ### My successes this week were:
 
-[Your answer here]
+Despite numerous challenges, I got the training method to develop a Q_Table with a relatively large amount of nonzero state-action pairs (That is, a list ofactions that are not entirely comprised of zeroes for a particular board state). Working on the functions that convert boards into strings and vice versa was also one of my biggest successes this past week, because having these functions made developing and visualizing the Q-Table so much more efficient and convenient.
 
 ### The challenges I faced this week were:
 
-[Your answer here]
+Throughout the first few days of the week, I tried designing my training function around a 7x7 Q-Table (7 Max Actions, 7 Possible future states for each action taken), because I knew there was no way I would design a Q-Table with 4.5 trillion possible states for a 7x6 game grid. However, as I struggled trying to design the right training algorithm to accommodate a Q-Table and board grid of such a size, I turned to my professors for help. That was when I learned that, considering the millions of possible states that exist in Connect Four, and the very slow amount of time it would take to process all of them, it would be impossible for me to create a Q-Table of that size, even if I prune out all the duplicates and illegal moves. Because having a Q-Learning AI is crucial for my project, I reduced the size of the game board considerably so that the computer has a better chance of processing all the possible states. The Q-Learning AI can now only work on game boards in the absolute minimum dimensions (4x4). 5x5 and 4x5 boards are also compatible; however, they require significantly more time for the compiler to process. For processing regular-sized boards, my professors encouraged me to search for a more efficient AI algorithm capable of handling a ginormous amount of states, which I have quickly found and plan to implement at the end of my second sprint.
 
 ---
 
-## Week 9 Summary (MM/DD/YYYY)
+## Week 9 Summary (11/03/2025)
 ### This week I worked on:
 
 [Your answer here]

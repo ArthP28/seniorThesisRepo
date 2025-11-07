@@ -97,6 +97,15 @@ void QLearningAI::dropChecker(){
         } else {
             cout << Q_State.at(actionIndex) << " ";
         }
+    }
+    for(int actionIndex : _availableActions){
+        // Overrides: If AI detects an immediate loss, move to block it
+        Board _nextState = *Player::GetBoard();
+        _nextState.placeChecker(actionIndex, 'R');
+        if(_nextState.checkWin('R')){
+            mostValuedAction = actionIndex;
+            break;
+        }
         if(Q_State.at(actionIndex) > highestReward){
             highestReward = Q_State.at(actionIndex);
             mostValuedAction = actionIndex;
@@ -121,11 +130,11 @@ void QLearningAI::Train(int numEpochs){
     for(int i = 0; i < numEpochs; i++){ // The training cycle loops for a certain number of epochs
         char currentCheckerIndex = 0;
         Board _currentState = *Player::GetBoard();
-        // Prepare Q-Learning Environment: Player 2 always goes after Player 1
-        //vector<Board> _firstChildren = MakeChildren(*Player::GetBoard()); // First Time Player 1 Moves
-        int lastActionTaken = (rand() % _currentState.GetWidth());; // Index storing the previous action taken by the AI player
-        _currentState.placeChecker(lastActionTaken, curr_checkers[currentCheckerIndex]);
-        // currentCheckerIndex = 1;
+        // // Prepare Q-Learning Environment: Player 2 always goes after Player 1
+        // //vector<Board> _firstChildren = MakeChildren(*Player::GetBoard()); // First Time Player 1 Moves
+        // int lastActionTaken = (rand() % _currentState.GetWidth());; // Index storing the previous action taken by the AI player
+        // _currentState.placeChecker(lastActionTaken, curr_checkers[currentCheckerIndex]);
+        // // currentCheckerIndex = 1;
         while(_currentState.getCurrentState() == Board::BOARD_STATE::INCOMPLETE){
             string _currentStateString = _currentState.boardToString();
             int actionIndex = EGreedyPolicy(_currentState, _currentStateString, explorationProbability); // Generate an index of the next move based on an epsilon greedy policy
@@ -192,10 +201,10 @@ void QLearningAI::updateQTable(string currentState, string nextState, int action
     double nextBestQAction = INT16_MIN;
     Board nextStateBoard = Board(nextState, Player::GetBoard()->GetHeight());
     // Determine the next possible future action
-    if(New_Q_Table->find(nextState) == New_Q_Table->end()){ // TEMPORARY
-        pair<string, vector<double>> _stateActionPair(nextState, vector<double>(numActions));
-        New_Q_Table->insert(_stateActionPair);
-    }
+    // if(New_Q_Table->find(nextState) == New_Q_Table->end()){ // TEMPORARY
+    //     pair<string, vector<double>> _stateActionPair(nextState, vector<double>(numActions));
+    //     New_Q_Table->insert(_stateActionPair);
+    // }
     for(int col = 0; col < Player::GetBoard()->GetWidth(); col++) {
         if(!nextStateBoard.isFull(col)) {
             if(New_Q_Table->at(nextState).at(col) > nextBestQAction){
@@ -206,10 +215,10 @@ void QLearningAI::updateQTable(string currentState, string nextState, int action
         }
     }
 
-    if(New_Q_Table->find(currentState) == New_Q_Table->end()){ // TEMPORARY
-        pair<string, vector<double>> _stateActionPair(currentState, vector<double>(numActions));
-        New_Q_Table->insert(_stateActionPair);
-    }
+    // if(New_Q_Table->find(currentState) == New_Q_Table->end()){ // TEMPORARY
+    //     pair<string, vector<double>> _stateActionPair(currentState, vector<double>(numActions));
+    //     New_Q_Table->insert(_stateActionPair);
+    // }
     vector<double> StateActionPair = New_Q_Table->at(currentState);
     // Calculate Q Formula to update Q Table
     StateActionPair.at(actionIndex) += learningRate * (double)(reward + discountFactor * nextBestQAction - StateActionPair.at(actionIndex));
@@ -223,10 +232,10 @@ int QLearningAI::EGreedyPolicy(Board childBoard, string stateString, double e){
     double randdouble = (double)((rand() % 100) / 100.0f); // 0 - 1 exclusive
     if(randdouble > e){ // If the random value exceeds the probability of exploration (e)
         // Exploit existing Q Table data to find most rewarding action
-        if(New_Q_Table->find(stateString) == New_Q_Table->end()){ // TEMPORARY
-            pair<string, vector<double>> _stateActionPair(stateString, vector<double>(numActions));
-            New_Q_Table->insert(_stateActionPair);
-        }
+        // if(New_Q_Table->find(stateString) == New_Q_Table->end()){ // TEMPORARY
+        //     pair<string, vector<double>> _stateActionPair(stateString, vector<double>(numActions));
+        //     New_Q_Table->insert(_stateActionPair);
+        // }
         vector<double> listOfActions = New_Q_Table->at(stateString);
         double highestReward = INT32_MIN;
         for(int validAction : validActions){

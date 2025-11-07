@@ -40,7 +40,9 @@ int main()
     p2->SetPlayersBoard(_board);
     p2->Train(1000000);
 
-    PlayQGame(p1, p2, _board);
+    for(int i = 0; i < 5; i++){
+        PlayQGame(p1, p2, _board);
+    }
     // Player* _p2 = new Player("Emma", 'B');
     // DummyAI* _ai1 = new DummyAI('B');
     // ALL_PLAYERS.push_back(_p1);
@@ -185,7 +187,7 @@ void PlayQGame(Player* p1, QLearningAI* p2, Board* _board){
 
     // Actual game begins. Loops as long as no one wins
     Board::BOARD_STATE _currState = Board::BOARD_STATE::INCOMPLETE;
-    while(_board->getCurrentState() == Board::BOARD_STATE::INCOMPLETE){
+    while(_currState == Board::BOARD_STATE::INCOMPLETE){
         if(_board->getNextTurn() == Board::PLAYER_TURN::P1){
             cout << p1->GetName() << "'s turn!" << endl;
             p1->dropChecker();
@@ -199,6 +201,7 @@ void PlayQGame(Player* p1, QLearningAI* p2, Board* _board){
             cout << "-";
         }
         cout << "\n" << endl;
+        _currState = _board->getCurrentState();
     }
 
     _board->printHeader();

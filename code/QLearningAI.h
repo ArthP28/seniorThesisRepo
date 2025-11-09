@@ -144,16 +144,7 @@ void QLearningAI::Train(int numEpochs){
                 _nextState.placeChecker(randColIndex, 'R');
                 string _nextStateString = _nextState.boardToString();
                 updateQTable(_currentStateString, _nextStateString, actionIndex, _reward);
-
-    
-                // Set current state to the next state
-                
-                //lastActionTaken = actionIndex;
             }
-
-            // if(_currentState.getCurrentState() == Board::BOARD_STATE::INCOMPLETE){
-                
-            // }
             _currentState = _nextState;
         }
         explorationProbability *= 0.99; // Decay Exploration Rate: AI exploits existing table data more

@@ -38,7 +38,7 @@ int main()
     QLearningAI* p2 = new QLearningAI('B');
     p1->SetPlayersBoard(_board);
     p2->SetPlayersBoard(_board);
-    p2->Train(5000000);
+    p2->Train(1500000);
 
     for(int i = 0; i < 5; i++){
         PlayQGame(p1, p2, _board);

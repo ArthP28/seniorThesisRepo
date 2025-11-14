@@ -155,23 +155,23 @@ Throughout the first few days of the week, I tried designing my training functio
 ## Week 9 Summary (11/03/2025)
 ### This week I worked on:
 
-[Your answer here]
+Throughout this week, I made the final tunings to my Connect Four Q-Learning Algorithm. My primary goal was to strike a balance between efficiency and effectiveness by adjusting certain significant values until they were just right. These included the hyperparameters needed for updating the Q-Table, such as the alpha, discount factor, and gamma values, as well as the number of episodes (games) on which the algorithm is trained.
 
 ### This week I learned:
 
-[Your answer here]
+The numerous rounds of testing and debugging led me to reevaluate the structure of my C++ Implementation of the Q-Learning algorithm, which I translated from others' Python versions. I ended up rewriting various chunks of my training algorithm to ensure that the AI algorithm gathers a substantial amount of Q-Information within a realistic timeframe. So if there was one thing that I can take away from this week, it was to think outside the box.
 
 ### My successes this week were:
 
-[Your answer here]
+This week marks the final time I have worked on the Q-Learning Algorithm in my project. Since reorganizing my training method, the AI has been able to accurately gather Q-Data and take full advantage of it to make intelligent decisions. Despite its capabilities being limited to small 4x4 and 4x5 game grids, it was powerful enough to win against me in a majority of the games it played. Because the Q-Learning Algorithm accomplished its purpose of capably competing against human Connect Four players and triumphing, I consider a significant part of the project complete and am ready to start my work on a second Artificial Intelligence, which makes decisions on a proper 7x6 board more efficiently through Deep Learning.
 
 ### The challenges I faced this week were:
 
-[Your answer here]
+While adjusting all the necessary values for the Q-Algorithm took lots of trial and error, one hidden irregularity within the Q-Learning intelligence has perplexed me. Despite all the changes to the values I have done, the AI would appear to select the highest Q-Value on its first turn as expected. However, as the game progresses, it eventually resorts to dropping checkers into the first available column. I knew this strange behavior was due to the Q-Value propagation not penetrating those possible future states in the game, yet I was stumped as to where this bug originated. With guidance from my professor, I was surprised to discover that this sudden regression in Q-Thinking came from both the Q-Learning AI itself (B) as well as the training algorithm (R) using the same Q-Table for their decision making. The AI was not exploring enough Q-States to affect its values because the decision to set those values comes from the current data of the Q-Table at that turn and not from the other player's actions. I since changed R's behavior to randomly selecting columns to drop its checkers and change the Q-Values afterwards. Now the training function works wonders, and I can finally rest knowing that I have spent a lot of time learning and developing an effective Q-Learning Algorithm.
 
 ---
 
-## Week 10 Summary (MM/DD/YYYY)
+## Week 10 Summary (11/10/2025)
 ### This week I worked on:
 
 [Your answer here]

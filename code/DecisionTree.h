@@ -18,6 +18,7 @@ public:
     DecisionTree(int w, int h);
     ~DecisionTree(); // Deconstructor
     void buildFullTree(); // Construct the whole tree of possible states
+    void buildFullTree(int max); // Construct the whole tree of possible states
 
     // Search Algorithms
     void breadthFirstSearchForOutcome(string boardSring, Board::BOARD_STATE requestedState);
@@ -52,6 +53,7 @@ private:
     // -- Helper Functions --
     Node* addNode(Node* p, string b_string);
     void generateStates(Node* p, string& b_string);
+    void generateStates(Node* p, string& b_string, int& max);
     void removeAll(Node* p); // Recursive Function that removes all of the nodes in the entire t
     void deleteNode(Node*& n); // Recursive Function that removes all of a source node's childre
 };
@@ -93,16 +95,26 @@ void DecisionTree::buildFullTree(){
     cout << "Total Number of Possible Moves (Counter): " << totalMoves << endl;
     cout << "Maximum Depth: " << maxDepth << endl;
 }
+
+void DecisionTree::buildFullTree(int max){
+    // Generate the children listing possible placements of O on the board
+    generateStates(root, root->board_String, max);
+    
+    // Output stats
+    cout << "Total Games: " << totalGames << endl;
+    cout << "# Times P1 Wins: " << totalP1Wins << endl;
+    cout << "# Times P2 Wins: " << totalP2Wins<< endl;
+    cout << "# Draws: " << totalDraws << endl;
+    cout << "Total Number of Possible Moves (Unordered Set): " << _allValidBoardStrings.size() << endl;
+    cout << "Total Number of Possible Moves (Counter): " << totalMoves << endl;
+    cout << "Maximum Depth: " << maxDepth << endl;
+}
 /***************************/
 // -p- Private Methods -p- //
 /***************************/
 void DecisionTree::generateStates(Node* p, string& b_string){ // Create a tree of all possible future states from a specific node
     char charToAdd;
     Board currBoard(b_string, height);
-    depthVal++; // Going deeper into tree
-    if(depthVal > maxDepth){
-        maxDepth = depthVal;
-    }
     if(currBoard.getCurrentState() == Board::BOARD_STATE::INCOMPLETE){
         if(currBoard.getNextTurn() == Board::PLAYER_TURN::P1){
             charToAdd = 'R';
@@ -150,7 +162,63 @@ void DecisionTree::generateStates(Node* p, string& b_string){ // Create a tree o
         }
         totalGames++;
     }
-    depthVal--; // Going up tree
+    //depthVal--; // Going up tree
+}
+
+void DecisionTree::generateStates(Node* p, string& b_string, int& max){ // Create a tree of all possible future states from a specific node
+    char charToAdd;
+    Board currBoard(b_string, height);
+    if(totalGames < max){
+        if(currBoard.getCurrentState() == Board::BOARD_STATE::INCOMPLETE){
+            if(currBoard.getNextTurn() == Board::PLAYER_TURN::P1){
+                charToAdd = 'R';
+            } else if (currBoard.getNextTurn() == Board::PLAYER_TURN::P2){
+                charToAdd = 'B';
+            }
+            // Iterate through all possible char placements within the board
+            for(int col = 0; col < currBoard.GetWidth(); col++){
+                if(!currBoard.isFull(col)){
+                    Board nextBoard = currBoard;
+                    nextBoard.placeChecker(col, charToAdd);
+                    string _nextBoardString = nextBoard.boardToString();
+                    if(_allValidBoardStrings.find(_nextBoardString) == _allValidBoardStrings.end()){
+                        addNode(p, _nextBoardString);
+                        _allValidBoardStrings.insert(_nextBoardString);
+                        totalMoves++;
+    
+                        if(totalMoves % 100000 == 0)
+                        {
+                            cout<<totalMoves<<endl;
+                        }
+                    } else {
+                        //cout << "Duplicate of board string found: " << _nextBoardString << endl;
+                    }
+                }
+            }
+            for(int i = 0; i < p->children.size(); i++){
+                // if(p->children.at(i) == root->children.at(1)){
+                //     cout << "Generating other children" << endl;
+                // }
+                generateStates(p->children.at(i), p->children.at(i)->board_String, max);
+            }
+            while(!p->children.empty()){
+                deleteNode(p->children.back());
+                p->children.pop_back();
+            }
+    
+        } else { // If the game is complete, determine if the endgame is an O Victory, an X victory, or a draw
+            if(currBoard.getCurrentState() == Board::BOARD_STATE::P1_WIN){
+                totalP1Wins++;
+            } else if (currBoard.getCurrentState() == Board::BOARD_STATE::P2_WIN){
+                totalP2Wins++;
+            } else if (currBoard.getCurrentState() == Board::BOARD_STATE::DRAW){
+                totalDraws++;
+            }
+            totalGames++;
+        }
+    } else {
+        cout << totalGames << " reached!" << endl;
+    }
 }
 
 DecisionTree::Node* DecisionTree::addNode(Node* p, string b_string){ // Make a new node and link it to the parent

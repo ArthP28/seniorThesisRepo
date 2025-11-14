@@ -7,11 +7,12 @@ bool CheckForFourInRow(int& connectCount);
 class Board{
     
     public:
+
+        // Public Enums
         enum PLAYER_TURN{
             P1,
             P2
         };
-
         enum BOARD_STATE{
             INCOMPLETE,
             P1_WIN,
@@ -19,28 +20,37 @@ class Board{
             DRAW
         };
 
+        // Constructors
         Board(int w, int h);
         Board(string g_string, int h);
         Board(vector<string> g);
         Board();
 
+        // Main Functions
         void placeChecker(int column, char checkerToDrop);
         Board::BOARD_STATE checkWin(char checker);
-        Board::BOARD_STATE getCurrentState();
-        void printBoard();
-        void printHeader();
-        PLAYER_TURN getNextTurn();
         bool isFull(int col);
         bool boardFilled() { return countAllCheckers() == _boardHeight * _boardWidth; };
+        void firstTurn();
+        string boardToString();
+        void clearBoard();
+
+        // Getters
+        Board::BOARD_STATE getCurrentState();
+        PLAYER_TURN getNextTurn();
         int GetWidth() { return _boardWidth; };
         int GetHeight() { return _boardHeight; };
         vector<string> GetGrid() { return _grid; };
         PLAYER_TURN getCurrentTurn(){ return _currTurn; };
-        void setCurrentTurn(PLAYER_TURN _turn){ _currTurn = _turn; };
         char getEmptyChar(){ return _empty; };
-        void firstTurn();
-        string boardToString();
-        void clearBoard();
+
+        // Setters
+        void setCurrentTurn(PLAYER_TURN _turn){ _currTurn = _turn; };
+
+        // Printers
+        void printBoard();
+        void printHeader();
+
     private:
         vector<string> _grid;
         int _boardWidth = 0;

@@ -34,13 +34,13 @@ int main()
 {
     srand(time(0));
     Player* p1 = new Player('R');
-    Board* _board = new Board("||||", 4);
+    Board* _board = new Board("|||||", 4);
     QLearningAI* p2 = new QLearningAI('B');
     p1->SetPlayersBoard(_board);
     p2->SetPlayersBoard(_board);
     p2->Train(1500000);
 
-    for(int i = 0; i < 5; i++){
+    for(int i = 0; i < 3; i++){
         PlayQGame(p1, p2, _board);
     }
     // Player* _p2 = new Player("Emma", 'B');

@@ -2,7 +2,7 @@
 #include <iomanip>
 #include <iostream>
 #include "Player.h"
-#include "DecisionTree.h"
+#include "QDecisionTree.h"
 #include <algorithm>
 #include <unordered_set>
 #include <unordered_map>
@@ -35,9 +35,9 @@ class QLearningAI : public Player{
         Board::BOARD_STATE _goalState = Board::BOARD_STATE::P2_WIN;
         Board::BOARD_STATE _defeatState = Board::BOARD_STATE::P1_WIN;
         
-        double learningRate = 0.25;
-        double discountFactor = 0.97;
-        double explorationProbability = 0.45;
+        double learningRate = 0.3;
+        double discountFactor = 0.98;
+        double explorationProbability = 0.5;
 
         // Helper Functions
         int FindMostRewardingIndex(vector<double> stateArray);
@@ -66,7 +66,7 @@ QLearningAI::~QLearningAI(){
 }
 
 void QLearningAI::InitializeQTable(){
-    DecisionTree _tree(Player::GetBoard()->GetWidth(), Player::GetBoard()->GetHeight());
+    QDecisionTree _tree(Player::GetBoard()->GetWidth(), Player::GetBoard()->GetHeight());
     _tree.buildFullTree();
     unordered_set<string> _validBoardStrings = _tree.GetAllValidBoardStrings();
 
@@ -78,7 +78,7 @@ void QLearningAI::InitializeQTable(){
 }
 
 void QLearningAI::InitializeQTable(int numGames){
-    DecisionTree _tree(Player::GetBoard()->GetWidth(), Player::GetBoard()->GetHeight());
+    QDecisionTree _tree(Player::GetBoard()->GetWidth(), Player::GetBoard()->GetHeight());
     _tree.buildFullTree(numGames);
     unordered_set<string> _validBoardStrings = _tree.GetAllValidBoardStrings();
 

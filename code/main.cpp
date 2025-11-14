@@ -5,7 +5,6 @@
 #include "Player.h"
 #include "DummyAI.h"
 #include "QLearningAI.h"
-#include "DecisionTree.h"
 
 using namespace std;
 

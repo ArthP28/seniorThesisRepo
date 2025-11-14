@@ -12,11 +12,11 @@ using namespace std;
 // FUTURE NOTE: Try to get the number of board states to tens of thousands
 // Total board states should not be 4.5 trillion
 // The states dimension should reflect the actual number of valid states possible in Connect Four
-class DecisionTree
+class QDecisionTree
 {
 public:
-    DecisionTree(int w, int h);
-    ~DecisionTree(); // Deconstructor
+    QDecisionTree(int w, int h);
+    ~QDecisionTree(); // Deconstructor
     void buildFullTree(); // Construct the whole tree of possible states
     void buildFullTree(int max); // Construct the whole tree of possible states
 
@@ -44,9 +44,6 @@ private:
     int totalDraws = 0;
     int totalMoves = 0;
 
-    int maxDepth = 0;
-    int depthVal = 0;
-
     int width;
     int height;
 
@@ -61,7 +58,7 @@ private:
 /*************************/
 //  -C- CONSTRUCTOR -C-  //
 /*************************/
-DecisionTree::DecisionTree(int w, int h){ // Construct the whole tree of possible states
+QDecisionTree::QDecisionTree(int w, int h){ // Construct the whole tree of possible states
     root = new Node;
     width = w;
     height = h;
@@ -74,7 +71,7 @@ DecisionTree::DecisionTree(int w, int h){ // Construct the whole tree of possibl
 /*************************/
 // -X- DECONSTRUCTOR -X- //
 /*************************/
-DecisionTree::~DecisionTree(){
+QDecisionTree::~QDecisionTree(){
     removeAll(root); // Remove all of the tree's child nodes
     deleteNode(root); // Then delete the root node itself
 }
@@ -82,7 +79,7 @@ DecisionTree::~DecisionTree(){
 /**************************/
 // -P- PUBLIC METHODS -P- //
 /**************************/
-void DecisionTree::buildFullTree(){
+void QDecisionTree::buildFullTree(){
     // Generate the children listing possible placements of O on the board
     generateStates(root, root->board_String);
     
@@ -93,10 +90,9 @@ void DecisionTree::buildFullTree(){
     cout << "# Draws: " << totalDraws << endl;
     cout << "Total Number of Possible Moves (Unordered Set): " << _allValidBoardStrings.size() << endl;
     cout << "Total Number of Possible Moves (Counter): " << totalMoves << endl;
-    cout << "Maximum Depth: " << maxDepth << endl;
 }
 
-void DecisionTree::buildFullTree(int max){
+void QDecisionTree::buildFullTree(int max){
     // Generate the children listing possible placements of O on the board
     generateStates(root, root->board_String, max);
     
@@ -107,12 +103,11 @@ void DecisionTree::buildFullTree(int max){
     cout << "# Draws: " << totalDraws << endl;
     cout << "Total Number of Possible Moves (Unordered Set): " << _allValidBoardStrings.size() << endl;
     cout << "Total Number of Possible Moves (Counter): " << totalMoves << endl;
-    cout << "Maximum Depth: " << maxDepth << endl;
 }
 /***************************/
 // -p- Private Methods -p- //
 /***************************/
-void DecisionTree::generateStates(Node* p, string& b_string){ // Create a tree of all possible future states from a specific node
+void QDecisionTree::generateStates(Node* p, string& b_string){ // Create a tree of all possible future states from a specific node
     char charToAdd;
     Board currBoard(b_string, height);
     if(currBoard.getCurrentState() == Board::BOARD_STATE::INCOMPLETE){
@@ -165,7 +160,7 @@ void DecisionTree::generateStates(Node* p, string& b_string){ // Create a tree o
     //depthVal--; // Going up tree
 }
 
-void DecisionTree::generateStates(Node* p, string& b_string, int& max){ // Create a tree of all possible future states from a specific node
+void QDecisionTree::generateStates(Node* p, string& b_string, int& max){ // Create a tree of all possible future states from a specific node
     char charToAdd;
     Board currBoard(b_string, height);
     if(totalGames < max){
@@ -217,11 +212,11 @@ void DecisionTree::generateStates(Node* p, string& b_string, int& max){ // Creat
             totalGames++;
         }
     } else {
-        cout << totalGames << " reached!" << endl;
+        //cout << totalGames << " reached!" << endl;
     }
 }
 
-DecisionTree::Node* DecisionTree::addNode(Node* p, string b_string){ // Make a new node and link it to the parent
+QDecisionTree::Node* QDecisionTree::addNode(Node* p, string b_string){ // Make a new node and link it to the parent
     Node* n = new Node;
     n->board_String = b_string;
     n->parent = p;
@@ -229,7 +224,7 @@ DecisionTree::Node* DecisionTree::addNode(Node* p, string b_string){ // Make a n
     return n;
 }
 
-void DecisionTree::removeAll(Node* p){ // Delete all of a parent node's children and their descendants
+void QDecisionTree::removeAll(Node* p){ // Delete all of a parent node's children and their descendants
     while(!p->children.empty()){ // Recursive call to deal with all the nodes children first before deleting itself
         removeAll(p->children.back());
         p->children.pop_back();
@@ -240,7 +235,7 @@ void DecisionTree::removeAll(Node* p){ // Delete all of a parent node's children
     }
 }
 
-void DecisionTree::deleteNode(Node*& n){ // Set all its pointer info to null and remove the node
+void QDecisionTree::deleteNode(Node*& n){ // Set all its pointer info to null and remove the node
     //std::cout <<"Deleting Node with "<<n->board->getBoardString()<< endl; 
     //delete n->board;
     //n->board_String = NULL;

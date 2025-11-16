@@ -5,28 +5,29 @@
 #include <vector>
 #include <string>
 #include <unordered_set>
+#include "QDecisionTree.h"
 #include "Board.h"
+#include "NeuralNetwork.h"
 
 using namespace std;
 
 // FUTURE NOTE: Try to get the number of board states to tens of thousands
 // Total board states should not be 4.5 trillion
 // The states dimension should reflect the actual number of valid states possible in Connect Four
-class QDecisionTree
+class NNDecisionTree
 {
 public:
-    QDecisionTree(int w, int h);
-    ~QDecisionTree(); // Deconstructor
+    NNDecisionTree(int w, int h);
+    ~NNDecisionTree();
     void buildFullTree(); // Construct the whole tree of possible states
     void buildFullTree(int max); // Construct the whole tree of possible states
-    unordered_set<string> GetAllValidBoardStrings() { return _allValidBoardStrings; };
 
     unordered_set<string> _allValidBoardStrings;
-protected:
-
+private:
     struct Node
     {
         string board_String;
+        string label;
         vector < Node* > children;
         Node* parent;
     };
@@ -44,18 +45,30 @@ protected:
     int width = 0;
     int height = 0;
 
+    // NN Architecture
+    // Inputs: 7x6 = 42 board spaces
+    // Layers: Variable
+    // Outputs: 7 Actions
+    // Due to the variable structure of the Connect 4 Board, the action labels will have to be automatically generated
+    //vector<int> networkArchitecture = { boardSize, 3, width };
+    unordered_map<string, string> _allMoves;
+    vector<pair<vector<double>, string>> _labelledData;
+
+
     // -- Helper Functions --
     Node* addNode(Node* p, string b_string);
     void generateStates(Node* p, string& b_string);
     void generateStates(Node* p, string& b_string, int& max);
     void removeAll(Node* p); // Recursive Function that removes all of the nodes in the entire t
-    void deleteNode(Node*& n); // Recursive Function that removes all of a source node's childre
+    void deleteNode(Node*& n); // Recursive Function that removes all of a source node's children
+    void propagateBack(Node*& n, vector<Node*> _path); // Go backwards through every node of the winning path and save each one to a vector
+    void convertAllFeatures(); // Take the unordered_map of labeled features, convert the board string to a double feature vector, and insert the converted data into a vector
 };
 
 /*************************/
 //  -C- CONSTRUCTOR -C-  //
 /*************************/
-QDecisionTree::QDecisionTree(int w, int h){ // Construct the whole tree of possible states
+NNDecisionTree::NNDecisionTree(int w, int h){ // Construct the whole tree of possible states
     root = new Node;
     width = w;
     height = h;
@@ -68,7 +81,7 @@ QDecisionTree::QDecisionTree(int w, int h){ // Construct the whole tree of possi
 /*************************/
 // -X- DECONSTRUCTOR -X- //
 /*************************/
-QDecisionTree::~QDecisionTree(){
+NNDecisionTree::~NNDecisionTree(){
     removeAll(root); // Remove all of the tree's child nodes
     deleteNode(root); // Then delete the root node itself
 }
@@ -76,7 +89,7 @@ QDecisionTree::~QDecisionTree(){
 /**************************/
 // -P- PUBLIC METHODS -P- //
 /**************************/
-void QDecisionTree::buildFullTree(){
+void NNDecisionTree::buildFullTree(){
     // Generate the children listing possible placements of O on the board
     generateStates(root, root->board_String);
     
@@ -85,11 +98,13 @@ void QDecisionTree::buildFullTree(){
     cout << "# Times P1 Wins: " << totalP1Wins << endl;
     cout << "# Times P2 Wins: " << totalP2Wins<< endl;
     cout << "# Draws: " << totalDraws << endl;
-    cout << "Total Number of Possible Moves (Unordered Set): " << _allValidBoardStrings.size() << endl;
     cout << "Total Number of Possible Moves (Counter): " << totalMoves << endl;
+
+    convertAllFeatures();
+
 }
 
-void QDecisionTree::buildFullTree(int max){
+void NNDecisionTree::buildFullTree(int max){
     // Generate the children listing possible placements of O on the board
     generateStates(root, root->board_String, max);
     
@@ -104,7 +119,7 @@ void QDecisionTree::buildFullTree(int max){
 /***************************/
 // -p- Private Methods -p- //
 /***************************/
-void QDecisionTree::generateStates(Node* p, string& b_string){ // Create a tree of all possible future states from a specific node
+void NNDecisionTree::generateStates(Node* p, string& b_string){ // Create a tree of all possible future states from a specific node
     char charToAdd;
     Board currBoard(b_string, height);
     if(currBoard.getCurrentState() == Board::BOARD_STATE::INCOMPLETE){
@@ -119,24 +134,12 @@ void QDecisionTree::generateStates(Node* p, string& b_string){ // Create a tree 
                 Board nextBoard = currBoard;
                 nextBoard.placeChecker(col, charToAdd);
                 string _nextBoardString = nextBoard.boardToString();
-                if(_allValidBoardStrings.find(_nextBoardString) == _allValidBoardStrings.end()){
-                    addNode(p, _nextBoardString);
-                    _allValidBoardStrings.insert(_nextBoardString);
-                    totalMoves++;
-
-                    if(totalMoves % 100000 == 0)
-                    {
-                        cout<<totalMoves<<endl;
-                    }
-                } else {
-                    //cout << "Duplicate of board string found: " << _nextBoardString << endl;
-                }
+                totalMoves++;
+                addNode(p, _nextBoardString);
+                p->label = to_string(col); // Move to play from current state of the board
             }
         }
         for(int i = 0; i < p->children.size(); i++){
-            // if(p->children.at(i) == root->children.at(1)){
-            //     cout << "Generating other children" << endl;
-            // }
             generateStates(p->children.at(i), p->children.at(i)->board_String);
         }
         while(!p->children.empty()){
@@ -147,8 +150,18 @@ void QDecisionTree::generateStates(Node* p, string& b_string){ // Create a tree 
     } else { // If the game is complete, determine if the endgame is an O Victory, an X victory, or a draw
         if(currBoard.getCurrentState() == Board::BOARD_STATE::P1_WIN){
             totalP1Wins++;
-        } else if (currBoard.getCurrentState() == Board::BOARD_STATE::P2_WIN){
+        } else if (currBoard.getCurrentState() == Board::BOARD_STATE::P2_WIN){ // AI Wins
             totalP2Wins++;
+            vector<Node*> _winPath;
+            propagateBack(p, _winPath); // Referenced path goes from end to start
+            // Add each node of the whole path into the unordered map of all moves
+            for(int i = _winPath.size() - 1; i > 0; i--){
+                Node*& n = _winPath.at(i);
+                // FUTURE: Label is calculated from the column move index of the next node, board string is from the current node
+                // Pair<board string, label>
+                pair<string, string> labeledFeatureString(n->board_String, n->label);
+                _allMoves.insert(labeledFeatureString);
+            }
         } else if (currBoard.getCurrentState() == Board::BOARD_STATE::DRAW){
             totalDraws++;
         }
@@ -157,7 +170,7 @@ void QDecisionTree::generateStates(Node* p, string& b_string){ // Create a tree 
     //depthVal--; // Going up tree
 }
 
-void QDecisionTree::generateStates(Node* p, string& b_string, int& max){ // Create a tree of all possible future states from a specific node
+void NNDecisionTree::generateStates(Node* p, string& b_string, int& max){ // Create a tree of all possible future states from a specific node
     char charToAdd;
     Board currBoard(b_string, height);
     if(totalGames < max){
@@ -213,7 +226,7 @@ void QDecisionTree::generateStates(Node* p, string& b_string, int& max){ // Crea
     }
 }
 
-QDecisionTree::Node* QDecisionTree::addNode(Node* p, string b_string){ // Make a new node and link it to the parent
+NNDecisionTree::Node* NNDecisionTree::addNode(Node* p, string b_string, string label){ // Make a new node and link it to the parent
     Node* n = new Node;
     n->board_String = b_string;
     n->parent = p;
@@ -221,7 +234,7 @@ QDecisionTree::Node* QDecisionTree::addNode(Node* p, string b_string){ // Make a
     return n;
 }
 
-void QDecisionTree::removeAll(Node* p){ // Delete all of a parent node's children and their descendants
+void NNDecisionTree::removeAll(Node* p){ // Delete all of a parent node's children and their descendants
     while(!p->children.empty()){ // Recursive call to deal with all the nodes children first before deleting itself
         removeAll(p->children.back());
         p->children.pop_back();
@@ -232,11 +245,37 @@ void QDecisionTree::removeAll(Node* p){ // Delete all of a parent node's childre
     }
 }
 
-void QDecisionTree::deleteNode(Node*& n){ // Set all its pointer info to null and remove the node
+void NNDecisionTree::deleteNode(Node*& n){ // Set all its pointer info to null and remove the node
     //std::cout <<"Deleting Node with "<<n->board->getBoardString()<< endl; 
     //delete n->board;
     //n->board_String = NULL;
     n->parent = NULL;
     delete n;
     n = NULL;
+}
+
+void NNDecisionTree::propagateBack(Node*& n, vector<Node*> _path){
+    _path.push_back(n);
+    if(n->parent != NULL){
+        propagateBack(n->parent, _path);
+    }
+}
+
+void NNDecisionTree::convertAllFeatures(){
+    for(auto& move : _allMoves){
+        string _boardString = move.first;
+        string _label = move.second;
+        vector<double> featureVector;
+        for(char space : _boardString){
+            if(space == 'R'){
+                featureVector.push_back(-1.0);
+            } else if (space == 'B'){
+                featureVector.push_back(1.0);
+            } else if (space == '0'){
+                featureVector.push_back(0.0);
+            }
+        }
+        pair<vector<double>, string> convertedLabelledData(featureVector, _label);
+        _labelledData.push_back(convertedLabelledData);
+    }
 }

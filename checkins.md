@@ -174,23 +174,23 @@ While adjusting all the necessary values for the Q-Algorithm took lots of trial 
 ## Week 10 Summary (11/10/2025)
 ### This week I worked on:
 
-[Your answer here]
+This week, I spent most of my time preparing for my second sprint presentation. I made sure to reserve more time throughout the week to review my slides and program demonstration. I even had my older sister listen to my presentation, and she offered me some mindful tips. Because of the extra training I did, I felt more confident about my presentation than I was before. In addition to the speech, I created a helper tree class for the upcoming Connect 4 Neural Network. Unlike the Q-Learning Tree class, the Neural Network Tree Class gathers labeled movement data of the computer, utilizing it as a guide to plot a path to the finish.
 
 ### This week I learned:
 
-[Your answer here]
+I have developed a foundational understanding of Neural Networks in the course on Artificial Intelligence. So I envisioned my theoretical Neural Network model to take in 42 neurons in the input layer, each one corresponding to a space on the 7x6 board, and illuminate one of the seven neurons in the output layer. The neurons here represent columns that are available to choose, and as more columns get filled, more neurons are prohibited from ever lighting up.
 
 ### My successes this week were:
 
-[Your answer here]
+As stated before, I was able to spend more time practicing for my presentation and therefore felt more mentally prepared to present. I have also already created a Tree Helper class for the Neural Network, which is a crucial component of the new AI Model that I am about to build.
 
 ### The challenges I faced this week were:
 
-[Your answer here]
+I made several design choices while conjuring up the methods for the tree helper class. For instance, a movement path for the computer is built by backpropagating through the nodes of the tree, from the winning move to the beginning of the game. Each label recording the AI's deciding move is retrieved from the action value of the current node's child. A risky strategy I chose to implement is the inclusion of duplicate board states, because even though both states look exactly identical, the way they came to be is unique. This means that the default state-generation method with no parameters does not work. Therefore, I included an overloaded variant in which only a specific number of games are played to gather the labeled input data.
 
 ---
 
-## Week 11 Summary (MM/DD/YYYY)
+## Week 11 Summary (11/17/2025)
 ### This week I worked on:
 
 [Your answer here]

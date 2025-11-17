@@ -5,7 +5,7 @@
 #include "Player.h"
 #include "DummyAI.h"
 #include "QLearningAI.h"
-#include "NNDecisionTree.h"
+#include "NeuralNetworkAI.h"
 
 using namespace std;
 
@@ -33,20 +33,23 @@ vector<Player*> ALL_AI_MODELS;
 int main()
 {
     srand(time(0));
-    NNDecisionTree _tree(7,6);
-    _tree.buildFullTree(1000000);
-
-    Player* p1 = new Player('R');
+    NeuralNetworkAI* _nn = new NeuralNetworkAI('B');
     Board* _board = new Board("||||", 4);
-    QLearningAI* p2 = new QLearningAI('B');
-    p1->SetPlayersBoard(_board);
-    p2->SetPlayersBoard(_board);
-    p2->Train(2000000);
+    _nn->SetPlayersBoard(_board, 10000);
+    _nn->PrepareData();
+
+    // Player* p1 = new Player('R');
+    // Board* _board = new Board("||||", 4);
+    // QLearningAI* p2 = new QLearningAI('B');
+    // p1->SetPlayersBoard(_board);
+    // p2->SetPlayersBoard(_board);
+    // p2->Train(2000000);
 
 
-    for(int i = 0; i < 3; i++){
-        PlayQGame(p1, p2, _board);
-    }
+    // for(int i = 0; i < 3; i++){
+    //     PlayQGame(p1, p2, _board);
+    // }
+
     // Player* _p2 = new Player("Emma", 'B');
     // DummyAI* _ai1 = new DummyAI('B');
     // ALL_PLAYERS.push_back(_p1);
@@ -67,14 +70,17 @@ int main()
     //     ALL_AI_MODELS.pop_back();
     // }
 
-    p1->RemovePlayersBoard();
-    p2->RemovePlayersBoard();
-    delete p1;
-    p1 = NULL;
+    // p1->RemovePlayersBoard();
+    // p2->RemovePlayersBoard();
+    // delete p1;
+    // p1 = NULL;
+    // delete p2;
+    // p2 = NULL;
     delete _board;
     _board = NULL;
-    delete p2;
-    p2 = NULL;
+    
+    delete _nn;
+    _nn = NULL;
     return 0;
 }
 

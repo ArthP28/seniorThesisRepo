@@ -21,8 +21,7 @@ public:
     ~NNDecisionTree();
     void buildFullTree(); // Construct the whole tree of possible states
     void buildFullTree(int max); // Construct the whole tree of possible states
-
-    unordered_set<string> _allValidBoardStrings;
+    unordered_map<string, string> getAllMoves() { return _allMoves; };
 private:
     struct Node
     {
@@ -53,7 +52,6 @@ private:
     // Due to the variable structure of the Connect 4 Board, the action labels will have to be automatically generated
     //vector<int> networkArchitecture = { boardSize, 3, width };
     unordered_map<string, string> _allMoves;
-    vector<pair<vector<double>, string>> _labelledData;
 
 
     // -- Helper Functions --
@@ -63,7 +61,7 @@ private:
     void removeAll(Node* p); // Recursive Function that removes all of the nodes in the entire t
     void deleteNode(Node*& n); // Recursive Function that removes all of a source node's children
     void propagateBack(Node*& n, vector<Node*>& _path); // Go backwards through every node of the winning path and save each one to a vector
-    void convertAllFeatures(); // Take the unordered_map of labeled features, convert the board string to a double feature vector, and insert the converted data into a vector
+    //void Save(); // Take the unordered_map of labeled features, and put each pair in an output file
 };
 
 /*************************/
@@ -76,7 +74,6 @@ NNDecisionTree::NNDecisionTree(int w, int h){ // Construct the whole tree of pos
     root->board_String = string(width, '|');
     root->parent = NULL;
     currNode = root;
-    _allValidBoardStrings.insert(root->board_String);
 }
 
 /*************************/
@@ -101,8 +98,6 @@ void NNDecisionTree::buildFullTree(){ // WARNING: Method is highly experimental!
     cout << "# Draws: " << totalDraws << endl;
     cout << "Total Number of Possible Moves (Counter): " << totalMoves << endl;
 
-    convertAllFeatures();
-
 }
 
 void NNDecisionTree::buildFullTree(int max){
@@ -115,8 +110,6 @@ void NNDecisionTree::buildFullTree(int max){
     cout << "# Times P2 Wins: " << totalP2Wins<< endl;
     cout << "# Draws: " << totalDraws << endl;
     cout << "Total Number of Possible Moves (Counter): " << totalMoves << endl;
-
-    convertAllFeatures();
 
 }
 /***************************/
@@ -277,28 +270,8 @@ void NNDecisionTree::propagateBack(Node*& n, vector<Node*>& _path){
     }
 }
 
-void NNDecisionTree::convertAllFeatures(){
-    for(auto& move : _allMoves){
-        string _boardString = move.first;
-        string _label = move.second;
-        vector<double> featureVector;
-        int numCheckersInCol = 0;
-        for(char space : _boardString){
-            if(space == 'R'){
-                featureVector.push_back(-1.0);
-                numCheckersInCol++;
-            } else if (space == 'B'){
-                featureVector.push_back(1.0);
-                numCheckersInCol++;
-            } else if (space == '|'){
-                int r = height - numCheckersInCol;
-                for(int i = 0; i < r; i++){
-                    featureVector.push_back(0.0);
-                }
-                numCheckersInCol = 0;
-            }
-        }
-        pair<vector<double>, string> convertedLabelledData(featureVector, _label);
-        _labelledData.push_back(convertedLabelledData);
-    }
-}
+// void NNDecisionTree::Save(){
+//     for(auto& move : _allMoves){
+        
+//     }
+// }

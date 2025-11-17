@@ -27,6 +27,7 @@ private:
     struct Node
     {
         string board_String;
+        int actionIndex = 0;
         string label;
         vector < Node* > children;
         Node* parent;
@@ -56,12 +57,12 @@ private:
 
 
     // -- Helper Functions --
-    Node* addNode(Node* p, string b_string);
+    Node* addNode(Node* p, string b_string, int col);
     void generateStates(Node* p, string& b_string);
     void generateStates(Node* p, string& b_string, int& max);
     void removeAll(Node* p); // Recursive Function that removes all of the nodes in the entire t
     void deleteNode(Node*& n); // Recursive Function that removes all of a source node's children
-    void propagateBack(Node*& n, vector<Node*> _path); // Go backwards through every node of the winning path and save each one to a vector
+    void propagateBack(Node*& n, vector<Node*>& _path); // Go backwards through every node of the winning path and save each one to a vector
     void convertAllFeatures(); // Take the unordered_map of labeled features, convert the board string to a double feature vector, and insert the converted data into a vector
 };
 
@@ -89,7 +90,7 @@ NNDecisionTree::~NNDecisionTree(){
 /**************************/
 // -P- PUBLIC METHODS -P- //
 /**************************/
-void NNDecisionTree::buildFullTree(){
+void NNDecisionTree::buildFullTree(){ // WARNING: Method is highly experimental! Call this method at your own risk!
     // Generate the children listing possible placements of O on the board
     generateStates(root, root->board_String);
     
@@ -113,8 +114,10 @@ void NNDecisionTree::buildFullTree(int max){
     cout << "# Times P1 Wins: " << totalP1Wins << endl;
     cout << "# Times P2 Wins: " << totalP2Wins<< endl;
     cout << "# Draws: " << totalDraws << endl;
-    cout << "Total Number of Possible Moves (Unordered Set): " << _allValidBoardStrings.size() << endl;
     cout << "Total Number of Possible Moves (Counter): " << totalMoves << endl;
+
+    convertAllFeatures();
+
 }
 /***************************/
 // -p- Private Methods -p- //
@@ -135,8 +138,9 @@ void NNDecisionTree::generateStates(Node* p, string& b_string){ // Create a tree
                 nextBoard.placeChecker(col, charToAdd);
                 string _nextBoardString = nextBoard.boardToString();
                 totalMoves++;
-                addNode(p, _nextBoardString);
-                p->label = to_string(col); // Move to play from current state of the board
+                addNode(p, _nextBoardString, col);
+                
+                //p->label = to_string(col); // Move to play from current state of the board
             }
         }
         for(int i = 0; i < p->children.size(); i++){
@@ -155,17 +159,23 @@ void NNDecisionTree::generateStates(Node* p, string& b_string){ // Create a tree
             vector<Node*> _winPath;
             propagateBack(p, _winPath); // Referenced path goes from end to start
             // Add each node of the whole path into the unordered map of all moves
-            for(int i = _winPath.size() - 1; i > 0; i--){
+            for(int i = _winPath.size() - 2; i >= 1; i-=2){
                 Node*& n = _winPath.at(i);
+                Node*& n_child = _winPath.at(i-1);
+                string label = to_string(n_child->actionIndex); // Label is the player move that advances the game from one board state to the next
                 // FUTURE: Label is calculated from the column move index of the next node, board string is from the current node
                 // Pair<board string, label>
-                pair<string, string> labeledFeatureString(n->board_String, n->label);
+                pair<string, string> labeledFeatureString(n->board_String, label);
                 _allMoves.insert(labeledFeatureString);
             }
         } else if (currBoard.getCurrentState() == Board::BOARD_STATE::DRAW){
             totalDraws++;
         }
         totalGames++;
+        if(totalGames % 100000 == 0)
+        {
+            cout<<totalGames<<endl;
+        }
     }
     //depthVal--; // Going up tree
 }
@@ -186,24 +196,13 @@ void NNDecisionTree::generateStates(Node* p, string& b_string, int& max){ // Cre
                     Board nextBoard = currBoard;
                     nextBoard.placeChecker(col, charToAdd);
                     string _nextBoardString = nextBoard.boardToString();
-                    if(_allValidBoardStrings.find(_nextBoardString) == _allValidBoardStrings.end()){
-                        addNode(p, _nextBoardString);
-                        _allValidBoardStrings.insert(_nextBoardString);
-                        totalMoves++;
-    
-                        if(totalMoves % 100000 == 0)
-                        {
-                            cout<<totalMoves<<endl;
-                        }
-                    } else {
-                        //cout << "Duplicate of board string found: " << _nextBoardString << endl;
-                    }
+                    totalMoves++;
+                    addNode(p, _nextBoardString, col);
+                    
+                    //p->label = to_string(col); // Move to play from current state of the board
                 }
             }
             for(int i = 0; i < p->children.size(); i++){
-                // if(p->children.at(i) == root->children.at(1)){
-                //     cout << "Generating other children" << endl;
-                // }
                 generateStates(p->children.at(i), p->children.at(i)->board_String, max);
             }
             while(!p->children.empty()){
@@ -214,21 +213,38 @@ void NNDecisionTree::generateStates(Node* p, string& b_string, int& max){ // Cre
         } else { // If the game is complete, determine if the endgame is an O Victory, an X victory, or a draw
             if(currBoard.getCurrentState() == Board::BOARD_STATE::P1_WIN){
                 totalP1Wins++;
-            } else if (currBoard.getCurrentState() == Board::BOARD_STATE::P2_WIN){
+            } else if (currBoard.getCurrentState() == Board::BOARD_STATE::P2_WIN){ // AI Wins
                 totalP2Wins++;
+                vector<Node*> _winPath;
+                propagateBack(p, _winPath); // Referenced path goes from end to start
+                // Add each node of the whole path into the unordered map of all moves
+                for(int i = _winPath.size() - 2; i >= 1; i-=2){
+                    Node*& n = _winPath.at(i);
+                    Node*& n_child = _winPath.at(i-1);
+                    string label = to_string(n_child->actionIndex); // Label is the player move that advances the game from one board state to the next
+                    // FUTURE: Label is calculated from the column move index of the next node, board string is from the current node
+                    // Pair<board string, label>
+                    pair<string, string> labeledFeatureString(n->board_String, label);
+                    _allMoves.insert(labeledFeatureString);
+                }
             } else if (currBoard.getCurrentState() == Board::BOARD_STATE::DRAW){
                 totalDraws++;
             }
             totalGames++;
+            if(totalGames % 100000 == 0)
+            {
+                cout<<totalGames<<endl;
+            }
         }
     } else {
         //cout << totalGames << " reached!" << endl;
     }
 }
 
-NNDecisionTree::Node* NNDecisionTree::addNode(Node* p, string b_string, string label){ // Make a new node and link it to the parent
+NNDecisionTree::Node* NNDecisionTree::addNode(Node* p, string b_string, int col){ // Make a new node and link it to the parent
     Node* n = new Node;
     n->board_String = b_string;
+    n->actionIndex = col;
     n->parent = p;
     p->children.push_back(n);
     return n;
@@ -254,7 +270,7 @@ void NNDecisionTree::deleteNode(Node*& n){ // Set all its pointer info to null a
     n = NULL;
 }
 
-void NNDecisionTree::propagateBack(Node*& n, vector<Node*> _path){
+void NNDecisionTree::propagateBack(Node*& n, vector<Node*>& _path){
     _path.push_back(n);
     if(n->parent != NULL){
         propagateBack(n->parent, _path);
@@ -266,13 +282,20 @@ void NNDecisionTree::convertAllFeatures(){
         string _boardString = move.first;
         string _label = move.second;
         vector<double> featureVector;
+        int numCheckersInCol = 0;
         for(char space : _boardString){
             if(space == 'R'){
                 featureVector.push_back(-1.0);
+                numCheckersInCol++;
             } else if (space == 'B'){
                 featureVector.push_back(1.0);
-            } else if (space == '0'){
-                featureVector.push_back(0.0);
+                numCheckersInCol++;
+            } else if (space == '|'){
+                int r = height - numCheckersInCol;
+                for(int i = 0; i < r; i++){
+                    featureVector.push_back(0.0);
+                }
+                numCheckersInCol = 0;
             }
         }
         pair<vector<double>, string> convertedLabelledData(featureVector, _label);

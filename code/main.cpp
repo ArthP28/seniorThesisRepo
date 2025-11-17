@@ -33,19 +33,20 @@ vector<Player*> ALL_AI_MODELS;
 int main()
 {
     srand(time(0));
-    // Player* p1 = new Player('R');
-    // Board* _board = new Board("|||||", 4);
-    // QLearningAI* p2 = new QLearningAI('B');
-    // p1->SetPlayersBoard(_board);
-    // p2->SetPlayersBoard(_board);
-    // p2->Train(1500000);
+    NNDecisionTree _tree(7,6);
+    _tree.buildFullTree(1000000);
 
-    NNDecisionTree _tree(4,4);
-    _tree.buildFullTree();
+    Player* p1 = new Player('R');
+    Board* _board = new Board("||||", 4);
+    QLearningAI* p2 = new QLearningAI('B');
+    p1->SetPlayersBoard(_board);
+    p2->SetPlayersBoard(_board);
+    p2->Train(2000000);
 
-    // for(int i = 0; i < 3; i++){
-    //     PlayQGame(p1, p2, _board);
-    // }
+
+    for(int i = 0; i < 3; i++){
+        PlayQGame(p1, p2, _board);
+    }
     // Player* _p2 = new Player("Emma", 'B');
     // DummyAI* _ai1 = new DummyAI('B');
     // ALL_PLAYERS.push_back(_p1);
@@ -66,15 +67,15 @@ int main()
     //     ALL_AI_MODELS.pop_back();
     // }
 
-    // p1->RemovePlayersBoard();
-    // p2->RemovePlayersBoard();
-    // delete p1;
-    // p1 = NULL;
-    // delete _board;
-    // _board = NULL;
-    // delete p2;
-    // p2 = NULL;
-    // return 0;
+    p1->RemovePlayersBoard();
+    p2->RemovePlayersBoard();
+    delete p1;
+    p1 = NULL;
+    delete _board;
+    _board = NULL;
+    delete p2;
+    p2 = NULL;
+    return 0;
 }
 
 void MainMenu(){ // Menu interface with various options

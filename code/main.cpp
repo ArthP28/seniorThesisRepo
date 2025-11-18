@@ -36,7 +36,7 @@ int main()
     NeuralNetworkAI* _nn = new NeuralNetworkAI('B');
     Board* _board = new Board("||||", 4);
     _nn->SetPlayersBoard(_board, 10000);
-    _nn->PrepareData();
+    _nn->Test();
 
     // Player* p1 = new Player('R');
     // Board* _board = new Board("||||", 4);

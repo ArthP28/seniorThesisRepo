@@ -20,20 +20,23 @@ class NeuralNetworkAI : public Player{
         void dropChecker() override;
         void SetPlayersBoard(Board* _board) override;
         void SetPlayersBoard(Board* _board, int numGames);
-        void PrepareData() { ConvertData(); Shuffle(); Partition(0.75); };
-    private:
+        void Test(); // Examines the accuracy of the NN model
+        private:
         NeuralNetwork* nn;
         vector<int> architecture;
         vector<int> hiddenLayers = {3, 3};
-
+        double lr = 0.5;
+        double numTrainingCycles = 1000;
+        
         vector<pair<string, string>> _labelledNNData;
         vector<pair<vector<double>, vector<double>>> _vectorizedNNData;
         vector<vector<double>> _trainingFeatures;
         vector<vector<double>> _trainingLabels;
         vector<vector<double>> _testingFeatures;
         vector<vector<double>> _testingLabels;
-
+        
         // // Helper Functions
+        void PrepareData() { ConvertData(); Shuffle(); Partition(0.75); };
         void Shuffle();
         void Partition(double threshold);
         void ConvertData();
@@ -79,6 +82,41 @@ void NeuralNetworkAI::SetPlayersBoard(Board* _board, int numGames){
         architecture.push_back(layerNeurons);
     }
     architecture.push_back(outputNeurons);
+
+    PrepareData();
+
+    nn = new NeuralNetwork(architecture, _trainingFeatures, _trainingLabels, lr, numTrainingCycles);
+}
+
+void NeuralNetworkAI::Test(){
+    double max;
+    int posOfMax;
+    int numMovesCorrect = 0;
+    for(int i = 0; i < _testingFeatures.size(); i++){
+        vector<double> result = nn->predict(_testingFeatures.at(i));
+        max = result[0]; 
+        posOfMax = 0; 
+        for(int k = 1;k < result.size();k++) 
+        { 
+            if(result[k] > max) 
+            { 
+                max = result[k]; 
+                posOfMax = k; 
+            } 
+        } 
+        
+        for(int j = 0; j < _testingLabels.size(); j++){
+            if(posOfMax == j && _testingLabels.at(i).at(j) == 1.0) // Check if position of Max corresponds with j and the neuron of value j is illuminated
+            { 
+                numMovesCorrect++;
+                break;
+            } 
+        }
+    }
+
+    double correctRatio = numMovesCorrect/(double)_testingFeatures.size();
+
+    cout << "Number of correct predictions: " << numMovesCorrect << "/" << _testingFeatures.size() << " (" << correctRatio << ")" << endl;
 }
 
 void NeuralNetworkAI::Shuffle(){

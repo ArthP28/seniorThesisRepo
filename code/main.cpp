@@ -34,8 +34,8 @@ int main()
 {
     srand(time(0));
     NeuralNetworkAI* _nn = new NeuralNetworkAI('B');
-    Board* _board = new Board("||||", 4);
-    _nn->SetPlayersBoard(_board, 10000);
+    Board* _board = new Board("|||||||", 6);
+    _nn->SetPlayersBoard(_board, 100000);
     _nn->Test();
 
     // Player* p1 = new Player('R');

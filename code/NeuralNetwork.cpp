@@ -48,6 +48,9 @@ void NeuralNetwork::train(vector<vector<double>>& trainingData, vector<vector<do
         {
             firstLayer->feedForward(trainingData[i], labelData[i]);
         }
+        if(iterNum % 50 == 0){
+            cout << "Number of finished iterations: " << iterNum << endl;
+        }
     }
 }
 //--

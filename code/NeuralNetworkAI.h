@@ -24,9 +24,9 @@ class NeuralNetworkAI : public Player{
         private:
         NeuralNetwork* nn;
         vector<int> architecture;
-        vector<int> hiddenLayers = {3, 3};
-        double lr = 0.5;
-        double numTrainingCycles = 1000;
+        vector<int> hiddenLayers = {30, 15};
+        double lr = 0.6;
+        double numTrainingCycles = 5000;
         
         vector<pair<string, string>> _labelledNNData;
         vector<pair<vector<double>, vector<double>>> _vectorizedNNData;
@@ -62,12 +62,13 @@ void NeuralNetworkAI::SetPlayersBoard(Board* _board){
 
 void NeuralNetworkAI::dropChecker(){
 
+    //nn->predict
 }
 
 void NeuralNetworkAI::SetPlayersBoard(Board* _board, int numGames){
     Player::SetPlayersBoard(_board);
 
-    NNDecisionTree _tree(_board->GetHeight(), _board->GetWidth());
+    NNDecisionTree _tree(_board->GetWidth(), _board->GetHeight());
     _tree.buildFullTree(numGames);
     unordered_map<string, string> _allMoves = _tree.getAllMoves();
     for(auto& move : _allMoves){

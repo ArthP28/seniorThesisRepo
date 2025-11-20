@@ -24,9 +24,9 @@ class NeuralNetworkAI : public Player{
         private:
         NeuralNetwork* nn;
         vector<int> architecture;
-        vector<int> hiddenLayers = {30, 15};
-        double lr = 0.6;
-        double numTrainingCycles = 5000;
+        vector<int> hiddenLayers = {20, 15, 5}; // Optimal Values for 7x6: 20, 15
+        double lr = 0.5; // Optimal LR for 7x6: 0.6
+        double numTrainingCycles = 700; // Optimal epochs for 7x6: 5000
         
         vector<pair<string, string>> _labelledNNData;
         vector<pair<vector<double>, vector<double>>> _vectorizedNNData;
@@ -40,6 +40,9 @@ class NeuralNetworkAI : public Player{
         void Shuffle();
         void Partition(double threshold);
         void ConvertData();
+        vector<double> BoardToFeatureVector(string b_string);
+        vector<double> LabelToVector(string b_label);
+        int SelectMove(vector<double> result);
 };
 
 
@@ -61,8 +64,11 @@ void NeuralNetworkAI::SetPlayersBoard(Board* _board){
 }
 
 void NeuralNetworkAI::dropChecker(){
-
-    //nn->predict
+    vector<double> CurrentBoardFeatures = BoardToFeatureVector(Player::GetBoard()->boardToString());
+    vector<double> results = nn->predict(CurrentBoardFeatures);
+    int moveIndex = SelectMove(results);
+    cout << GetName() << " drops a checker into column " << moveIndex << "." << endl << endl; // This message primarily conveys that the action went through
+    GetBoard()->placeChecker(moveIndex, GetSymbol());
 }
 
 void NeuralNetworkAI::SetPlayersBoard(Board* _board, int numGames){
@@ -90,24 +96,13 @@ void NeuralNetworkAI::SetPlayersBoard(Board* _board, int numGames){
 }
 
 void NeuralNetworkAI::Test(){
-    double max;
-    int posOfMax;
     int numMovesCorrect = 0;
     for(int i = 0; i < _testingFeatures.size(); i++){
         vector<double> result = nn->predict(_testingFeatures.at(i));
-        max = result[0]; 
-        posOfMax = 0; 
-        for(int k = 1;k < result.size();k++) 
-        { 
-            if(result[k] > max) 
-            { 
-                max = result[k]; 
-                posOfMax = k; 
-            } 
-        } 
+        int bestMove = SelectMove(result);
         
         for(int j = 0; j < _testingLabels.size(); j++){
-            if(posOfMax == j && _testingLabels.at(i).at(j) == 1.0) // Check if position of Max corresponds with j and the neuron of value j is illuminated
+            if(bestMove == j && _testingLabels.at(i).at(j) == 1.0) // Check if position of Max corresponds with j and the neuron of value j is illuminated
             { 
                 numMovesCorrect++;
                 break;
@@ -151,31 +146,60 @@ void NeuralNetworkAI::ConvertData(){
         string _label = data.second;
 
         // Feature Data
-        vector<double> featureVector;
-        int numCheckersInCol = 0;
-        for(char space : _boardString){
-            if(space == 'R'){
-                featureVector.push_back(-1.0);
-                numCheckersInCol++;
-            } else if (space == 'B'){
-                featureVector.push_back(1.0);
-                numCheckersInCol++;
-            } else if (space == '|'){
-                int r = Player::GetBoard()->GetHeight() - numCheckersInCol;
-                for(int i = 0; i < r; i++){
-                    featureVector.push_back(0.0);
-                }
-                numCheckersInCol = 0;
-            }
-        }
+        vector<double> featureVector = BoardToFeatureVector(_boardString);
 
         // Labelled Data
-        vector<double> labelFeature(Player::GetBoard()->GetWidth());
-        int labelIndex = stoi(_label);
-        labelFeature.at(labelIndex) = 1.0;
+        vector<double> labelVector = LabelToVector(_label);
 
-        pair<vector<double>, vector<double>> _vectorizedPair(featureVector, labelFeature);
+        pair<vector<double>, vector<double>> _vectorizedPair(featureVector, labelVector);
 
         _vectorizedNNData.push_back(_vectorizedPair);
     }
+}
+
+vector<double> NeuralNetworkAI::BoardToFeatureVector(string b_string){
+    vector<double> featureVector;
+    int numCheckersInCol = 0;
+    for(char space : b_string){
+        if(space == 'R'){
+            featureVector.push_back(-1.0);
+            numCheckersInCol++;
+        } else if (space == 'B'){
+            featureVector.push_back(1.0);
+            numCheckersInCol++;
+        } else if (space == '|'){
+            int r = Player::GetBoard()->GetHeight() - numCheckersInCol;
+            for(int i = 0; i < r; i++){
+                featureVector.push_back(0.0);
+            }
+            numCheckersInCol = 0;
+        }
+    }
+    return featureVector;
+}
+
+vector<double> NeuralNetworkAI::LabelToVector(string b_label){
+    vector<double> labelFeature(Player::GetBoard()->GetWidth());
+    int labelIndex = stoi(b_label);
+    labelFeature.at(labelIndex) = 1.0;
+    return labelFeature;
+}
+
+int NeuralNetworkAI::SelectMove(vector<double> result){
+    double max = result[0]; 
+    int posOfMax = 0; 
+    for(int k = 1;k < result.size();k++) 
+    { 
+        if(!GetBoard()->isFull(k)){
+            if(result[k] > max) 
+            { 
+                max = result[k]; 
+                posOfMax = k; 
+            }
+        } else {
+            cout << "Column " << k << " is full! Getting next best neuron" << endl;
+        }
+    } 
+
+    return posOfMax;
 }

@@ -21,6 +21,7 @@ void SelectPlayer();
 void SelectAI();
 void PlayGame(Player* p1, Player* p2);
 void PlayQGame(Player* p1, QLearningAI* p2, Board* _board);
+void PlayNNGame(Player* p1, NeuralNetworkAI* p2, Board* _board);
 // If possible, after finishing main Q-Learning AI, create a function that saves all player data to a new file using outfile
 
 vector<Player*> ALL_PLAYERS;
@@ -35,20 +36,19 @@ int main()
     srand(time(0));
     NeuralNetworkAI* _nn = new NeuralNetworkAI('B');
     Board* _board = new Board("|||||||", 6);
-    _nn->SetPlayersBoard(_board, 100000);
+    _nn->SetPlayersBoard(_board, 2000000);
     _nn->Test();
-
-    // Player* p1 = new Player('R');
+    Player* p1 = new Player('R');
+    p1->SetPlayersBoard(_board);
     // Board* _board = new Board("||||", 4);
     // QLearningAI* p2 = new QLearningAI('B');
-    // p1->SetPlayersBoard(_board);
     // p2->SetPlayersBoard(_board);
     // p2->Train(2000000);
 
 
-    // for(int i = 0; i < 3; i++){
-    //     PlayQGame(p1, p2, _board);
-    // }
+    for(int i = 0; i < 10; i++){
+        PlayNNGame(p1, _nn, _board);
+    }
 
     // Player* _p2 = new Player("Emma", 'B');
     // DummyAI* _ai1 = new DummyAI('B');
@@ -193,6 +193,46 @@ void Options(){
 }
 
 void PlayQGame(Player* p1, QLearningAI* p2, Board* _board){
+
+    // Actual game begins. Loops as long as no one wins
+    Board::BOARD_STATE _currState = Board::BOARD_STATE::INCOMPLETE;
+    while(_currState == Board::BOARD_STATE::INCOMPLETE){
+        if(_board->getNextTurn() == Board::PLAYER_TURN::P1){
+            cout << p1->GetName() << "'s turn!" << endl;
+            p1->dropChecker();
+            //_currState = _board->checkWin(p1->GetSymbol());
+        } else if (_board->getNextTurn() == Board::PLAYER_TURN::P2){
+            cout << p2->GetName() << "'s turn!" << endl;
+            p2->dropChecker();
+            //_currState = _board->checkWin(p2->GetSymbol());
+        }
+        for(int i = 0; i <= _board->GetWidth() * 4; i++){
+            cout << "-";
+        }
+        cout << "\n" << endl;
+        _currState = _board->getCurrentState();
+    }
+
+    _board->printHeader();
+    _board->printBoard();
+    cout << endl;
+
+    if(_currState == Board::BOARD_STATE::P1_WIN){
+        cout << p1->GetName() << " Wins!" << endl;
+        p1->win();
+        p2->loss();
+    } else if(_currState == Board::BOARD_STATE::P2_WIN){
+        cout << p2->GetName() << " Wins!" << endl;
+        p2->win();
+        p1->loss();
+    } else if(_currState == Board::BOARD_STATE::DRAW){
+        cout << "Incredible! It's a draw!" << endl;
+    }
+
+    _board->clearBoard();
+}
+
+void PlayNNGame(Player* p1, NeuralNetworkAI* p2, Board* _board){
 
     // Actual game begins. Loops as long as no one wins
     Board::BOARD_STATE _currState = Board::BOARD_STATE::INCOMPLETE;

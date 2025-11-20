@@ -97,6 +97,7 @@ void NNDecisionTree::buildFullTree(){ // WARNING: Method is highly experimental!
     cout << "# Times P2 Wins: " << totalP2Wins<< endl;
     cout << "# Draws: " << totalDraws << endl;
     cout << "Total Number of Possible Moves (Counter): " << totalMoves << endl;
+    cout << "Total Number of Possible Moves (Unordered Set): " << _allMoves.size() << endl;
 
 }
 
@@ -110,6 +111,7 @@ void NNDecisionTree::buildFullTree(int max){
     cout << "# Times P2 Wins: " << totalP2Wins<< endl;
     cout << "# Draws: " << totalDraws << endl;
     cout << "Total Number of Possible Moves (Counter): " << totalMoves << endl;
+    cout << "Total Number of Possible Moves (Unordered Set): " << _allMoves.size() << endl;
 
 }
 /***************************/

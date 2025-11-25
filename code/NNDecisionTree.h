@@ -112,9 +112,9 @@ void NNDecisionTree::buildFullTree(){ // WARNING: Method is highly experimental!
 
 void NNDecisionTree::buildFullTree(int max){
     // Generate the children listing possible placements of O on the board
-    while(totalGames < max){
+    //while(totalGames < max){
         generateStates(root, root->board_String, max);
-    }
+    //}
     
     // Output stats
     cout << "Total Games: " << totalGames << endl;
@@ -212,11 +212,11 @@ void NNDecisionTree::generateStates(Node* p, string& b_string, int& max){ // Cre
                     //p->label = to_string(col); // Move to play from current state of the board
                 }
             }
-            int randIndex = rand() % p->children.size();
-            generateStates(p->children.at(randIndex), p->children.at(randIndex)->board_String, max);
-            // for(int i = 0; i < p->children.size(); i++){
-            //     generateStates(p->children.at(i), p->children.at(i)->board_String, max);
-            // }
+            //int randIndex = rand() % p->children.size();
+            //generateStates(p->children.at(randIndex), p->children.at(randIndex)->board_String, max);
+            for(int i = 0; i < p->children.size(); i++){
+                generateStates(p->children.at(i), p->children.at(i)->board_String, max);
+            }
             while(!p->children.empty()){
                 deleteNode(p->children.back());
                 p->children.pop_back();

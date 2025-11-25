@@ -24,9 +24,9 @@ class NeuralNetworkAI : public Player{
         private:
         NeuralNetwork* nn;
         vector<int> architecture;
-        vector<int> hiddenLayers = {10, 5}; // Optimal Values for 7x6: 20, 15
-        double lr = 0.5; // Optimal LR for 7x6: 0.6
-        double numTrainingCycles = 25; // Optimal epochs for 7x6: 5000
+        vector<int> hiddenLayers = {5, 3}; // Optimal Values for 7x6: 20, 15
+        double lr = 0.7; // Optimal LR for 7x6: 0.6
+        double numTrainingCycles = 1000; // Optimal epochs for 7x6: 5000
         
         vector<pair<string, string>> _labelledNNData;
         vector<pair<vector<double>, vector<double>>> _vectorizedNNData;

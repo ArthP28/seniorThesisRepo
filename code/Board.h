@@ -140,16 +140,6 @@ Board::Board(){ // Make a default board
 }
 
 Board::PLAYER_TURN Board::getNextTurn(){
-    // if(_currTurn == NULL){
-    //     firstTurn();
-    // }
-    // else if(_currTurn == PLAYER_TURN::P1){
-    //     _currTurn = PLAYER_TURN::P2;
-    //     return PLAYER_TURN::P2;
-    // } else if (_currTurn == PLAYER_TURN::P2){
-    //     _currTurn = PLAYER_TURN::P1;
-    //     return PLAYER_TURN::P1;
-    // }
 
     PLAYER_TURN retVal;
 

@@ -4,10 +4,13 @@
 #include <set>
 #include <vector>
 #include <string>
+#include <cmath>
 #include <unordered_set>
 #include "QDecisionTree.h"
 #include "Board.h"
 #include "NeuralNetwork.h"
+
+// REDESIGN THE DECISION TREE TO UTILIZE MONTE CARLO SEARCHING
 
 using namespace std;
 
@@ -25,11 +28,15 @@ public:
 private:
     struct Node
     {
+        //Board* b;
         string board_String;
         int actionIndex = 0;
         string label;
         vector < Node* > children;
         Node* parent;
+        //int visits = 0;
+        //int wins = 0;
+        //vector<int> unexploredActions;
     };
     Node* root; // The first node that represents the current/first state of the game
     Node* currNode;
@@ -52,8 +59,8 @@ private:
     // Due to the variable structure of the Connect 4 Board, the action labels will have to be automatically generated
     //vector<int> networkArchitecture = { boardSize, 3, width };
     unordered_map<string, string> _allMoves;
-
-
+    
+    
     // -- Helper Functions --
     Node* addNode(Node* p, string b_string, int col);
     void generateStates(Node* p, string& b_string);
@@ -61,6 +68,8 @@ private:
     void removeAll(Node* p); // Recursive Function that removes all of the nodes in the entire t
     void deleteNode(Node*& n); // Recursive Function that removes all of a source node's children
     void propagateBack(Node*& n, vector<Node*>& _path); // Go backwards through every node of the winning path and save each one to a vector
+    //double calculateUCB1(Node*& n);
+    //void explore(Node*& p);
     //void Save(); // Take the unordered_map of labeled features, and put each pair in an output file
 };
 
@@ -103,7 +112,9 @@ void NNDecisionTree::buildFullTree(){ // WARNING: Method is highly experimental!
 
 void NNDecisionTree::buildFullTree(int max){
     // Generate the children listing possible placements of O on the board
-    generateStates(root, root->board_String, max);
+    while(totalGames < max){
+        generateStates(root, root->board_String, max);
+    }
     
     // Output stats
     cout << "Total Games: " << totalGames << endl;
@@ -120,6 +131,10 @@ void NNDecisionTree::buildFullTree(int max){
 void NNDecisionTree::generateStates(Node* p, string& b_string){ // Create a tree of all possible future states from a specific node
     char charToAdd;
     Board currBoard(b_string, height);
+    if(currBoard.isFull(6) && currBoard.isFull(5) && currBoard.isFull(4) && currBoard.isFull(3)){
+        cout << "possible" << endl;
+    }
+    //Board nextBoard = currBoard;
     if(currBoard.getCurrentState() == Board::BOARD_STATE::INCOMPLETE){
         if(currBoard.getNextTurn() == Board::PLAYER_TURN::P1){
             charToAdd = 'R';
@@ -197,9 +212,11 @@ void NNDecisionTree::generateStates(Node* p, string& b_string, int& max){ // Cre
                     //p->label = to_string(col); // Move to play from current state of the board
                 }
             }
-            for(int i = 0; i < p->children.size(); i++){
-                generateStates(p->children.at(i), p->children.at(i)->board_String, max);
-            }
+            int randIndex = rand() % p->children.size();
+            generateStates(p->children.at(randIndex), p->children.at(randIndex)->board_String, max);
+            // for(int i = 0; i < p->children.size(); i++){
+            //     generateStates(p->children.at(i), p->children.at(i)->board_String, max);
+            // }
             while(!p->children.empty()){
                 deleteNode(p->children.back());
                 p->children.pop_back();
@@ -275,5 +292,26 @@ void NNDecisionTree::propagateBack(Node*& n, vector<Node*>& _path){
 // void NNDecisionTree::Save(){
 //     for(auto& move : _allMoves){
         
+//     }
+// }
+
+// double NNDecisionTree::calculateUCB1(Node*& n){
+//     if(n->visits == 0){
+//         return double('inf');
+//     }
+//     Node* top_node = n;
+//     if(n->parent != NULL){
+//         top_node = n->parent;
+//     }
+//     double avg = n->wins / n->visits;
+//     double c = 1.4;
+//     return avg + c * sqrt(log(top_node->visits) / n->visits);
+// }
+
+// void NNDecisionTree::explore(Node*& p){
+//     for(int i = 0; i < p->children.size(); i++){
+//         // Generate actions of child with most UCB
+//         double max_UCB = 0.0;
+
 //     }
 // }

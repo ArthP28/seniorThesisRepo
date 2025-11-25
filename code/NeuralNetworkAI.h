@@ -24,9 +24,9 @@ class NeuralNetworkAI : public Player{
         private:
         NeuralNetwork* nn;
         vector<int> architecture;
-        vector<int> hiddenLayers = {20, 15, 5}; // Optimal Values for 7x6: 20, 15
+        vector<int> hiddenLayers = {10, 5}; // Optimal Values for 7x6: 20, 15
         double lr = 0.5; // Optimal LR for 7x6: 0.6
-        double numTrainingCycles = 700; // Optimal epochs for 7x6: 5000
+        double numTrainingCycles = 25; // Optimal epochs for 7x6: 5000
         
         vector<pair<string, string>> _labelledNNData;
         vector<pair<vector<double>, vector<double>>> _vectorizedNNData;
@@ -67,6 +67,10 @@ void NeuralNetworkAI::dropChecker(){
     vector<double> CurrentBoardFeatures = BoardToFeatureVector(Player::GetBoard()->boardToString());
     vector<double> results = nn->predict(CurrentBoardFeatures);
     int moveIndex = SelectMove(results);
+    while(Player::GetBoard()->isFull(moveIndex)){ // Stuck in infinite loop, prediction results do not change
+        results = nn->predict(CurrentBoardFeatures);
+        moveIndex = SelectMove(results);
+    }
     cout << GetName() << " drops a checker into column " << moveIndex << "." << endl << endl; // This message primarily conveys that the action went through
     GetBoard()->placeChecker(moveIndex, GetSymbol());
 }
@@ -196,8 +200,6 @@ int NeuralNetworkAI::SelectMove(vector<double> result){
                 max = result[k]; 
                 posOfMax = k; 
             }
-        } else {
-            cout << "Column " << k << " is full! Getting next best neuron" << endl;
         }
     } 
 

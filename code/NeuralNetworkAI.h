@@ -33,15 +33,12 @@ class NeuralNetworkAI : public Player{
         vector<pair<string, string>> _labelledMoveData;
         vector<pair<string, string>> _labelledBlockingData;
         vector<pair<string, string>> _labelledBehaviorData;
-        vector<pair<vector<double>, vector<double>>> _vectorizedMoveData;
-        vector<pair<vector<double>, vector<double>>> _vectorizedBlockingData;
-        vector<pair<vector<double>, vector<double>>> _vectorizedBehaviorData;
-        vector<vector<double>> _trainingFeatures;
-        vector<vector<double>> _trainingLabels;
         pair<vector<vector<double>>, vector<vector<double>>> _trainingMovementData; // First = Features, Second = Labels
-        pair<vector<vector<double>>, vector<vector<double>>> _testingMovementData; // First = Features, Second = Labels
-        vector<vector<double>> _testingFeatures;
-        vector<vector<double>> _testingLabels;
+        pair<vector<vector<double>>, vector<vector<double>>> _testingMovementData;
+        pair<vector<vector<double>>, vector<vector<double>>> _trainingBlockingData;
+        pair<vector<vector<double>>, vector<vector<double>>> _testingBlockingData;
+        pair<vector<vector<double>>, vector<vector<double>>> _trainingBehaviorData;
+        pair<vector<vector<double>>, vector<vector<double>>> _testingBehaviorData;
         
         // // Helper Functions
         void PrepareData(vector<pair<string, string>> _labelledData, pair<vector<vector<double>>, vector<vector<double>>>& _trainingData, pair<vector<vector<double>>, vector<vector<double>>>& _testingData);
@@ -54,6 +51,7 @@ class NeuralNetworkAI : public Player{
         vector<double> BoardToFeatureVector(string b_string);
         vector<double> LabelToVector(string b_label);
         int SelectMove(vector<double> result);
+        int MakeChoice(vector<double> result);
 };
 
 
@@ -80,12 +78,32 @@ void NeuralNetworkAI::SetPlayersBoard(Board* _board){
 
 void NeuralNetworkAI::dropChecker(){
     vector<double> CurrentBoardFeatures = BoardToFeatureVector(Player::GetBoard()->boardToString());
-    vector<double> results = move_nn->predict(CurrentBoardFeatures);
-    int moveIndex = SelectMove(results);
-    while(Player::GetBoard()->isFull(moveIndex)){ // Stuck in infinite loop, prediction results do not change
-        results = move_nn->predict(CurrentBoardFeatures);
-        moveIndex = SelectMove(results);
+    vector<double> decision = decide_nn->predict(CurrentBoardFeatures);
+    int decisionIndex = MakeChoice(decision);
+    int moveIndex;
+    if(decisionIndex == 0){ // Place Checker
+        cout << GetName() << " chooses to move!" << endl;
+        vector<double> resultsOfMove = move_nn->predict(CurrentBoardFeatures);
+        moveIndex = SelectMove(resultsOfMove);
+        while(Player::GetBoard()->isFull(moveIndex)){ // Stuck in infinite loop, prediction results do not change
+            resultsOfMove = move_nn->predict(CurrentBoardFeatures);
+            moveIndex = SelectMove(resultsOfMove);
+        }
+    } else if (decisionIndex == 1){ // Block opponent
+        cout << GetName() << " chooses to BLOCK!" << endl;
+        vector<double> resultsOfBlock = block_nn->predict(CurrentBoardFeatures);
+        moveIndex = SelectMove(resultsOfBlock);
+        while(Player::GetBoard()->isFull(moveIndex)){ // Stuck in infinite loop, prediction results do not change
+            resultsOfBlock = move_nn->predict(CurrentBoardFeatures);
+            moveIndex = SelectMove(resultsOfBlock);
+        }
     }
+    // vector<double> results = move_nn->predict(CurrentBoardFeatures);
+    // int moveIndex = SelectMove(results);
+    // while(Player::GetBoard()->isFull(moveIndex)){ // Stuck in infinite loop, prediction results do not change
+    //     results = move_nn->predict(CurrentBoardFeatures);
+    //     moveIndex = SelectMove(results);
+    // }
     cout << GetName() << " drops a checker into column " << moveIndex << "." << endl << endl; // This message primarily conveys that the action went through
     GetBoard()->placeChecker(moveIndex, GetSymbol());
 }
@@ -121,19 +139,36 @@ void NeuralNetworkAI::SetPlayersBoard(Board* _board, int numGames){
         movementNNarchitecture.push_back(layerNeurons);
     }
     movementNNarchitecture.push_back(movementOutput);
-
     PrepareData(_labelledMoveData, _trainingMovementData, _testingMovementData);
 
+    blockNNarchitecture.push_back(inputNeurons);
+    for(int layerNeurons : hiddenLayers){
+        blockNNarchitecture.push_back(layerNeurons);
+    }
+    blockNNarchitecture.push_back(movementOutput);
+    PrepareData(_labelledBlockingData, _trainingBlockingData, _testingBlockingData);
+
+    behaviorNNarchitecture.push_back(inputNeurons);
+    for(int layerNeurons : hiddenLayers){
+        behaviorNNarchitecture.push_back(layerNeurons);
+    }
+    behaviorNNarchitecture.push_back(behaviorOutput);
+    PrepareData(_labelledBehaviorData, _trainingBehaviorData, _testingBehaviorData);
+
     move_nn = new NeuralNetwork(movementNNarchitecture, _trainingMovementData.first, _trainingMovementData.second, lr, numTrainingCycles);
+    block_nn = new NeuralNetwork(blockNNarchitecture, _trainingBlockingData.first, _trainingBlockingData.second, lr, numTrainingCycles);
+    decide_nn = new NeuralNetwork(behaviorNNarchitecture, _trainingBehaviorData.first, _trainingBehaviorData.second, lr, numTrainingCycles);
 }
 
 void NeuralNetworkAI::Test(){
     int numMovesCorrect = 0;
+    int numBlocksCorrect = 0;
+    int numDecisionsCorrect = 0;
     for(int i = 0; i < _testingMovementData.first.size(); i++){
         vector<double> result = move_nn->predict(_testingMovementData.first.at(i));
         int bestMove = SelectMove(result);
         
-        for(int j = 0; j < _testingMovementData.second.size(); j++){
+        for(int j = 0; j < _testingMovementData.second.at(i).size(); j++){
             if(bestMove == j && _testingMovementData.second.at(i).at(j) == 1.0) // Check if position of Max corresponds with j and the neuron of value j is illuminated
             { 
                 numMovesCorrect++;
@@ -141,10 +176,38 @@ void NeuralNetworkAI::Test(){
             } 
         }
     }
+    for(int i = 0; i < _testingBlockingData.first.size(); i++){
+        vector<double> result = block_nn->predict(_testingBlockingData.first.at(i));
+        int bestMove = SelectMove(result);
+        
+        for(int j = 0; j < _testingBlockingData.second.at(i).size(); j++){
+            if(bestMove == j && _testingBlockingData.second.at(i).at(j) == 1.0) // Check if position of Max corresponds with j and the neuron of value j is illuminated
+            { 
+                numBlocksCorrect++;
+                break;
+            } 
+        }
+    }
+    for(int i = 0; i < _testingBehaviorData.first.size(); i++){
+        vector<double> result = decide_nn->predict(_testingBehaviorData.first.at(i));
+        int bestMove = MakeChoice(result);
+        
+        for(int j = 0; j < _testingBehaviorData.second.at(i).size(); j++){
+            if(bestMove == j && _testingBehaviorData.second.at(i).at(j) == 1.0) // Check if position of Max corresponds with j and the neuron of value j is illuminated
+            { 
+                numDecisionsCorrect++;
+                break;
+            } 
+        }
+    }
 
-    double correctRatio = numMovesCorrect/(double)_testingMovementData.first.size();
+    double correctMovementRatio = numMovesCorrect/(double)_testingMovementData.first.size();
+    double correctBlocksRatio = numBlocksCorrect/(double)_testingBlockingData.first.size();
+    double correctDecisionsRatio = numDecisionsCorrect/(double)_testingBehaviorData.first.size();
 
-    cout << "Number of correct predictions: " << numMovesCorrect << "/" << _testingMovementData.first.size() << " (" << correctRatio << ")" << endl;
+    cout << "Number of correct movement predictions: " << numMovesCorrect << "/" << _testingMovementData.first.size() << " (" << correctMovementRatio << ")" << endl;
+    cout << "Number of correct blocking predictions: " << numBlocksCorrect << "/" << _testingBlockingData.first.size() << " (" << correctBlocksRatio << ")" << endl;
+    cout << "Number of correct decision predictions: " << numDecisionsCorrect << "/" << _testingBehaviorData.first.size() << " (" << correctDecisionsRatio << ")" << endl;
 }
 
 void NeuralNetworkAI::PrepareData(vector<pair<string, string>> _labelledData, pair<vector<vector<double>>, vector<vector<double>>>& _trainingData, pair<vector<vector<double>>, vector<vector<double>>>& _testingData) {
@@ -233,6 +296,11 @@ vector<double> NeuralNetworkAI::BoardToFeatureVector(string b_string){
 }
 
 vector<double> NeuralNetworkAI::LabelToVector(string b_label){
+    if(b_label == "BLOCK"){
+        return { 0, 1 };
+    } else if(b_label == "MOVE"){
+        return { 1, 0 };
+    }
     vector<double> labelFeature(Player::GetBoard()->GetWidth());
     int labelIndex = stoi(b_label);
     labelFeature.at(labelIndex) = 1.0;
@@ -253,5 +321,13 @@ int NeuralNetworkAI::SelectMove(vector<double> result){
         }
     } 
 
+    return posOfMax;
+}
+
+int NeuralNetworkAI::MakeChoice(vector<double> result){
+    int posOfMax = 0; 
+    if(result[0] < result[1]){
+        posOfMax = 1;
+    }
     return posOfMax;
 }

@@ -25,6 +25,8 @@ public:
     void buildFullTree(); // Construct the whole tree of possible states
     void buildFullTree(int max); // Construct the whole tree of possible states
     unordered_map<string, string> getAllMoves() { return _allMoves; };
+    unordered_map<string, string> getAllBlockingMoves() { return _allBlocks; };
+    unordered_map<string, string> getAllBehaviors() { return _behaviors; };
 private:
     struct Node
     {
@@ -59,6 +61,8 @@ private:
     // Due to the variable structure of the Connect 4 Board, the action labels will have to be automatically generated
     //vector<int> networkArchitecture = { boardSize, 3, width };
     unordered_map<string, string> _allMoves;
+    unordered_map<string, string> _allBlocks;
+    unordered_map<string, string> _behaviors;
     
     
     // -- Helper Functions --
@@ -131,9 +135,6 @@ void NNDecisionTree::buildFullTree(int max){
 void NNDecisionTree::generateStates(Node* p, string& b_string){ // Create a tree of all possible future states from a specific node
     char charToAdd;
     Board currBoard(b_string, height);
-    if(currBoard.isFull(6) && currBoard.isFull(5) && currBoard.isFull(4) && currBoard.isFull(3)){
-        cout << "possible" << endl;
-    }
     //Board nextBoard = currBoard;
     if(currBoard.getCurrentState() == Board::BOARD_STATE::INCOMPLETE){
         if(currBoard.getNextTurn() == Board::PLAYER_TURN::P1){
@@ -193,6 +194,9 @@ void NNDecisionTree::generateStates(Node* p, string& b_string){ // Create a tree
 void NNDecisionTree::generateStates(Node* p, string& b_string, int& max){ // Create a tree of all possible future states from a specific node
     char charToAdd;
     Board currBoard(b_string, height);
+    // if(currBoard.isFull(6) && currBoard.isFull(5) && currBoard.isFull(4) && currBoard.isFull(3)){
+    //     cout << "possible" << endl;
+    // }
     if(totalGames < max){
         if(currBoard.getCurrentState() == Board::BOARD_STATE::INCOMPLETE){
             if(currBoard.getNextTurn() == Board::PLAYER_TURN::P1){
@@ -225,19 +229,29 @@ void NNDecisionTree::generateStates(Node* p, string& b_string, int& max){ // Cre
         } else { // If the game is complete, determine if the endgame is an O Victory, an X victory, or a draw
             if(currBoard.getCurrentState() == Board::BOARD_STATE::P1_WIN){
                 totalP1Wins++;
+                // Set the grandchild of the current node (AKA red's move before blue's move that led to red's win) to BLOCK.
+                // Record winning move as the label of the column number that will block the winning move.
+                Node*& prevP1 = p->parent->parent;
+                string blockLabel = to_string(p->actionIndex); // Red's winning move
+                pair<string, string> labeledBehaviorString(prevP1->board_String, "BLOCK");
+                pair<string, string> labeledBlockString(prevP1->board_String, blockLabel);
+                _allBlocks.insert(labeledBlockString);
+                _behaviors.insert(labeledBehaviorString);
             } else if (currBoard.getCurrentState() == Board::BOARD_STATE::P2_WIN){ // AI Wins
                 totalP2Wins++;
                 vector<Node*> _winPath;
                 propagateBack(p, _winPath); // Referenced path goes from end to start
                 // Add each node of the whole path into the unordered map of all moves
                 for(int i = _winPath.size() - 2; i >= 1; i-=2){
-                    Node*& n = _winPath.at(i);
-                    Node*& n_child = _winPath.at(i-1);
+                    Node*& n = _winPath.at(i); // Red's Turn
+                    Node*& n_child = _winPath.at(i-1); // Blue's Turn
                     string label = to_string(n_child->actionIndex); // Label is the player move that advances the game from one board state to the next
                     // FUTURE: Label is calculated from the column move index of the next node, board string is from the current node
                     // Pair<board string, label>
-                    pair<string, string> labeledFeatureString(n->board_String, label);
-                    _allMoves.insert(labeledFeatureString);
+                    pair<string, string> labeledBehaviorString(n->board_String, "MOVE");
+                    pair<string, string> labeledMovementString(n->board_String, label);
+                    _allMoves.insert(labeledMovementString);
+                    _behaviors.insert(labeledBehaviorString);
                 }
             } else if (currBoard.getCurrentState() == Board::BOARD_STATE::DRAW){
                 totalDraws++;

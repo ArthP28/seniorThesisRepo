@@ -130,6 +130,8 @@ void NeuralNetworkAI::SetPlayersBoard(Board* _board, int games){
         _labelledBehaviorData = ReadDataFromFile("NNDecisionData.txt");
     }
 
+    cout << "Training Algorithm..." << endl;
+
     int inputNeurons = _board->GetHeight() * _board->GetWidth();
     int movementOutput = _board->GetWidth();
     int behaviorOutput = 2;
@@ -342,7 +344,17 @@ bool NeuralNetworkAI::FileExists(string fileName){
     if(inData.fail()){
         inData.close();
         return false;
+    } else if (inData.good()){
+        string data; getline(inData, data);
+        if(data.empty()){
+            inData.close();
+            return false;
+        } else if(data.at(0) < '0' || data.at(0) > '9'){
+            inData.close();
+            return false;
+        }
     }
+    inData.close();
     return true;
 }
 
@@ -352,8 +364,10 @@ bool NeuralNetworkAI::CheckDimensionsFromFile(string fileName){
     if(inData.good()){
         string dimensions; getline(inData, dimensions);
         int width = stoi(dimensions.substr(0, dimensions.find(',')));
-        int height = stoi(dimensions.substr(dimensions.find(',') + 2));
-        if(width == Player::GetBoard()->GetWidth() && height == Player::GetBoard()->GetHeight()){
+        dimensions = dimensions.substr(dimensions.find(',') + 2);
+        int height = stoi(dimensions.substr(0, dimensions.find(',')));
+        int games = stoi(dimensions.substr(dimensions.find(',') + 2));
+        if(width == Player::GetBoard()->GetWidth() && height == Player::GetBoard()->GetHeight() && numGames == games){
             return true;
         } else {
             return false;
@@ -364,6 +378,7 @@ bool NeuralNetworkAI::CheckDimensionsFromFile(string fileName){
 }
 
 void NeuralNetworkAI::CreateNewData(){
+    cout << "Creating training data. This may take a moment..." << endl;
     ofstream outMovement; ofstream outBlockMovement; ofstream outDecisions;
     outMovement.open("NNMovementData.txt"); outBlockMovement.open("NNBlockMovementData.txt"); outDecisions.open("NNDecisionData.txt");
 
@@ -372,7 +387,7 @@ void NeuralNetworkAI::CreateNewData(){
     unordered_map<string, string> _allMoves = _tree.getAllMoves();
     unordered_map<string, string> _allBlockingMoves = _tree.getAllBlockingMoves();
     unordered_map<string, string> _allBehaviors = _tree.getAllBehaviors();
-    string dimensionsString = to_string(Player::GetBoard()->GetWidth()) + ", " + to_string(Player::GetBoard()->GetHeight()) + "\n";
+    string dimensionsString = to_string(Player::GetBoard()->GetWidth()) + ", " + to_string(Player::GetBoard()->GetHeight()) + ", " + to_string(numGames) + "\n";
     outMovement << dimensionsString;
     outBlockMovement << dimensionsString;
     outDecisions << dimensionsString;

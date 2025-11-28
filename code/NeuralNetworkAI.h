@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Player.h"
 #include <vector>
+#include <fstream>
 #include "NNDecisionTree.h"
 #include "NeuralNetwork.h"
 
@@ -19,9 +20,9 @@ class NeuralNetworkAI : public Player{
         ~NeuralNetworkAI();
         void dropChecker() override;
         void SetPlayersBoard(Board* _board) override;
-        void SetPlayersBoard(Board* _board, int numGames);
+        void SetPlayersBoard(Board* _board, int games);
         void Test(); // Examines the accuracy of the NN model
-        private:
+    private:
         NeuralNetwork* decide_nn;
         NeuralNetwork* block_nn;
         NeuralNetwork* move_nn;
@@ -29,6 +30,7 @@ class NeuralNetworkAI : public Player{
         int moveOrBlock = 2;
         double lr = 0.7; // Optimal LR for 7x6: 0.6
         double numTrainingCycles = 100; // Optimal epochs for 7x6: 5000
+        int numGames;
         
         vector<pair<string, string>> _labelledMoveData;
         vector<pair<string, string>> _labelledBlockingData;
@@ -52,6 +54,10 @@ class NeuralNetworkAI : public Player{
         vector<double> LabelToVector(string b_label);
         int SelectMove(vector<double> result);
         int MakeChoice(vector<double> result);
+        bool FileExists(string fileName);
+        bool CheckDimensionsFromFile(string fileName);
+        void CreateNewData();
+        vector<pair<string, string>> ReadDataFromFile(string fileName);
 };
 
 
@@ -108,22 +114,20 @@ void NeuralNetworkAI::dropChecker(){
     GetBoard()->placeChecker(moveIndex, GetSymbol());
 }
 
-void NeuralNetworkAI::SetPlayersBoard(Board* _board, int numGames){
+void NeuralNetworkAI::SetPlayersBoard(Board* _board, int games){
     Player::SetPlayersBoard(_board);
-
-    NNDecisionTree _tree(_board->GetWidth(), _board->GetHeight());
-    _tree.buildFullTree(numGames);
-    unordered_map<string, string> _allMoves = _tree.getAllMoves();
-    unordered_map<string, string> _allBlockingMoves = _tree.getAllBlockingMoves();
-    unordered_map<string, string> _allBehaviors = _tree.getAllBehaviors();
-    for(auto& move : _allMoves){
-        _labelledMoveData.push_back(move);
-    }
-    for(auto& block : _allBlockingMoves){
-        _labelledBlockingData.push_back(block);
-    }
-    for(auto& behavior : _allBehaviors){
-        _labelledBehaviorData.push_back(behavior);
+    numGames = games;
+    // If any of these special txt files do not exist in the program, make them, create the tree, and store its data into the txt files. Overwriting may occur.
+    // Else if they all exist, check if the dimensions of the board in the existing data files match the board dimensions within the parameter
+    // If any of them do not match, then the data needs to be overwritten; use the same process in this for loop again.
+    if((!FileExists("NNMovementData.txt") || !FileExists("NNBlockMovementData.txt") || !FileExists("NNDecisionData.txt"))){
+        CreateNewData();
+    } else if (!CheckDimensionsFromFile("NNMovementData.txt") || !CheckDimensionsFromFile("NNBlockMovementData.txt") || !CheckDimensionsFromFile("NNDecisionData.txt")){
+        CreateNewData();
+    } else {
+        _labelledMoveData = ReadDataFromFile("NNMovementData.txt");
+        _labelledBlockingData = ReadDataFromFile("NNBlockMovementData.txt");
+        _labelledBehaviorData = ReadDataFromFile("NNDecisionData.txt");
     }
 
     int inputNeurons = _board->GetHeight() * _board->GetWidth();
@@ -330,4 +334,84 @@ int NeuralNetworkAI::MakeChoice(vector<double> result){
         posOfMax = 1;
     }
     return posOfMax;
+}
+
+bool NeuralNetworkAI::FileExists(string fileName){
+    ifstream inData;
+    inData.open(fileName);
+    if(inData.fail()){
+        inData.close();
+        return false;
+    }
+    return true;
+}
+
+bool NeuralNetworkAI::CheckDimensionsFromFile(string fileName){
+    ifstream inData;
+    inData.open(fileName);
+    if(inData.good()){
+        string dimensions; getline(inData, dimensions);
+        int width = stoi(dimensions.substr(0, dimensions.find(',')));
+        int height = stoi(dimensions.substr(dimensions.find(',') + 2));
+        if(width == Player::GetBoard()->GetWidth() && height == Player::GetBoard()->GetHeight()){
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        throw "Error trying to read input data file";
+    }
+}
+
+void NeuralNetworkAI::CreateNewData(){
+    ofstream outMovement; ofstream outBlockMovement; ofstream outDecisions;
+    outMovement.open("NNMovementData.txt"); outBlockMovement.open("NNBlockMovementData.txt"); outDecisions.open("NNDecisionData.txt");
+
+    NNDecisionTree _tree(Player::GetBoard()->GetWidth(), Player::GetBoard()->GetHeight());
+    _tree.buildFullTree(numGames);
+    unordered_map<string, string> _allMoves = _tree.getAllMoves();
+    unordered_map<string, string> _allBlockingMoves = _tree.getAllBlockingMoves();
+    unordered_map<string, string> _allBehaviors = _tree.getAllBehaviors();
+    string dimensionsString = to_string(Player::GetBoard()->GetWidth()) + ", " + to_string(Player::GetBoard()->GetHeight()) + "\n";
+    outMovement << dimensionsString;
+    outBlockMovement << dimensionsString;
+    outDecisions << dimensionsString;
+    for(auto& move : _allMoves){
+        _labelledMoveData.push_back(move);
+        string outputString = move.first + ", " + move.second + "\n";
+        outMovement << outputString;
+    }
+    for(auto& block : _allBlockingMoves){
+        _labelledBlockingData.push_back(block);
+        string outputString = block.first + ", " + block.second + "\n";
+        outBlockMovement << outputString;
+    }
+    for(auto& behavior : _allBehaviors){
+        _labelledBehaviorData.push_back(behavior);
+        string outputString = behavior.first + ", " + behavior.second + "\n";
+        outDecisions << outputString;
+    }
+    outMovement.close();
+    outBlockMovement.close();
+    outDecisions.close();
+}
+
+vector<pair<string, string>> NeuralNetworkAI::ReadDataFromFile(string fileName){
+    ifstream inData;
+    vector<pair<string, string>> _labelledData;
+
+    inData.open(fileName);
+    if(inData.good()){
+        string dataLine; getline(inData, dataLine); // Skip the line containing dimensions. That will not be needed.
+        while(getline(inData, dataLine)){
+            string feature = dataLine.substr(0, dataLine.find(','));
+            string label = dataLine.substr(dataLine.find(',') + 2, dataLine.find('\n'));
+            pair<string, string> featureData(feature, label);
+            _labelledData.push_back(featureData);
+        }
+
+        return _labelledData;
+    } else {
+        throw "Error trying to read input data file";
+    }
 }

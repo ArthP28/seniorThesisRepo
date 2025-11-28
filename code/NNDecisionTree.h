@@ -10,8 +10,6 @@
 #include "Board.h"
 #include "NeuralNetwork.h"
 
-// REDESIGN THE DECISION TREE TO UTILIZE MONTE CARLO SEARCHING
-
 using namespace std;
 
 // FUTURE NOTE: Try to get the number of board states to tens of thousands
@@ -44,6 +42,7 @@ private:
     Node* currNode;
     
     // Counter Variables for the Full Tree
+    int totalCurrentGames = 0;
     int totalGames = 0;
     int totalP1Wins = 0;
     int totalP2Wins = 0;
@@ -115,9 +114,29 @@ void NNDecisionTree::buildFullTree(){ // WARNING: Method is highly experimental!
 }
 
 void NNDecisionTree::buildFullTree(int max){
+    generateStates(root, root->board_String, max);
+    // max /= width;
+    // Board startingBoard(root->board_String, height);
+    // for(int col = 0; col < startingBoard.GetWidth(); col++){
+    //     if(!startingBoard.isFull(col)){
+    //         Board nextBoard = startingBoard;
+    //         nextBoard.placeChecker(col, 'R');
+    //         string _nextBoardString = nextBoard.boardToString();
+    //         totalMoves++;
+    //         addNode(root, _nextBoardString, col);
+    //     }
+    // }
+    // for(int i = 0; i < width; i++){
+    //     Node* child = root->children.at(i);
+    //     while(totalCurrentGames < max){
+    //         generateStates(child, child->board_String, max);
+    //     }
+    //     totalGames+=totalCurrentGames;
+    //     totalCurrentGames = 0;
+    // }
     // Generate the children listing possible placements of O on the board
     //while(totalGames < max){
-        generateStates(root, root->board_String, max);
+        //generateStates(root, root->board_String, max);
     //}
     
     // Output stats
@@ -194,10 +213,10 @@ void NNDecisionTree::generateStates(Node* p, string& b_string){ // Create a tree
 void NNDecisionTree::generateStates(Node* p, string& b_string, int& max){ // Create a tree of all possible future states from a specific node
     char charToAdd;
     Board currBoard(b_string, height);
-    // if(currBoard.isFull(6) && currBoard.isFull(5) && currBoard.isFull(4) && currBoard.isFull(3)){
-    //     cout << "possible" << endl;
+    // if(b_string == "R|||||||" || b_string == "|R||||||" || b_string == "||R|||||" || b_string == "|||R||||" || b_string == "||||R|||" || b_string == "|||||R||" || b_string == "||||||R|"){
+    //     cout << b_string << endl;
     // }
-    if(totalGames < max){
+    if(totalCurrentGames < max){
         if(currBoard.getCurrentState() == Board::BOARD_STATE::INCOMPLETE){
             if(currBoard.getNextTurn() == Board::PLAYER_TURN::P1){
                 charToAdd = 'R';
@@ -216,8 +235,8 @@ void NNDecisionTree::generateStates(Node* p, string& b_string, int& max){ // Cre
                     //p->label = to_string(col); // Move to play from current state of the board
                 }
             }
-            //int randIndex = rand() % p->children.size();
-            //generateStates(p->children.at(randIndex), p->children.at(randIndex)->board_String, max);
+            // int randIndex = rand() % p->children.size();
+            // generateStates(p->children.at(randIndex), p->children.at(randIndex)->board_String, max);
             for(int i = 0; i < p->children.size(); i++){
                 generateStates(p->children.at(i), p->children.at(i)->board_String, max);
             }
@@ -256,10 +275,10 @@ void NNDecisionTree::generateStates(Node* p, string& b_string, int& max){ // Cre
             } else if (currBoard.getCurrentState() == Board::BOARD_STATE::DRAW){
                 totalDraws++;
             }
-            totalGames++;
-            if(totalGames % 100000 == 0)
+            totalCurrentGames++;
+            if(totalCurrentGames % 100000 == 0)
             {
-                cout<<totalGames<<endl;
+                cout<<totalCurrentGames<<endl;
             }
         }
     } else {

@@ -24,12 +24,14 @@ class Player{
         char GetSymbol();
         string GetName();
         Board* GetBoard(){ return _playersBoard; };
+        int GetGamesPlayed(){ return _numGamesPlayed; };
+        int GetWins(){ return _numWins; };
+        int GetLosses(){ return _numLosses; };
     protected:
         string _playerName = "Arthur";
-        private:
+    private:
         int _numWins = 0;
         int _numLosses = 0;
-        int _netScore = 0;
         int _numGamesPlayed = 0;
         Board* _playersBoard;
         char _tokenSymbol;
@@ -109,17 +111,16 @@ void Player::viewPlayRecord(){
     cout << "Games Won: " << _numWins << endl;
     cout << "Games Lost: " << _numLosses << endl;
     cout << "Ratio: " << _numWins << ":" << _numLosses << endl;
-    cout << "Net Score: " << _netScore << endl; 
 }
 
 void Player::win(){
     _numWins++;
-    _netScore++;
+    _numGamesPlayed++;
 }
 
 void Player::loss(){
     _numLosses++;
-    _netScore--;
+    _numGamesPlayed++;
 }
 
 char Player::GetSymbol(){

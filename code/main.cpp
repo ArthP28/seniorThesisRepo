@@ -2,6 +2,7 @@
 #include <chrono>
 #include <thread>
 #include <unordered_set>
+#include <filesystem>
 #include "Board.h"
 #include "Player.h"
 #include "DummyAI.h"
@@ -28,6 +29,7 @@ void SelectAI();
 void PlayGame(Player* p1, Player* p2);
 void PlayQGame(Player* p1, QLearningAI* p2, Board* _board);
 void PlayNNGame(Player* p1, NeuralNetworkAI* p2, Board* _board);
+string GetFileName(string p_name);
 // If possible, after finishing main Q-Learning AI, create a function that saves all player data to a new file using outfile
 
 unordered_map<string, Player*> ALL_PLAYERS; // Player objects are retrieved by name
@@ -59,12 +61,12 @@ int main()
     //     PlayNNGame(p1, _nn, _board);
     // }
 
-    Player* _p2 = new Player("Emma", 'B');
+    Player* _p2 = new Player("Emma Pisanko", 'B');
     //DummyAI* _ai1 = new DummyAI('B');
     ALL_PLAYERS.insert(make_pair(p1->GetName(), p1));
     ALL_PLAYERS.insert(make_pair(_p2->GetName(), _p2));
 
-    cout << "Welcome to the ML Connect Four Software!" << endl;
+    string path = "${fileDirname}";
 
     MainMenu();
     
@@ -96,6 +98,7 @@ void MainMenu(){ // Menu interface with various options
 
     while(_userInput[0] != tolower('Q')){
         system("clear");
+        cout << "Welcome to the ML Connect Four Software!" << endl << endl;
         cout << "MAIN MENU" << endl;
         cout << "Type in the corresponding number to get started." << endl << endl;
         cout << "[1] - Play Player vs. AI" << endl;
@@ -217,6 +220,10 @@ void PlayerVsAI(){
 void Options(){
     system("clear");
     cout << "Options to be added!" << endl;
+    // Load Player Data from File
+    // Delete Player Data
+    // Modify AI training data
+    // Reset NN Training data
     string _userInput = "";
     cout << "Press any key to return to the menu." << endl;
     getline(cin, _userInput);
@@ -305,6 +312,22 @@ string ChooseExistingPlayer(){
     }
 
     return _userName; // The user's inputted name will be returned so that the account will be accessed later
+}
+
+void SaveData(string p_name){
+    if(ALL_PLAYERS.find(p_name) != NULL){
+        Player* p = ALL_PLAYERS.at(p_name);
+        string fileName = GetFileName(p_name);
+        ofstream PlayerData; PlayerData.open(fileName);
+        // Save name, num games played, num wins, num losses
+        PlayerData << p->GetName() << "\n";
+        PlayerData << p->GetGamesPlayed() << "\n";
+        PlayerData << p->GetWins() << "\n";
+        PlayerData << p->GetLosses() << "\n";
+        PlayerData.close();
+    } else {
+        throw "Account with that name not found";
+    }
 }
 
 void PlayQGame(Player* p1, QLearningAI* p2, Board* _board){
@@ -431,4 +454,16 @@ void PlayGame(Player* p1, Player* p2){
     _board = NULL;
     p1->RemovePlayersBoard();
     p2->RemovePlayersBoard();
+}
+
+string GetFileName(string p_name){
+    string fileName = p_name;
+        for(char& c : fileName){
+            if(c == ' '){
+                c = '_';
+            }
+        }
+    fileName += "_PlayerData.txt";
+
+    return fileName;
 }

@@ -3,7 +3,11 @@
 #include "Layer.h"
  
 using namespace std;
- 
+
+/**********************************************************/
+// Neural Network Code courtesy of Professor Mark Mahoney //
+/**********************************************************/
+
 class NeuralNetwork
 {
 public:

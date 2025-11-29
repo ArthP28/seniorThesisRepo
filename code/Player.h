@@ -12,6 +12,7 @@ using std::chrono::milliseconds;
 class Player{
     public:
         Player(string name, char symbol);
+        Player(string name);
         Player(char symbol);
         virtual void SetPlayersBoard(Board* _board);
         void RemovePlayersBoard();
@@ -32,12 +33,16 @@ class Player{
         int _numGamesPlayed = 0;
         Board* _playersBoard;
         char _tokenSymbol;
-    };
+};
     
-    Player::Player(string name, char symbol){
-        _playerName = name;
-        _tokenSymbol = symbol;
-    }
+Player::Player(string name, char symbol){
+    _playerName = name;
+    _tokenSymbol = symbol;
+}
+
+Player::Player(string name){
+    _playerName = name;
+}
 
 Player::Player(char symbol){
     _tokenSymbol = symbol;

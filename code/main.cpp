@@ -23,6 +23,7 @@ string MakeNewPlayer();
 string ChooseExistingPlayer();
 void SaveData(string p_name);
 void LoadData();
+void DeleteData();
 bool UserFileExists(string p_name);
 void SelectAI();
 void PlayGame(Player* p1, Player* p2);
@@ -173,6 +174,8 @@ void PlayerVsPlayer(){
     }
 
     // Save both players results to text files
+    SaveData(p1->GetName());
+    SaveData(p2->GetName());
 }
 
 void PlayerVsAI(){
@@ -353,12 +356,35 @@ void LoadData(){
             p->LoadRecords(wins, losses, games);
             ALL_PLAYERS.insert(make_pair(name, p));
             cout << name << "'s profile successfully loaded!" << endl;
+            sleep_for(milliseconds(3000));
         } else {
             cout << "File name cannot be found." << endl;
             userInput = "";
         }
     }
 
+}
+
+void DeleteData(){
+    system("clear");
+    system("ls PlayerData");
+    cout << "\nType one of the txt files to delete the data of that player" << endl << endl;
+    string userInput = "";
+    while(userInput == ""){
+        getline(cin, userInput);
+        string fileName = "PlayerData/" + userInput;
+        ifstream inFile; inFile.open(fileName);
+        if(inFile.good()){
+            string cmd_string = "ls " + fileName;
+            const char* cmd = cmd_string.c_str();
+            system(cmd);
+            cout << "Data successfully deleted!" << endl;
+            sleep_for(milliseconds(3000));
+        } else {
+            cout << "File name cannot be found." << endl;
+            userInput = "";
+        }
+    }
 }
 
 void PlayQGame(Player* p1, QLearningAI* p2, Board* _board){

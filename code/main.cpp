@@ -68,7 +68,7 @@ int main()
 
     //SaveData("Emma Rochester");
     //SaveData("Arthur");
-    LoadData();
+    DeleteData();
 
     MainMenu();
     
@@ -375,9 +375,29 @@ void DeleteData(){
         string fileName = "PlayerData/" + userInput;
         ifstream inFile; inFile.open(fileName);
         if(inFile.good()){
-            string cmd_string = "ls " + fileName;
-            const char* cmd = cmd_string.c_str();
-            system(cmd);
+            // Delete the account associated with the txt file
+            string name = "";
+            for(int i = userInput.length() - 1; i >= 0; i--){
+                if(userInput[i] == '_'){
+                    name = userInput.substr(0, i);
+                    break;
+                }
+            }
+            for(int k = 0; k < name.length(); k++){
+                if(name[k] == '_'){
+                    name[k] = ' ';
+                }
+            }
+            if(ALL_PLAYERS.find(name) != NULL){
+                delete ALL_PLAYERS.at(name);
+                ALL_PLAYERS.at(name) = NULL;
+                ALL_PLAYERS.erase(name);
+            } else {
+                cout << "Account with that name not found. Txt file will still be deleted." << endl;
+            }
+            //string cmd_string = "rmv -i " + fileName;
+            //const char* cmd = cmd_string.c_str();
+            //system(cmd);
             cout << "Data successfully deleted!" << endl;
             sleep_for(milliseconds(3000));
         } else {

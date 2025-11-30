@@ -55,6 +55,9 @@
         "typeinfo": "cpp",
         "iomanip": "cpp",
         "unordered_set": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "codecvt": "cpp",
+        "set": "cpp",
+        "sstream": "cpp"
     }
 }

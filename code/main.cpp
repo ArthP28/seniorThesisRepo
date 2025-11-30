@@ -2,7 +2,6 @@
 #include <chrono>
 #include <thread>
 #include <unordered_set>
-#include <filesystem>
 #include "Board.h"
 #include "Player.h"
 #include "DummyAI.h"
@@ -23,7 +22,7 @@ string SelectPlayer();
 string MakeNewPlayer();
 string ChooseExistingPlayer();
 void SaveData(string p_name);
-void LoadData(string p_name);
+void LoadData();
 bool UserFileExists(string p_name);
 void SelectAI();
 void PlayGame(Player* p1, Player* p2);
@@ -48,7 +47,7 @@ int main()
     // Board* _board = new Board("|||||||", 6);
     // _nn->SetPlayersBoard(_board, 2000000);
     // _nn->Test();
-     Player* p1 = new Player('R');
+    //Player* p1 = new Player('R');
     // p1->SetPlayersBoard(_board);
 
     // Board* _board = new Board("||||", 4);
@@ -61,12 +60,14 @@ int main()
     //     PlayNNGame(p1, _nn, _board);
     // }
 
-    Player* _p2 = new Player("Emma Pisanko", 'B');
+    Player* _p2 = new Player("Emma Rochester", 'B');
     //DummyAI* _ai1 = new DummyAI('B');
-    ALL_PLAYERS.insert(make_pair(p1->GetName(), p1));
+    //ALL_PLAYERS.insert(make_pair(p1->GetName(), p1));
     ALL_PLAYERS.insert(make_pair(_p2->GetName(), _p2));
 
-    string path = "${fileDirname}";
+    //SaveData("Emma Rochester");
+    //SaveData("Arthur");
+    LoadData();
 
     MainMenu();
     
@@ -325,9 +326,39 @@ void SaveData(string p_name){
         PlayerData << p->GetWins() << "\n";
         PlayerData << p->GetLosses() << "\n";
         PlayerData.close();
+
+        cout << p->GetName() << "'s records saved!" << endl;
     } else {
         throw "Account with that name not found";
     }
+}
+
+void LoadData(){
+    system("clear");
+    system("ls PlayerData");
+    cout << "\nType one of the txt files to load the data for that player" << endl << endl;
+    string userInput = "";
+    while(userInput == ""){
+        getline(cin, userInput);
+        string fileName = "PlayerData/" + userInput;
+        ifstream inFile; inFile.open(fileName);
+        if(inFile.good()){
+            vector<string> p_data;
+            string curr_data;
+            while(getline(inFile, curr_data)){
+                p_data.push_back(curr_data);
+            }
+            string name = p_data.at(0); int games = stoi(p_data.at(1)); int wins = stoi(p_data.at(2)); int losses = stoi(p_data.at(3));
+            Player* p = new Player(name);
+            p->LoadRecords(wins, losses, games);
+            ALL_PLAYERS.insert(make_pair(name, p));
+            cout << name << "'s profile successfully loaded!" << endl;
+        } else {
+            cout << "File name cannot be found." << endl;
+            userInput = "";
+        }
+    }
+
 }
 
 void PlayQGame(Player* p1, QLearningAI* p2, Board* _board){
@@ -457,12 +488,13 @@ void PlayGame(Player* p1, Player* p2){
 }
 
 string GetFileName(string p_name){
-    string fileName = p_name;
-        for(char& c : fileName){
-            if(c == ' '){
-                c = '_';
-            }
+    string p_name_with_underscore = p_name;
+    for(char& c : p_name_with_underscore){
+        if(c == ' '){
+            c = '_';
         }
+    }
+    string fileName = "PlayerData/" + p_name_with_underscore;
     fileName += "_PlayerData.txt";
 
     return fileName;

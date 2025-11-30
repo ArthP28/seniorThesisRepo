@@ -27,6 +27,7 @@ class Player{
         int GetGamesPlayed(){ return _numGamesPlayed; };
         int GetWins(){ return _numWins; };
         int GetLosses(){ return _numLosses; };
+        void LoadRecords(int wins, int losses, int games);
     protected:
         string _playerName = "Arthur";
     private:
@@ -129,5 +130,11 @@ char Player::GetSymbol(){
 
 string Player::GetName(){
     return _playerName;
+}
+
+void Player::LoadRecords(int wins, int losses, int games){
+    _numWins = wins;
+    _numLosses = losses;
+    _numGamesPlayed = games;
 }
 

@@ -161,6 +161,21 @@ void NeuralNetworkAI::SetPlayersBoard(Board* _board, int games){
     behaviorNNarchitecture.push_back(behaviorOutput);
     PrepareData(_labelledBehaviorData, _trainingBehaviorData, _testingBehaviorData);
 
+    if(move_nn != NULL){
+        delete move_nn;
+        move_nn = NULL;
+    }
+
+    if(block_nn != NULL){
+        delete block_nn;
+        block_nn = NULL;
+    }
+
+    if(decide_nn != NULL){
+        delete decide_nn;
+        decide_nn = NULL;
+    }
+    
     move_nn = new NeuralNetwork(movementNNarchitecture, _trainingMovementData.first, _trainingMovementData.second, lr, numTrainingCycles);
     block_nn = new NeuralNetwork(blockNNarchitecture, _trainingBlockingData.first, _trainingBlockingData.second, lr, numTrainingCycles);
     decide_nn = new NeuralNetwork(behaviorNNarchitecture, _trainingBehaviorData.first, _trainingBehaviorData.second, lr, numTrainingCycles);

@@ -33,9 +33,12 @@ string GetFileName(string p_name);
 // If possible, after finishing main Q-Learning AI, create a function that saves all player data to a new file using outfile
 
 unordered_map<string, Player*> ALL_PLAYERS; // Player objects are retrieved by name
-//vector<Player*> ALL_PLAYERS;
+
 QLearningAI* q_AI = new QLearningAI('B');
+int q_TrainingEpochs = 1000000;
+int q_BoardDimensions[2] = {4, 4};
 NeuralNetworkAI* nn_AI = new NeuralNetworkAI('B');
+int nn_TrainingGames = 10000000;
 
 // ***NOTICE***
 // The following code is to test the underlying logic of the Connect Four game works well.
@@ -66,7 +69,7 @@ int main()
     //ALL_PLAYERS.insert(make_pair(p1->GetName(), p1));
     ALL_PLAYERS.insert(make_pair(_p2->GetName(), _p2));
 
-    SaveData("Emma Rochester");
+    //SaveData("Emma Rochester");
     //SaveData("Arthur");
     DeleteData();
 
@@ -98,7 +101,7 @@ void MainMenu(){ // Menu interface with various options
     string ESC = "\033";
     string _userInput;
 
-    while(_userInput[0] != tolower('Q')){
+    while(tolower(_userInput[0]) != 'q'){
         system("clear");
         cout << "Welcome to the ML Connect Four Software!" << endl << endl;
         cout << "MAIN MENU" << endl;
@@ -226,8 +229,8 @@ void Options(){
     cout << "Options to be added!" << endl;
     // Load Player Data from File
     // Delete Player Data
-    // Modify AI training data
-    // Reset NN Training data
+    // Manage Q Data
+    // Manage NN Data
     string _userInput = "";
     cout << "Press any key to return to the menu." << endl;
     getline(cin, _userInput);
@@ -400,14 +403,11 @@ void DeleteData(){
                 } else {
                     cout << "Account with that name not found. Txt file will still be deleted." << endl;
                 }
-                inFile.close();
                 string cmd_string = "rm " + fileName;
                 const char* cmd = cmd_string.c_str();
                 system(cmd);
-                if(inFile.good()){
-                    cout << "Data successfully deleted!" << endl;
-                    sleep_for(milliseconds(3000));
-                }
+                cout << "Data successfully deleted!" << endl;
+                sleep_for(milliseconds(3000));
             }
         } else {
             cout << "File name cannot be found." << endl;

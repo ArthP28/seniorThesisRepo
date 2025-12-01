@@ -82,6 +82,10 @@ void QLearningAI::InitializeQTable(int numGames){
     _tree.buildFullTree(numGames);
     unordered_set<string> _validBoardStrings = _tree.GetAllValidBoardStrings();
 
+    if(New_Q_Table != NULL){
+        delete New_Q_Table;
+        New_Q_Table = NULL;
+    }
     New_Q_Table = new unordered_map<string, vector<double>>;
     for(string _boardString : _validBoardStrings){
         pair<string, vector<double>> _stateActionPair(_boardString, vector<double>(numActions));

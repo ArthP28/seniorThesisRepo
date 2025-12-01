@@ -17,12 +17,16 @@ void PlayerVsPlayer();
 void PlayerVsAI();
 //void ViewScores();
 void Options();
+void ManageQData();
+void ManageNNData();
 // Game Functions
 string SelectPlayer();
 string MakeNewPlayer();
 string ChooseExistingPlayer();
 void SaveData(string p_name);
 void LoadData();
+void SaveQData();
+void LoadAndTrainQ();
 void DeleteData();
 bool UserFileExists(string p_name);
 void SelectAI();
@@ -122,7 +126,7 @@ void MainMenu(){ // Menu interface with various options
                     PlayerVsPlayer();
                     break;
                 case '3': // Proceeds to screen where user can view all play records of both human and machine players
-                    //ViewScores();
+                    ViewScores();
                     break;
                 case '4': // Proceeds to Options Menu where user can change player data
                     Options();
@@ -183,6 +187,8 @@ void PlayerVsPlayer(){
 
 void PlayerVsAI(){
     system("clear");
+    string p1_Name = SelectPlayer();
+    Player* p1 = ALL_PLAYERS.at(p1_Name);
     // Board* _board = new Board("|||||", 4);
     // Player* p1 = ALL_PLAYERS.at(0);
     // QLearningAI* p2 = new QLearningAI('B');
@@ -209,31 +215,78 @@ void PlayerVsAI(){
 
 }
 
-// void ViewScores(){
-//     system("clear");
-//     cout << "Player Records" << endl;
-//     for(int i = 0; i < ALL_PLAYERS.size(); i++){
-//         cout << (i + 1) << ": "; ALL_PLAYERS.at(i)->viewPlayRecord(); cout << endl;
-//     }
-//     // cout << endl << "AI Records" << endl;
-//     // for(int i = 0; i < ALL_AI_MODELS.size(); i++){
-//     //     cout << (i + 1) << ": "; ALL_AI_MODELS.at(i)->viewPlayRecord(); cout << endl;
-//     // }
-//     string _userInput = "";
-//     cout << "Press any key to return to the menu." << endl;
-//     getline(cin, _userInput);
-// }
-
-void Options(){
+void ViewScores(){
     system("clear");
-    cout << "Options to be added!" << endl;
-    // Load Player Data from File
-    // Delete Player Data
-    // Manage Q Data
-    // Manage NN Data
+    cout << "Player Records" << endl; // Cycle through all player scores
+    if(ALL_PLAYERS.empty()){
+        cout << "No Player Data Found!" << endl;
+    } else {
+        int i = 1; // i is being used as a label, so its starting value is 1
+        for(auto& p_object : ALL_PLAYERS){
+            Player* p = p_object.second;
+            cout << i << ": "; p->viewPlayRecord(); cout << endl;
+            i++;
+        }
+        cout << endl;
+    }
+
+    // Then display the score data for the Q-Learning AI and the Neural Network AI
+    cout << "Q Records" << endl;
+    q_AI->viewPlayRecord(); cout << endl;
+    cout << endl;
+
+    cout << "Neural Network Records" << endl;
+    nn_AI->viewPlayRecord(); cout << endl;
+    cout << endl;
+
     string _userInput = "";
     cout << "Press any key to return to the menu." << endl;
     getline(cin, _userInput);
+}
+
+void Options(){
+    system("clear");
+    string ESC = "\033";
+    string _userInput;
+    
+    while(tolower(_userInput[0]) != 'q'){
+        system("clear");
+        cout << "OPTIONS" << endl << endl;
+        cout << "What would you like to change?" << endl << endl;
+        cout << "[1] - Modify Player Data" << endl;
+        cout << "[2] - Delete Player Data" << endl;
+        cout << "[Q] - Quit" << endl;
+        _userInput = "";
+        while(_userInput == ""){ // Program will wait for valid input
+            getline(cin, _userInput);
+            switch(_userInput[0]){
+                case '1': // Load Player Data from File
+                    LoadData();
+                    break;
+                case '2': // Delete Player Data
+                    DeleteData();
+                    break;
+                case 'Q': // Quits the application
+                    cout << "See you soon!" << endl;
+                    break;
+                case 'q': // Quits the application
+                    cout << "See you soon!" << endl;
+                    break;
+                default: // Any other input is invalid
+                    cout << ESC << "[A" << ESC << "[2KInvalid Input!" << endl;
+                    sleep_for(milliseconds(500));
+                    _userInput = ""; // Input is reset back to "null" and the loop restarts.
+                    cout << ESC << "[A" << ESC << "[2K"; // Clears the error message
+            }
+        }
+    }
+    // Manage Q Data (TBA)
+    // Manage NN Data (TBA)
+}
+
+void ManageQData(){
+    system("clear");
+
 }
 
 string SelectPlayer(){
@@ -367,6 +420,38 @@ void LoadData(){
     }
 
 }
+
+void SaveQData(){
+    ofstream QData; QData.open("Q_Data.txt");
+    // Save name, num games played, num wins, num losses
+    QData << q_AI->GetName() << "\n";
+    QData << q_AI->GetGamesPlayed() << "\n";
+    QData << q_AI->GetWins() << "\n";
+    QData << q_AI->GetLosses() << "\n";
+    QData << q_AI->GetBoard()->GetWidth() + ", " + q_AI->GetBoard()->GetHeight() << "\n";
+    QData << q_TrainingEpochs << "\n";
+    QData.close();
+}
+
+// void LoadAndTrainQ(){
+//     ifstream inFile; inFile.open("Q_Data.txt");
+//     if(inFile.good()){
+//         vector<string> p_data;
+//         string curr_data;
+//         while(getline(inFile, curr_data)){
+//             p_data.push_back(curr_data);
+//         }
+//         string name = p_data.at(0); int games = stoi(p_data.at(1)); int wins = stoi(p_data.at(2)); int losses = stoi(p_data.at(3));
+//         Player* p = new Player(name);
+//         p->LoadRecords(wins, losses, games);
+//         ALL_PLAYERS.insert(make_pair(name, p));
+//         cout << name << "'s profile successfully loaded!" << endl;
+//         sleep_for(milliseconds(3000));
+//     } else {
+//         cout << "File name cannot be found." << endl;
+//         userInput = "";
+//     }
+// }
 
 void DeleteData(){
     system("clear");

@@ -8,7 +8,6 @@
 #include <unordered_set>
 #include "QDecisionTree.h"
 #include "Board.h"
-#include "NeuralNetwork.h"
 
 using namespace std;
 

@@ -31,6 +31,9 @@ class NeuralNetworkAI : public Player{
         double lr = 0.7; // Optimal LR for 7x6: 0.6
         double numTrainingCycles = 100; // Optimal epochs for 7x6: 5000
         int numGames;
+        string movement_data_path = "NeuralNetworkData/NNMovementData.txt";
+        string block_data_path = "NeuralNetworkData/NNBlockMovementData.txt";
+        string decision_data_path = "NeuralNetworkData/NNDecisionData.txt";
         
         vector<pair<string, string>> _labelledMoveData;
         vector<pair<string, string>> _labelledBlockingData;
@@ -120,14 +123,14 @@ void NeuralNetworkAI::SetPlayersBoard(Board* _board, int games){
     // If any of these special txt files do not exist in the program, make them, create the tree, and store its data into the txt files. Overwriting may occur.
     // Else if they all exist, check if the dimensions of the board in the existing data files match the board dimensions within the parameter
     // If any of them do not match, then the data needs to be overwritten; use the same process in this for loop again.
-    if((!FileExists("NNMovementData.txt") || !FileExists("NNBlockMovementData.txt") || !FileExists("NNDecisionData.txt"))){
+    if((!FileExists(movement_data_path) || !FileExists(block_data_path) || !FileExists(decision_data_path))){
         CreateNewData();
-    } else if (!CheckDimensionsFromFile("NNMovementData.txt") || !CheckDimensionsFromFile("NNBlockMovementData.txt") || !CheckDimensionsFromFile("NNDecisionData.txt")){
+    } else if (!CheckDimensionsFromFile(movement_data_path) || !CheckDimensionsFromFile(block_data_path) || !CheckDimensionsFromFile(decision_data_path)){
         CreateNewData();
     } else {
-        _labelledMoveData = ReadDataFromFile("NNMovementData.txt");
-        _labelledBlockingData = ReadDataFromFile("NNBlockMovementData.txt");
-        _labelledBehaviorData = ReadDataFromFile("NNDecisionData.txt");
+        _labelledMoveData = ReadDataFromFile(movement_data_path);
+        _labelledBlockingData = ReadDataFromFile(block_data_path);
+        _labelledBehaviorData = ReadDataFromFile(decision_data_path);
     }
 
     cout << "Training Algorithm..." << endl;
@@ -175,7 +178,7 @@ void NeuralNetworkAI::SetPlayersBoard(Board* _board, int games){
         delete decide_nn;
         decide_nn = NULL;
     }
-    
+
     move_nn = new NeuralNetwork(movementNNarchitecture, _trainingMovementData.first, _trainingMovementData.second, lr, numTrainingCycles);
     block_nn = new NeuralNetwork(blockNNarchitecture, _trainingBlockingData.first, _trainingBlockingData.second, lr, numTrainingCycles);
     decide_nn = new NeuralNetwork(behaviorNNarchitecture, _trainingBehaviorData.first, _trainingBehaviorData.second, lr, numTrainingCycles);
@@ -395,7 +398,7 @@ bool NeuralNetworkAI::CheckDimensionsFromFile(string fileName){
 void NeuralNetworkAI::CreateNewData(){
     cout << "Creating training data. This may take a moment..." << endl;
     ofstream outMovement; ofstream outBlockMovement; ofstream outDecisions;
-    outMovement.open("NNMovementData.txt"); outBlockMovement.open("NNBlockMovementData.txt"); outDecisions.open("NNDecisionData.txt");
+    outMovement.open(movement_data_path); outBlockMovement.open(block_data_path); outDecisions.open(decision_data_path);
 
     NNDecisionTree _tree(Player::GetBoard()->GetWidth(), Player::GetBoard()->GetHeight());
     _tree.buildFullTree(numGames);

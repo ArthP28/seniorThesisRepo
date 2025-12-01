@@ -137,6 +137,7 @@ void QLearningAI::dropChecker(){
 }
 
 void QLearningAI::Train(int numEpochs){
+    cout << "Training Q-Algorithm..." << endl;
     double _reward = 0.0; // Reward Value
     vector<int> statesToChoose; // A scalable array containing indices of all the available states to select
     // Each training episode (epoch) ends when either player wins or the board is filled with no winner (A tie, although rare, is still a possibility)

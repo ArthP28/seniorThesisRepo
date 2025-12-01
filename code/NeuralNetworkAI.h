@@ -22,6 +22,7 @@ class NeuralNetworkAI : public Player{
         void SetPlayersBoard(Board* _board) override;
         void SetPlayersBoard(Board* _board, int games);
         void Test(); // Examines the accuracy of the NN model
+        void Train(int games);
     private:
         NeuralNetwork* decide_nn;
         NeuralNetwork* block_nn;
@@ -119,7 +120,11 @@ void NeuralNetworkAI::dropChecker(){
 
 void NeuralNetworkAI::SetPlayersBoard(Board* _board, int games){
     Player::SetPlayersBoard(_board);
+}
+
+void NeuralNetworkAI::Train(int games){
     numGames = games;
+    cout << "Training Neural Network..." << endl;
     // If any of these special txt files do not exist in the program, make them, create the tree, and store its data into the txt files. Overwriting may occur.
     // Else if they all exist, check if the dimensions of the board in the existing data files match the board dimensions within the parameter
     // If any of them do not match, then the data needs to be overwritten; use the same process in this for loop again.
@@ -135,8 +140,8 @@ void NeuralNetworkAI::SetPlayersBoard(Board* _board, int games){
 
     cout << "Training Algorithm..." << endl;
 
-    int inputNeurons = _board->GetHeight() * _board->GetWidth();
-    int movementOutput = _board->GetWidth();
+    int inputNeurons = Player::GetBoard()->GetHeight() * Player::GetBoard()->GetWidth();
+    int movementOutput = Player::GetBoard()->GetWidth();
     int behaviorOutput = 2;
 
     vector<int> movementNNarchitecture;

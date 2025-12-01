@@ -14,6 +14,7 @@ class Player{
         Player(string name, char symbol);
         Player(string name);
         Player(char symbol);
+        ~Player();
         virtual void SetPlayersBoard(Board* _board);
         void RemovePlayersBoard();
         void SetSymbol(char symbol);
@@ -49,6 +50,13 @@ Player::Player(string name){
 
 Player::Player(char symbol){
     _tokenSymbol = symbol;
+}
+
+Player::~Player(){
+    if(_playersBoard != NULL){
+        delete _playersBoard;
+        RemovePlayersBoard();
+    }
 }
 
 void Player::SetPlayersBoard(Board* _board){

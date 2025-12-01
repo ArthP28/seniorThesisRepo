@@ -34,6 +34,7 @@ void PlayGame(Player* p1, Player* p2);
 void PlayQGame(Player* p1, QLearningAI* p2, Board* _board);
 void PlayNNGame(Player* p1, NeuralNetworkAI* p2, Board* _board);
 string GetFileName(string p_name);
+bool NN_Warning();
 // If possible, after finishing main Q-Learning AI, create a function that saves all player data to a new file using outfile
 
 unordered_map<string, Player*> ALL_PLAYERS; // Player objects are retrieved by name
@@ -51,22 +52,15 @@ int nn_TrainingGames = 10000000;
 int main()
 {
     srand(time(0));
-    // NeuralNetworkAI* _nn = new NeuralNetworkAI('B');
-    // Board* _board = new Board("|||||||", 6);
-    // _nn->SetPlayersBoard(_board, 2000000);
-    // _nn->Test();
-    //Player* p1 = new Player('R');
-    // p1->SetPlayersBoard(_board);
+    // Train Algorithms on boards
+    
+    Board* q_Board = new Board("||||", 4);
+    q_AI->SetPlayersBoard(q_Board);
+    q_AI->Train(1000000);
 
-    // Board* _board = new Board("||||", 4);
-    // QLearningAI* p2 = new QLearningAI('B');
-    // p2->SetPlayersBoard(_board);
-    // p2->Train(2000000);
-
-
-    // for(int i = 0; i < 10; i++){
-    //     PlayNNGame(p1, _nn, _board);
-    // }
+    Board* nn_Board = new Board("|||||||", 6);
+    nn_AI->SetPlayersBoard(nn_Board);
+    nn_AI->Train(1000000);
 
     Player* _p2 = new Player("Emma Rochester", 'B');
     //DummyAI* _ai1 = new DummyAI('B');
@@ -75,7 +69,6 @@ int main()
 
     //SaveData("Emma Rochester");
     //SaveData("Arthur");
-    DeleteData();
 
     MainMenu();
     
@@ -187,8 +180,61 @@ void PlayerVsPlayer(){
 
 void PlayerVsAI(){
     system("clear");
+    string ESC = "\033";
+    Board* gameBoard;
     string p1_Name = SelectPlayer();
     Player* p1 = ALL_PLAYERS.at(p1_Name);
+    string _userInput = "";
+    string affirmationSignal = "y";
+    while(_userInput == ""){ // Program will wait for valid input
+        cout << "Select which AI to go up against." << endl;
+        cout << "[1] - Q-Learning (4x4)" << endl;
+        cout << "[2] - Neural Network (7x6)" << endl;
+        getline(cin, _userInput);
+        switch(_userInput[0]){
+            case '1': // Proceeds to game where player competes against AI
+                cout << "Let's play Q-Learning Connect Four!" << endl << endl;
+                while(tolower(affirmationSignal[0]) == 'y'){ // This function goes on as long as the user wants it to go
+                    gameBoard = q_AI->GetBoard();
+                    p1->SetPlayersBoard(gameBoard);
+                    PlayQGame(p1, q_AI, gameBoard);
+                    cout << "Would you like to play again?" << endl << 
+                    "[y] = YES\n[n] = NO" << endl;
+                    getline(cin, affirmationSignal);
+                    system("clear");
+                }
+                // Save player results to text files
+                SaveData(p1->GetName());
+                p1->RemovePlayersBoard();
+                break;
+            case '2': // Proceeds to game where player competes with another human player
+                if(NN_Warning()){
+                    cout << "Let's play Neural Network Connect Four!" << endl << endl;
+                    while(tolower(affirmationSignal[0]) == 'y'){ // This function goes on as long as the user wants it to go
+                        gameBoard = nn_AI->GetBoard();
+                        p1->SetPlayersBoard(gameBoard);
+                        PlayNNGame(p1, nn_AI, gameBoard);
+                        cout << "Would you like to play again?" << endl << 
+                        "[y] = YES\n[n] = NO" << endl;
+                        getline(cin, affirmationSignal);
+                        system("clear");
+                    }
+                    // Save player results to text files
+                    SaveData(p1->GetName());
+                    p1->RemovePlayersBoard();
+                } else {
+                    _userInput = "";
+                }
+                break;
+            default: // Any other input is invalid
+                cout << ESC << "[A" << ESC << "[2KInvalid Input!" << endl;
+                sleep_for(milliseconds(500));
+                _userInput = ""; // Input is reset back to "null" and the loop restarts.
+                cout << ESC << "[A" << ESC << "[2K"; // Clears the error message
+        }
+    }
+
+
     // Board* _board = new Board("|||||", 4);
     // Player* p1 = ALL_PLAYERS.at(0);
     // QLearningAI* p2 = new QLearningAI('B');
@@ -502,7 +548,6 @@ void DeleteData(){
 }
 
 void PlayQGame(Player* p1, QLearningAI* p2, Board* _board){
-
     // Actual game begins. Loops as long as no one wins
     Board::BOARD_STATE _currState = Board::BOARD_STATE::INCOMPLETE;
     while(_currState == Board::BOARD_STATE::INCOMPLETE){
@@ -638,4 +683,20 @@ string GetFileName(string p_name){
     fileName += "_PlayerData.txt";
 
     return fileName;
+}
+
+bool NN_Warning(){
+    system("clear");
+    cout << "WARNING" << endl;
+    cout << "The Neural Network AI is a highly experimental feature" << endl;
+    cout << "Training may take some time and the algorithm may act unexpectedly." << endl;
+    cout << "Are you sure you want to proceed? [y/n]" << endl;
+    string yesorno = "";
+    getline(cin, yesorno);
+    if(tolower(yesorno[0]) == 'y'){
+        return true;
+    } else {
+        return false;
+    }
+    system("clear");
 }

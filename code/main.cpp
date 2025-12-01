@@ -11,11 +11,10 @@
 using namespace std;
 
 // Menu Functions
-void LogIn(); // For Later
 void MainMenu();
 void PlayerVsPlayer();
 void PlayerVsAI();
-//void ViewScores();
+void ViewScores();
 void Options();
 void ManageQData();
 void ManageNNData();
@@ -161,7 +160,9 @@ void PlayerVsPlayer(){
     }
 
     Player* p1 = ALL_PLAYERS.at(p1_Name);
+    p1->SetSymbol('R');
     Player* p2 = ALL_PLAYERS.at(p2_Name);
+    p2->SetSymbol('B');
 
     cout << "Let's play PvP Connect Four!" << endl << endl;
     string affirmationSignal = "y";
@@ -184,6 +185,7 @@ void PlayerVsAI(){
     Board* gameBoard;
     string p1_Name = SelectPlayer();
     Player* p1 = ALL_PLAYERS.at(p1_Name);
+    p1->SetSymbol('R');
     string _userInput = "";
     string affirmationSignal = "y";
     while(_userInput == ""){ // Program will wait for valid input
@@ -581,6 +583,8 @@ void PlayQGame(Player* p1, QLearningAI* p2, Board* _board){
         p1->loss();
     } else if(_currState == Board::BOARD_STATE::DRAW){
         cout << "Incredible! It's a draw!" << endl;
+        p1->tie();
+        p2->tie();
     }
 
     _board->clearBoard();
@@ -621,6 +625,8 @@ void PlayNNGame(Player* p1, NeuralNetworkAI* p2, Board* _board){
         p1->loss();
     } else if(_currState == Board::BOARD_STATE::DRAW){
         cout << "Incredible! It's a draw!" << endl;
+        p1->tie();
+        p2->tie();
     }
 
     _board->clearBoard();
@@ -664,6 +670,10 @@ void PlayGame(Player* p1, Player* p2){
         cout << p2->GetName() << " Wins!" << endl;
         p2->win();
         p1->loss();
+    } else if(_currState == Board::BOARD_STATE::DRAW){
+        cout << "Incredible! It's a draw!" << endl;
+        p1->tie();
+        p2->tie();
     }
 
     delete _board;

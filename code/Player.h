@@ -22,6 +22,7 @@ class Player{
         void viewPlayRecord();
         void win();
         void loss();
+        void tie();
         char GetSymbol();
         string GetName();
         Board* GetBoard(){ return _playersBoard; };
@@ -35,7 +36,7 @@ class Player{
         int _numWins = 0;
         int _numLosses = 0;
         int _numGamesPlayed = 0;
-        Board* _playersBoard;
+        Board* _playersBoard = NULL;
         char _tokenSymbol;
 };
     
@@ -53,7 +54,7 @@ Player::Player(char symbol){
 }
 
 Player::~Player(){
-    if(_playersBoard != NULL){
+    if(_playersBoard != NULL){ // !FIX!
         delete _playersBoard;
         RemovePlayersBoard();
     }
@@ -119,7 +120,8 @@ void Player::viewPlayRecord(){
     cout << "Games Played: " << _numGamesPlayed << endl;
     cout << "Games Won: " << _numWins << endl;
     cout << "Games Lost: " << _numLosses << endl;
-    cout << "Ratio: " << _numWins << ":" << _numLosses << endl;
+    float ratio = ((float)_numWins)/_numGamesPlayed;
+    cout << "Ratio: " << _numWins << ":" << _numLosses << " (" << ratio << ")" << endl;
 }
 
 void Player::win(){
@@ -129,6 +131,10 @@ void Player::win(){
 
 void Player::loss(){
     _numLosses++;
+    _numGamesPlayed++;
+}
+
+void Player::tie(){
     _numGamesPlayed++;
 }
 

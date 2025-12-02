@@ -296,7 +296,7 @@ bool Board::searchRightDiagonally(char checker, int col, int row, int count){
 
 bool Board::searchLeftDiagonally(char checker, int col, int row, int count){
     for(int d = 1; d <= 2; d++){
-        if(inBounds(col-d, row)){ // Searching left and down
+        if(inBounds(col-d, row + d)){ // Searching left and down
             if(_grid.at(col-d)[row + d] == checker){ // Searching left and down
                 count++;
             }

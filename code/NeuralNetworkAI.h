@@ -24,9 +24,9 @@ class NeuralNetworkAI : public Player{
         void Test(); // Examines the accuracy of the NN model
         void Train(int games);
     private:
-        NeuralNetwork* decide_nn;
-        NeuralNetwork* block_nn;
-        NeuralNetwork* move_nn;
+        NeuralNetwork* decide_nn = NULL;
+        NeuralNetwork* block_nn = NULL;
+        NeuralNetwork* move_nn = NULL;
         vector<int> hiddenLayers = {5, 3}; // Optimal Values for 7x6: 20, 15
         int moveOrBlock = 2;
         double lr = 0.7; // Optimal LR for 7x6: 0.6

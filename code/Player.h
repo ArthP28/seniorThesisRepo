@@ -37,7 +37,7 @@ class Player{
         int _numLosses = 0;
         int _numGamesPlayed = 0;
         Board* _playersBoard = NULL;
-        char _tokenSymbol;
+        char _tokenSymbol = ' ';
 };
     
 Player::Player(string name, char symbol){

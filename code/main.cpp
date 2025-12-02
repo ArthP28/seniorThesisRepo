@@ -55,11 +55,11 @@ int main()
     
     Board* q_Board = new Board("||||", 4);
     q_AI->SetPlayersBoard(q_Board);
-    q_AI->Train(1000000);
+    q_AI->Train(50000);
 
     Board* nn_Board = new Board("|||||||", 6);
     nn_AI->SetPlayersBoard(nn_Board);
-    nn_AI->Train(1000000);
+    nn_AI->Train(50000);
 
     Player* _p2 = new Player("Emma Rochester", 'B');
     //DummyAI* _ai1 = new DummyAI('B');
@@ -85,6 +85,12 @@ int main()
     }
     ALL_PLAYERS.clear();
 
+    q_AI->RemovePlayersBoard();
+    nn_AI->RemovePlayersBoard();
+    delete q_Board;
+    q_Board = NULL;
+    delete nn_Board;
+    nn_Board = NULL;
     delete q_AI;
     q_AI = NULL;
     delete nn_AI;
@@ -456,10 +462,14 @@ void LoadData(){
                 p_data.push_back(curr_data);
             }
             string name = p_data.at(0); int games = stoi(p_data.at(1)); int wins = stoi(p_data.at(2)); int losses = stoi(p_data.at(3));
-            Player* p = new Player(name);
-            p->LoadRecords(wins, losses, games);
-            ALL_PLAYERS.insert(make_pair(name, p));
-            cout << name << "'s profile successfully loaded!" << endl;
+            if(ALL_PLAYERS.find(name) == NULL){
+                Player* p = new Player(name);
+                p->LoadRecords(wins, losses, games);
+                ALL_PLAYERS.insert(make_pair(name, p));
+                cout << name << "'s profile successfully loaded!" << endl;
+            } else {
+                cout << "Data for " << name << " is already loaded." << endl;
+            }
             sleep_for(milliseconds(3000));
         } else {
             cout << "File name cannot be found." << endl;

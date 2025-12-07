@@ -116,11 +116,14 @@ void Player::dropChecker(){
 }
 
 void Player::viewPlayRecord(){
-    cout << _playerName << " (" << _tokenSymbol << ")" << endl << endl;
+    cout << _playerName << endl << endl;
     cout << "Games Played: " << _numGamesPlayed << endl;
     cout << "Games Won: " << _numWins << endl;
     cout << "Games Lost: " << _numLosses << endl;
-    float ratio = ((float)_numWins)/_numGamesPlayed;
+    float ratio = 0.0f;
+    if(_numGamesPlayed > 0){
+        ratio = ((float)_numWins)/_numGamesPlayed;
+    }
     cout << "Ratio: " << _numWins << ":" << _numLosses << " (" << ratio << ")" << endl;
 }
 

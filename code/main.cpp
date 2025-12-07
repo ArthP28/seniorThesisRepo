@@ -40,7 +40,7 @@ unordered_map<string, Player*> ALL_PLAYERS; // Player objects are retrieved by n
 
 QLearningAI* q_AI = new QLearningAI('B');
 int q_TrainingEpochs = 1000000;
-int q_BoardDimensions[2] = {4, 4};
+//int q_BoardDimensions[2] = {4, 4};
 NeuralNetworkAI* nn_AI = new NeuralNetworkAI('B');
 int nn_TrainingGames = 10000000;
 
@@ -55,28 +55,13 @@ int main()
     
     Board* q_Board = new Board("||||", 4);
     q_AI->SetPlayersBoard(q_Board);
-    q_AI->Train(50000);
+    q_AI->Train(q_TrainingEpochs);
 
     Board* nn_Board = new Board("|||||||", 6);
     nn_AI->SetPlayersBoard(nn_Board);
-    nn_AI->Train(50000);
-
-    Player* _p2 = new Player("Emma Rochester", 'B');
-    //DummyAI* _ai1 = new DummyAI('B');
-    //ALL_PLAYERS.insert(make_pair(p1->GetName(), p1));
-    ALL_PLAYERS.insert(make_pair(_p2->GetName(), _p2));
-
-    //SaveData("Emma Rochester");
-    //SaveData("Arthur");
+    nn_AI->Train(nn_TrainingGames);
 
     MainMenu();
-    
-    // while(!ALL_PLAYERS.empty()){
-    //     ALL_PLAYERS.
-    //     delete ALL_PLAYERS.back();
-    //     ALL_PLAYERS.back() = NULL;
-    //     ALL_PLAYERS.pop_back();
-    // }
 
     for(auto& p : ALL_PLAYERS){
         //ALL_PLAYERS.erase(p);
@@ -105,8 +90,8 @@ void MainMenu(){ // Menu interface with various options
 
     while(tolower(_userInput[0]) != 'q'){
         system("clear");
-        cout << "Welcome to the ML Connect Four Software!" << endl << endl;
-        cout << "MAIN MENU" << endl;
+        cout << ESC << "[4mWelcome to the ML Connect Four Software!" << ESC << "[24m" << endl << endl;
+        cout << ESC << "[1;4mMAIN MENU" << ESC << "[0m" << endl;
         cout << "Type in the corresponding number to get started." << endl << endl;
         cout << "[1] - Play Player vs. AI" << endl;
         cout << "[2] - Play Player vs. Player" << endl;
@@ -148,14 +133,14 @@ void MainMenu(){ // Menu interface with various options
 
 void PlayerVsPlayer(){
     system("clear");
-
+    string ESC = "\033";
     // Prompt Players to select their profiles
-    cout << "Player 1" << endl;
+    cout << ESC << "[41mPlayer 1" << ESC << "[0m" << endl;
     string p1_Name = SelectPlayer();
     string p2_Name = "";
     while(p2_Name == ""){
         system("clear");
-        cout << "Player 2" << endl;
+        cout << ESC << "[44mPlayer 2" << ESC << "[0m" << endl;
         p2_Name = SelectPlayer();
         if(p2_Name == p1_Name){
             cout << "Player 1 is already using this account. Please select a different name!" << endl;
@@ -170,7 +155,7 @@ void PlayerVsPlayer(){
     Player* p2 = ALL_PLAYERS.at(p2_Name);
     p2->SetSymbol('B');
 
-    cout << "Let's play PvP Connect Four!" << endl << endl;
+    cout << ESC << "[4mLet's play PvP Connect Four!" << ESC << "[0m" << endl << endl;
     string affirmationSignal = "y";
     while(tolower(affirmationSignal[0]) == 'y'){ // This function goes on as long as the user wants it to go
         PlayGame(p1, p2);
@@ -195,13 +180,13 @@ void PlayerVsAI(){
     string _userInput = "";
     string affirmationSignal = "y";
     while(_userInput == ""){ // Program will wait for valid input
-        cout << "Select which AI to go up against." << endl;
+        cout << "Select which AI to play with." << endl;
         cout << "[1] - Q-Learning (4x4)" << endl;
         cout << "[2] - Neural Network (7x6)" << endl;
         getline(cin, _userInput);
         switch(_userInput[0]){
             case '1': // Proceeds to game where player competes against AI
-                cout << "Let's play Q-Learning Connect Four!" << endl << endl;
+                cout << ESC << "[4mLet's play Q-Learning Connect Four!" << ESC << "[0m" << endl << endl;
                 while(tolower(affirmationSignal[0]) == 'y'){ // This function goes on as long as the user wants it to go
                     gameBoard = q_AI->GetBoard();
                     p1->SetPlayersBoard(gameBoard);
@@ -217,7 +202,7 @@ void PlayerVsAI(){
                 break;
             case '2': // Proceeds to game where player competes with another human player
                 if(NN_Warning()){
-                    cout << "Let's play Neural Network Connect Four!" << endl << endl;
+                    cout << ESC << "[4mLet's play Neural Network Connect Four!" << ESC << "[0m" << endl << endl;
                     while(tolower(affirmationSignal[0]) == 'y'){ // This function goes on as long as the user wants it to go
                         gameBoard = nn_AI->GetBoard();
                         p1->SetPlayersBoard(gameBoard);
@@ -241,39 +226,14 @@ void PlayerVsAI(){
                 cout << ESC << "[A" << ESC << "[2K"; // Clears the error message
         }
     }
-
-
-    // Board* _board = new Board("|||||", 4);
-    // Player* p1 = ALL_PLAYERS.at(0);
-    // QLearningAI* p2 = new QLearningAI('B');
-    // p1->SetPlayersBoard(_board);
-    // p2->SetPlayersBoard(_board);
-    // p2->Train(2000000);
-    // cout << "Let's play PvAI Connect Four!" << endl << endl;
-    // string affirmationSignal = "y";
-    
-    // while(tolower(affirmationSignal[0]) == 'y'){ // This function goes on as long as the user wants it to go
-    //     PlayQGame(ALL_PLAYERS.at(0), p2, _board);
-    //     cout << "Would you like to play again?" << endl << 
-    //     "[y] = YES\n[n] = NO" << endl;
-    //     getline(cin, affirmationSignal);
-    //     system("clear");
-    // }
-    // delete _board;
-    // _board = NULL;
-    // p1->RemovePlayersBoard();
-    // p2->RemovePlayersBoard();
-    // delete p2;
-    // p2 = NULL;
-
-
 }
 
 void ViewScores(){
     system("clear");
-    cout << "Player Records" << endl; // Cycle through all player scores
+    string ESC = "\033";
+    cout << ESC << "[1;4mPlayer Records" << ESC << "[0m" << endl; // Cycle through all player scores
     if(ALL_PLAYERS.empty()){
-        cout << "No Player Data Found!" << endl;
+        cout << "No Player Data Found!" << endl << endl;
     } else {
         int i = 1; // i is being used as a label, so its starting value is 1
         for(auto& p_object : ALL_PLAYERS){
@@ -285,11 +245,11 @@ void ViewScores(){
     }
 
     // Then display the score data for the Q-Learning AI and the Neural Network AI
-    cout << "Q Records" << endl;
+    cout << ESC << "[1;4mQ Records" << ESC << "[0m" << endl;
     q_AI->viewPlayRecord(); cout << endl;
     cout << endl;
 
-    cout << "Neural Network Records" << endl;
+    cout << ESC << "[1;4mNeural Network Records" << ESC << "[0m" << endl;
     nn_AI->viewPlayRecord(); cout << endl;
     cout << endl;
 
@@ -305,7 +265,8 @@ void Options(){
     
     while(tolower(_userInput[0]) != 'q'){
         system("clear");
-        cout << "OPTIONS" << endl << endl;
+        string ESC = "\033";
+        cout << ESC << "[1;4mOPTIONS" << ESC << "[0m" << endl << endl;
         cout << "What would you like to change?" << endl << endl;
         cout << "[1] - Modify Player Data" << endl;
         cout << "[2] - Delete Player Data" << endl;
@@ -320,11 +281,9 @@ void Options(){
                 case '2': // Delete Player Data
                     DeleteData();
                     break;
-                case 'Q': // Quits the application
-                    cout << "See you soon!" << endl;
+                case 'Q': // Quit
                     break;
-                case 'q': // Quits the application
-                    cout << "See you soon!" << endl;
+                case 'q': // Quit
                     break;
                 default: // Any other input is invalid
                     cout << ESC << "[A" << ESC << "[2KInvalid Input!" << endl;
@@ -380,7 +339,7 @@ string MakeNewPlayer(){
         if(ALL_PLAYERS.find(_userName) == NULL){ // Player does not exist with that name
             Player* new_player = new Player(_userName);
             ALL_PLAYERS.insert(make_pair(_userName, new_player));
-            cout << "Your profile is now ready!" << endl;
+            cout << ESC << "[1;32mYour profile is now ready!" << ESC << "[0m" << endl;
             sleep_for(milliseconds(3000));
         } else { // Player DOES exist with that name. Ask user to try again
             cout << "Sorry, but an account already exists with that username. Cannot proceed!" << endl;
@@ -429,6 +388,7 @@ string ChooseExistingPlayer(){
 }
 
 void SaveData(string p_name){
+    string ESC = "\033";
     if(ALL_PLAYERS.find(p_name) != NULL){
         Player* p = ALL_PLAYERS.at(p_name);
         string fileName = GetFileName(p_name);
@@ -440,7 +400,7 @@ void SaveData(string p_name){
         PlayerData << p->GetLosses() << "\n";
         PlayerData.close();
 
-        cout << p->GetName() << "'s records saved!" << endl;
+        cout << ESC << "[1;32m" << p->GetName() << "'s records saved!" << ESC <<"[0m" << endl;
     } else {
         throw "Account with that name not found";
     }
@@ -449,6 +409,7 @@ void SaveData(string p_name){
 void LoadData(){
     system("clear");
     system("ls PlayerData");
+    string ESC = "\033";
     cout << "\nType one of the txt files to load the data for that player" << endl << endl;
     string userInput = "";
     while(userInput == ""){
@@ -466,13 +427,13 @@ void LoadData(){
                 Player* p = new Player(name);
                 p->LoadRecords(wins, losses, games);
                 ALL_PLAYERS.insert(make_pair(name, p));
-                cout << name << "'s profile successfully loaded!" << endl;
+                cout << ESC << "[1;32m" << name << "'s profile successfully loaded!" << ESC << "[0m" << endl;
             } else {
                 cout << "Data for " << name << " is already loaded." << endl;
             }
             sleep_for(milliseconds(3000));
         } else {
-            cout << "File name cannot be found." << endl;
+            cout << ESC << "[1;31mFile name cannot be found." << ESC << "[0m" << endl;
             userInput = "";
         }
     }
@@ -514,6 +475,7 @@ void SaveQData(){
 void DeleteData(){
     system("clear");
     system("ls PlayerData");
+    string ESC = "\033";
     cout << "\nType one of the txt files to delete the data of that player" << endl << endl;
     string userInput = "";
     while(userInput == ""){
@@ -521,7 +483,7 @@ void DeleteData(){
         string fileName = "PlayerData/" + userInput;
         ifstream inFile; inFile.open(fileName);
         if(inFile.good()){
-            cout << "WARNING: The account linked to your save data will also be removed upon deletion!" << endl;
+            cout << ESC << "[1;31mWARNING" << ESC << "[0m: The account linked to your save data will also be removed upon deletion!" << endl;
             cout << "Are you sure you want to proceed? [y/n]" << endl;
             string yesorno = ""; getline(cin, yesorno);
             inFile.close();
@@ -549,11 +511,11 @@ void DeleteData(){
                 string cmd_string = "rm " + fileName;
                 const char* cmd = cmd_string.c_str();
                 system(cmd);
-                cout << "Data successfully deleted!" << endl;
+                cout << ESC << "[1;32mData successfully deleted!" << ESC << "[0m" << endl;
                 sleep_for(milliseconds(3000));
             }
         } else {
-            cout << "File name cannot be found." << endl;
+            cout << ESC << "[1;31mFile name cannot be found." << ESC << "[0m" << endl;
             userInput = "";
         }
     }
@@ -561,14 +523,15 @@ void DeleteData(){
 
 void PlayQGame(Player* p1, QLearningAI* p2, Board* _board){
     // Actual game begins. Loops as long as no one wins
+    string ESC = "\033";
     Board::BOARD_STATE _currState = Board::BOARD_STATE::INCOMPLETE;
     while(_currState == Board::BOARD_STATE::INCOMPLETE){
         if(_board->getNextTurn() == Board::PLAYER_TURN::P1){
-            cout << p1->GetName() << "'s turn!" << endl;
+            cout << ESC << "[1;41m" << p1->GetName() << "'s turn!" << ESC << "[0m" << endl;
             p1->dropChecker();
             //_currState = _board->checkWin(p1->GetSymbol());
         } else if (_board->getNextTurn() == Board::PLAYER_TURN::P2){
-            cout << p2->GetName() << "'s turn!" << endl;
+            cout << ESC << "[1;44m" << p2->GetName() << "'s turn!" << ESC << "[0m" << endl;
             p2->dropChecker();
             //_currState = _board->checkWin(p2->GetSymbol());
         }
@@ -584,15 +547,15 @@ void PlayQGame(Player* p1, QLearningAI* p2, Board* _board){
     cout << endl;
 
     if(_currState == Board::BOARD_STATE::P1_WIN){
-        cout << p1->GetName() << " Wins!" << endl;
+        cout << ESC << "[1;41m" << p1->GetName() << " Wins!" << ESC << "[0m" << endl;
         p1->win();
         p2->loss();
     } else if(_currState == Board::BOARD_STATE::P2_WIN){
-        cout << p2->GetName() << " Wins!" << endl;
+        cout << ESC << "[1;44m" << p2->GetName() << " Wins!" << ESC << "[0m" << endl;
         p2->win();
         p1->loss();
     } else if(_currState == Board::BOARD_STATE::DRAW){
-        cout << "Incredible! It's a draw!" << endl;
+        cout << ESC << "[1mIncredible! It's a draw!" << ESC << "[0m" << endl;
         p1->tie();
         p2->tie();
     }
@@ -603,14 +566,15 @@ void PlayQGame(Player* p1, QLearningAI* p2, Board* _board){
 void PlayNNGame(Player* p1, NeuralNetworkAI* p2, Board* _board){
 
     // Actual game begins. Loops as long as no one wins
+    string ESC = "\033";
     Board::BOARD_STATE _currState = Board::BOARD_STATE::INCOMPLETE;
     while(_currState == Board::BOARD_STATE::INCOMPLETE){
         if(_board->getNextTurn() == Board::PLAYER_TURN::P1){
-            cout << p1->GetName() << "'s turn!" << endl;
+            cout << ESC << "[1;41m" << p1->GetName() << "'s turn!" << ESC << "[0m" << endl;
             p1->dropChecker();
             //_currState = _board->checkWin(p1->GetSymbol());
         } else if (_board->getNextTurn() == Board::PLAYER_TURN::P2){
-            cout << p2->GetName() << "'s turn!" << endl;
+            cout << ESC << "[1;44m" << p2->GetName() << "'s turn!" << ESC << "[0m" << endl;
             p2->dropChecker();
             //_currState = _board->checkWin(p2->GetSymbol());
         }
@@ -626,15 +590,15 @@ void PlayNNGame(Player* p1, NeuralNetworkAI* p2, Board* _board){
     cout << endl;
 
     if(_currState == Board::BOARD_STATE::P1_WIN){
-        cout << p1->GetName() << " Wins!" << endl;
+        cout << ESC << "[1;41m" << p1->GetName() << " Wins!" << ESC << "[0m" << endl;
         p1->win();
         p2->loss();
     } else if(_currState == Board::BOARD_STATE::P2_WIN){
-        cout << p2->GetName() << " Wins!" << endl;
+        cout << ESC << "[1;44m" << p2->GetName() << " Wins!" << ESC << "[0m" << endl;
         p2->win();
         p1->loss();
     } else if(_currState == Board::BOARD_STATE::DRAW){
-        cout << "Incredible! It's a draw!" << endl;
+        cout << ESC << "[1mIncredible! It's a draw!" << ESC << "[0m" << endl;
         p1->tie();
         p2->tie();
     }
@@ -643,10 +607,8 @@ void PlayNNGame(Player* p1, NeuralNetworkAI* p2, Board* _board){
 }
 
 void PlayGame(Player* p1, Player* p2){
-    p1->SetSymbol('R');
-    p2->SetSymbol('B');
+    string ESC = "\033";
     Board* _board = new Board();
-    _board->firstTurn();
     p1->SetPlayersBoard(_board);
     p2->SetPlayersBoard(_board);
 
@@ -654,18 +616,19 @@ void PlayGame(Player* p1, Player* p2){
     Board::BOARD_STATE _currState = Board::BOARD_STATE::INCOMPLETE;
     while(_currState == Board::BOARD_STATE::INCOMPLETE){
         if(_board->getNextTurn() == Board::PLAYER_TURN::P1){
-            cout << p1->GetName() << "'s turn!" << endl;
+            cout << ESC << "[1;41m" << p1->GetName() << "'s turn!" << ESC << "[0m" << endl;
             p1->dropChecker();
-            _currState = _board->checkWin(p1->GetSymbol());
+            //_currState = _board->checkWin(p1->GetSymbol());
         } else if (_board->getNextTurn() == Board::PLAYER_TURN::P2){
-            cout << p2->GetName() << "'s turn!" << endl;
+            cout << ESC << "[1;44m" << p2->GetName() << "'s turn!" << ESC << "[0m" << endl;
             p2->dropChecker();
-            _currState = _board->checkWin(p2->GetSymbol());
+            //_currState = _board->checkWin(p2->GetSymbol());
         }
         for(int i = 0; i <= _board->GetWidth() * 4; i++){
             cout << "-";
         }
         cout << "\n" << endl;
+        _currState = _board->getCurrentState();
     }
 
     _board->printHeader();
@@ -673,15 +636,15 @@ void PlayGame(Player* p1, Player* p2){
     cout << endl;
 
     if(_currState == Board::BOARD_STATE::P1_WIN){
-        cout << p1->GetName() << " Wins!" << endl;
+        cout << ESC << "[1;41m" << p1->GetName() << " Wins!" << ESC << "[0m" << endl;
         p1->win();
         p2->loss();
     } else if(_currState == Board::BOARD_STATE::P2_WIN){
-        cout << p2->GetName() << " Wins!" << endl;
+        cout << ESC << "[1;44m" << p2->GetName() << " Wins!" << ESC << "[0m" << endl;
         p2->win();
         p1->loss();
     } else if(_currState == Board::BOARD_STATE::DRAW){
-        cout << "Incredible! It's a draw!" << endl;
+        cout << ESC << "[1mIncredible! It's a draw!" << ESC << "[0m" << endl;
         p1->tie();
         p2->tie();
     }
@@ -707,7 +670,8 @@ string GetFileName(string p_name){
 
 bool NN_Warning(){
     system("clear");
-    cout << "WARNING" << endl;
+    string ESC = "\033";
+    cout << ESC << "[1;4;31mWARNING" << ESC << "[0m" << endl;
     cout << "The Neural Network AI is a highly experimental feature" << endl;
     cout << "Training may take some time and the algorithm may act unexpectedly." << endl;
     cout << "Are you sure you want to proceed? [y/n]" << endl;

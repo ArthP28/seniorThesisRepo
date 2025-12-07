@@ -359,10 +359,12 @@ string MakeNewPlayer(){
 string ChooseExistingPlayer(){
     string ESC = "\033";
     system("clear");
-    for(auto& p : ALL_PLAYERS){
-        cout << "| " << p.first << " ";
+    if(!ALL_PLAYERS.empty()){
+        for(auto& p : ALL_PLAYERS){
+            cout << "| " << p.first << " ";
+        }
+        cout << "|" << endl;
     }
-    cout << "|" << endl;
     // Prompt the user to type in their name
     cout << "Select a player..." << endl;
     string _userName = "";

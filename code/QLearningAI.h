@@ -182,26 +182,6 @@ void QLearningAI::Train(int numEpochs){
             cout << "Current Number of Epochs: " << i << endl;
         }
     }
-
-    int allNonZero = 0;
-    for(auto& Q_Pair : *New_Q_Table){
-        if(!isAllZeroes(Q_Pair.second)){
-            //int w = (Player::GetBoard()->GetHeight() * Player::GetBoard()->GetWidth()) + Player::GetBoard()->GetWidth() - Q_Pair.first.length();
-            // cout << Q_Pair.first << " - { ";
-            // for(int i = 0; i < Q_Pair.second.size(); i++){
-            //     cout << Q_Pair.second.at(i);
-            //     if(i < Q_Pair.second.size() - 1){
-            //         cout << ", ";
-            //     } else {
-            //         cout << " ";
-            //     }
-            // }
-            // cout << "}" << endl;
-            allNonZero++;
-        }
-    }
-
-    cout << "Non-zero States: " << allNonZero << "/" << New_Q_Table->size() << endl;
 }
 
 void QLearningAI::updateQTable(string currentState, string nextState, int actionIndex, double reward){

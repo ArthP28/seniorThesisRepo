@@ -193,11 +193,11 @@ I made several design choices while conjuring up the methods for the tree helper
 ## Week 11 Summary (11/17/2025)
 ### This week I worked on:
 
-[Your answer here]
+This week, I worked on creating the Neural Network Class. Using the Neural Network Code kindly provided by Professor Mahoney, the algorithm should go through all its trained label data to process all 42 input nodes from the current board and return the best possible move to make.
 
 ### This week I learned:
 
-[Your answer here]
+Through integrating the Professor's Neural Network code into my Machine Learning algorithm, I have gained a deeper understanding of how Neural Networks function. I have learned more about how these networks process tons of training data into an input vector of double-type arrays. Each double represents the current value that each neuron holds. 
 
 ### My successes this week were:
 
@@ -209,7 +209,7 @@ I made several design choices while conjuring up the methods for the tree helper
 
 ---
 
-## Week 12 Summary (MM/DD/YYYY)
+## Week 12 Summary (11/24/2025)
 ### This week I worked on:
 
 [Your answer here]
@@ -228,7 +228,7 @@ I made several design choices while conjuring up the methods for the tree helper
 
 ---
 
-## Week 13 Summary (MM/DD/YYYY)
+## Week 13 Summary (12/01/2025)
 ### This week I worked on:
 
 [Your answer here]

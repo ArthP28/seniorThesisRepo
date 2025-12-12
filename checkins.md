@@ -231,18 +231,18 @@ As stated before, the constant tweaking of the Neural Network code was perhaps t
 ## Week 13 Summary (12/01/2025)
 ### This week I worked on:
 
-[Your answer here]
+Given that my project's code is complete, I spent the first week of December working on my final presentation. First, I created a slide deck of dynamic visuals and brief bullet points that both work together to visually present my project. Then I wrote down the talking part of the presentation on flash cards. They will serve as a guide on what to say on each slide while I am presenting. Finally, I, of course, made sure to practice at least once every day to ensure I am fully prepared to present my presentation with confidence.
 
 ### This week I learned:
 
-[Your answer here]
+I took this presentation as an opportunity to reflect on my project and how it evolved over time. This entire project itself has been a learning experience for me, as this is the first time I have worked on a program this ambitious. I have gathered so much new information on Artificially Intelligent algorithms, and working them inside the complex game space of Connect Four was both the most challenging and most rewarding experience I have had in my life as a student programmer. All of the lessons I have learned throughout the entire development of my Thesis can be applied to any future project of this similar magnitude, especially when it comes to managing time, scope, and expectations. I will discuss all of this in my final presentation on Monday.
 
 ### My successes this week were:
 
-[Your answer here]
+I completed my slides around Tuesday. They came out quite nicely while also serving their purpose of explaining my entire development process. By the end of this week, I also felt confident about my presentation, as I followed my routine of practicing every day. Sometimes, I would end up reciting my presentation multiple times on some days to ensure that my speech and tone flow the right way.
 
 ### The challenges I faced this week were:
 
-[Your answer here]
+As with the Sprint Presentations, managing my time and workload was the primary challenge of this week. This time, however, the homework I have received for all my other classes would be significantly more intense. Not only must I complete my final 3D project for my Animation Class, but I also need to delegate time for studying for my final exams in my Artificial Intelligence and Intermediate Spanish II classes. All of these final assignments are due the week of finals. I actually focused on my other work first so that I would have more time to practice for my Thesis presentation.
 
 ---

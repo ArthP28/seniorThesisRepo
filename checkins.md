@@ -201,30 +201,30 @@ Through integrating the Professor's Neural Network code into my Machine Learning
 
 ### My successes this week were:
 
-[Your answer here]
+The Neural Network was able to predict the testing data very accurately. The success rate would typically be around 85 - 95% based on my learning rate and layer configurations.
 
 ### The challenges I faced this week were:
 
-[Your answer here]
+There were quite a few bugs that I have discovered while testing the logic of my neural network. The algorithm would sometimes select columns that are already full, putting itself in an infinite loop. To mitigate this, I have the prediction method return the next illuminated neuron, which does break some of the logic behind how a Neural Network is supposed to work, but it does discourage the AI from choosing full columns. More fundamentally, the Network is not making the decisions that I expected it would make, as it fails to recognize how to achieve a four-in-a-row. I will have to spend all of Thanksgiving Break trying to find ways to make this better.
 
 ---
 
 ## Week 12 Summary (11/24/2025)
 ### This week I worked on:
 
-[Your answer here]
+For almost all of Thanksgiving Break I tried finding numerous ways to improve the intelligence of my Neural Network algorithm. These included adjusting the learning rate, adding more layers, adding more neurons to each hidden layer, and even trying the Mixture of Experts approach. However, all of my attempts either greatly increased the training time to an unbearably slow rate, or confused the logic of the network itself. Towards the end of my break, I was out of ideas and time, so I moved onto creating a save system for the Player and Neural Network data, which would be my last major change in the Thesis Project.
 
 ### This week I learned:
 
-[Your answer here]
+This Thanksgiving week was when I truly learned the importance of managing my time and expectations. As much as I wanted to keep pursuing a solution for my Neural Network, I realized that this would only waste more time that could have been spent on implementing other functions of the project. I always intended to have my project finished by the beginning of December, so that I have the rest of the time left for practicing for my final presentation. I made the difficult decision to halt further development of the Neural Network, as it became obvious that it had grown too ambitious to be fully completed by the end of the semester. I redirected my focus to my last initial proposed function, the save system, and was able to finish development of the program by December 1st.
 
 ### My successes this week were:
 
-[Your answer here]
+The silver lining of this week was the fact that I got a working save system implemented for all players. Each player has scoring data that is saved automatically to its own .txt file for preservation. In order to load an existing player, it must be done manually by typing the name of the txt file containing the data of a particular player.
 
 ### The challenges I faced this week were:
 
-[Your answer here]
+As stated before, the constant tweaking of the Neural Network code was perhaps the hardest challenge I have ever faced in the entire development process. The algorithm grew too ambitious for me to reasonably finish in the amount of time that I had left, so I left it on the side to work on later after this semester is over.
 
 ---
 
